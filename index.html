@@ -151,6 +151,10 @@
   .car-foot .price small{display:block;font-size:11px;color:var(--muted2);font-weight:400}
   .car-foot a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#fff;font-weight:700}
   .car-foot a .ico{width:15px;height:15px;color:var(--brand2)}
+  .car-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:linear-gradient(180deg,#f6f7f9,#e6e9ec);padding:4px;z-index:1}
+  .car-trim{font-size:12.5px;color:var(--gold2);font-weight:600;margin-top:-4px}
+  .car-colors{display:flex;gap:7px;align-items:center;margin-top:2px}
+  .car-colors i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,.28);display:inline-block}
 
   /* why */
   .why{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -423,7 +427,7 @@
       </div>
       <a href="#contact" class="btn btn-ghost"><span data-i18n="stock_all">عرض كل المخزون</span><svg class="ico"><use href="#i-arrow"/></svg></a>
     </div>
-    <div class="stock">
+    <div class="stock" id="stockGrid">
       <div class="car-card">
         <div class="car-photo"><span class="pill badge b-avail" data-i18n="st_avail">متوفرة</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
         <div class="car-body">
@@ -928,6 +932,49 @@ function sendRequest(e){
   window.open('https://wa.me/213554601928?text='+encodeURIComponent(lines.join("\n")),'_blank');
   return false;
 }
+
+// ---- Live stock from Airtable (served by the portal API on Render) ----
+var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
+(function(){
+  var COLORMAP={"أبيض":"#f2f2f2","فضي":"#c7ccd1","رمادي":"#6c7076","أسود":"#1c1f24","أحمر":"#e01e26","أزرق":"#3b6fd1","أخضر":"#2f9e5f","بني":"#7a5a3a","ذهبي":"#d9b382"};
+  var STATUSMAP={"متوفرة":{cls:"b-avail",label:"متوفرة"},"في الطريق":{cls:"b-transit",label:"في الطريق"},"تصل قريباً":{cls:"b-soon",label:"تصل قريباً"}};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c];});}
+  function chip(t){return t?("<span class=\"chip\">"+esc(t)+"</span>"):"";}
+  function dots(colors){
+    if(!colors)return "";
+    var parts=String(colors).split(/[،,\/]+/).map(function(x){return x.trim();}).filter(Boolean);
+    var d=parts.map(function(p){var c=COLORMAP[p];return c?("<i title=\""+esc(p)+"\" style=\"background:"+c+"\"></i>"):"";}).join("");
+    return d?("<div class=\"car-colors\">"+d+"</div>"):"";
+  }
+  function card(c){
+    var st=STATUSMAP[c.status]||{cls:"b-avail",label:c.status||""};
+    var photo=(c.photos&&c.photos[0])||"";
+    var media=photo?("<img loading=\"lazy\" src=\""+esc(photo)+"\" alt=\""+esc(c.name)+"\">"):("<svg viewBox=\"0 0 24 24\"><use href=\"#i-car\"/></svg>");
+    return "<div class=\"car-card\">"
+      +"<div class=\"car-photo\"><span class=\"pill badge "+st.cls+"\">"+esc(st.label)+"</span>"+media+"</div>"
+      +"<div class=\"car-body\">"
+      +"<h3>"+esc(c.name)+"</h3>"
+      +(c.trim?("<div class=\"car-trim\">"+esc(c.trim)+"</div>"):"")
+      +"<div class=\"cc\">"+chip(c.year)+chip(c.transmission)+chip(c.fuel)+"</div>"
+      +dots(c.colors)
+      +"<div class=\"car-foot\"><div class=\"price\"><span data-i18n=\"onreq\">عند الطلب</span><small data-i18n=\"ask_wa\">اسأل عبر واتساب</small></div>"
+      +"<a href=\"#contact\"><span data-i18n=\"reserve\">احجز</span><svg class=\"ico\"><use href=\"#i-arrow\"/></svg></a></div>"
+      +"</div></div>";
+  }
+  function loadStock(){
+    if(!API_BASE)return;
+    var grid=document.getElementById("stockGrid");
+    if(!grid)return;
+    fetch(API_BASE.replace(/\/+$/,"")+"/api/stock").then(function(r){return r.json();}).then(function(d){
+      var cars=(d&&d.cars)||[];
+      cars=cars.filter(function(c){return c&&c.name&&c.status!=="مُباعة"&&c.photos&&c.photos.length;});
+      if(!cars.length)return;
+      grid.innerHTML=cars.map(card).join("");
+      try{ setLang(document.documentElement.lang||"ar"); }catch(e){}
+    }).catch(function(){});
+  }
+  if(document.readyState!=="loading")loadStock();else document.addEventListener("DOMContentLoaded",loadStock);
+})();
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
