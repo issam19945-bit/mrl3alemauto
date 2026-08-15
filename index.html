@@ -155,6 +155,45 @@
   .car-trim{font-size:12.5px;color:var(--gold2);font-weight:600;margin-top:-4px}
   .car-colors{display:flex;gap:7px;align-items:center;margin-top:2px}
   .car-colors i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,.28);display:inline-block}
+  /* featured offer video */
+  .featured-hero{border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(224,30,38,.07),transparent)}
+  .featured-inner{padding:24px 0 30px}
+  .featured-inner .eyebrow{margin-bottom:14px}
+  .vwrap{position:relative;width:100%;max-width:900px;margin:0 auto;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;border:1px solid var(--line2)}
+  .vwrap iframe{position:absolute;inset:0;width:100%;height:100%}
+  /* brand tiles */
+  .brand-tiles{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
+  .brand-tile{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:700;font-size:14px;cursor:pointer;transition:.2s;font-family:inherit}
+  .brand-tile:hover{border-color:var(--gold);color:#fff}
+  .brand-tile.active{background:linear-gradient(180deg,var(--brand2),var(--brand));border-color:transparent;color:#fff}
+  .brand-tile small{color:var(--muted2);font-weight:600;margin-inline-start:7px}
+  .brand-tile.active small{color:rgba(255,255,255,.85)}
+  .car-card{cursor:pointer}
+  .car-foot .more{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#fff;font-weight:700}
+  .car-foot .more b{color:var(--brand2);font-size:16px}
+  /* model detail overlay */
+  .detail-overlay{position:fixed;inset:0;z-index:200;background:rgba(6,7,9,.93);backdrop-filter:blur(6px);overflow-y:auto;display:none}
+  .detail-overlay.open{display:block}
+  .detail-box{max-width:1000px;margin:38px auto;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;overflow:hidden}
+  .detail-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg2);z-index:2}
+  .detail-close{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center}
+  .detail-close:hover{border-color:var(--brand);color:#fff}
+  .detail-body{padding:22px}
+  .gmain{position:relative;width:100%;aspect-ratio:16/10;background:linear-gradient(180deg,#f6f7f9,#e6e9ec);border-radius:16px;overflow:hidden}
+  .gmain .gimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;opacity:0;transition:opacity .2s}
+  .gmain .gimg.active{opacity:1}
+  .gthumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .gthumb{width:78px;height:54px;border-radius:8px;overflow:hidden;border:2px solid transparent;background:#f2f2f2;cursor:pointer;padding:0}
+  .gthumb.active{border-color:var(--brand)}
+  .gthumb img{width:100%;height:100%;object-fit:cover}
+  .detail-title{font-size:24px;margin-top:20px;letter-spacing:-.3px}
+  .detail-trim{color:var(--gold2);font-weight:600;margin-top:3px}
+  .detail-desc{color:var(--muted);font-size:14.5px;margin-top:14px;line-height:1.9;white-space:pre-line}
+  .detail-video{margin-top:24px}
+  .detail-video h4{font-size:16px;margin-bottom:12px;color:var(--gold2)}
+  .detail-cta{display:inline-flex;align-items:center;gap:9px;margin-top:22px;padding:14px 28px;border-radius:12px;background:linear-gradient(180deg,#25d366,#1eb257);color:#04220f;font-weight:800;font-size:15px;text-decoration:none}
+  .detail-cta:hover{transform:translateY(-1px)}
+  @media(max-width:640px){.detail-box{margin:0;border-radius:0;min-height:100vh}}
 
   /* why */
   .why{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -368,6 +407,8 @@
   </div>
 </header>
 
+<section id="featured" class="featured-hero" style="display:none"><div id="featuredSlot"></div></section>
+
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
@@ -427,6 +468,7 @@
       </div>
       <a href="#contact" class="btn btn-ghost"><span data-i18n="stock_all">عرض كل المخزون</span><svg class="ico"><use href="#i-arrow"/></svg></a>
     </div>
+    <div id="brandTiles" class="brand-tiles"></div>
     <div class="stock" id="stockGrid">
       <div class="car-card">
         <div class="car-photo"><span class="pill badge b-avail" data-i18n="st_avail">متوفرة</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
@@ -933,24 +975,35 @@ function sendRequest(e){
   return false;
 }
 
-// ---- Live stock from Airtable (served by the portal API on Render) ----
+// ---- Live showroom from Airtable: featured video, brands, models, detail pages ----
 var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
 (function(){
   var COLORMAP={"أبيض":"#f2f2f2","فضي":"#c7ccd1","رمادي":"#6c7076","أسود":"#1c1f24","أحمر":"#e01e26","أزرق":"#3b6fd1","أخضر":"#2f9e5f","بني":"#7a5a3a","ذهبي":"#d9b382"};
   var STATUSMAP={"متوفرة":{cls:"b-avail",label:"متوفرة"},"في الطريق":{cls:"b-transit",label:"في الطريق"},"تصل قريباً":{cls:"b-soon",label:"تصل قريباً"}};
+  var WA="213554601928", ALL=[], BRAND=null;
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c];});}
   function chip(t){return t?("<span class=\"chip\">"+esc(t)+"</span>"):"";}
+  function norm(b){return String(b||"").trim().toLowerCase();}
   function dots(colors){
     if(!colors)return "";
     var parts=String(colors).split(/[،,\/]+/).map(function(x){return x.trim();}).filter(Boolean);
     var d=parts.map(function(p){var c=COLORMAP[p];return c?("<i title=\""+esc(p)+"\" style=\"background:"+c+"\"></i>"):"";}).join("");
     return d?("<div class=\"car-colors\">"+d+"</div>"):"";
   }
+  function fbEmbed(url){
+    var u=String(url||"").trim(); if(!u) return "";
+    if(/youtu\.?be/.test(u)){
+      var id="", m=u.match(/[?&]v=([^&]+)/)||u.match(/youtu\.be\/([^?&]+)/)||u.match(/embed\/([^?&]+)/); if(m)id=m[1];
+      if(id) return "<div class=\"vwrap\"><iframe src=\"https://www.youtube.com/embed/"+esc(id)+"\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></div>";
+    }
+    return "<div class=\"vwrap\"><iframe src=\"https://www.facebook.com/plugins/video.php?href="+encodeURIComponent(u)+"&show_text=false&width=800\" style=\"border:none;overflow:hidden\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"true\" allow=\"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share\"></iframe></div>";
+  }
+  function waLink(c){ return "https://wa.me/"+WA+"?text="+encodeURIComponent("مرحبا، مهتم بـ "+(c.name||"")+(c.trim?(" — "+c.trim):"")); }
   function card(c){
     var st=STATUSMAP[c.status]||{cls:"b-avail",label:c.status||""};
     var photo=(c.photos&&c.photos[0])||"";
     var media=photo?("<img loading=\"lazy\" src=\""+esc(photo)+"\" alt=\""+esc(c.name)+"\">"):("<svg viewBox=\"0 0 24 24\"><use href=\"#i-car\"/></svg>");
-    return "<div class=\"car-card\">"
+    return "<div class=\"car-card\" role=\"button\" tabindex=\"0\" data-id=\""+esc(c.id)+"\">"
       +"<div class=\"car-photo\"><span class=\"pill badge "+st.cls+"\">"+esc(st.label)+"</span>"+media+"</div>"
       +"<div class=\"car-body\">"
       +"<h3>"+esc(c.name)+"</h3>"
@@ -958,22 +1011,94 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
       +"<div class=\"cc\">"+chip(c.year)+chip(c.transmission)+chip(c.fuel)+"</div>"
       +dots(c.colors)
       +"<div class=\"car-foot\"><div class=\"price\"><span data-i18n=\"onreq\">عند الطلب</span><small data-i18n=\"ask_wa\">اسأل عبر واتساب</small></div>"
-      +"<a href=\"#contact\"><span data-i18n=\"reserve\">احجز</span><svg class=\"ico\"><use href=\"#i-arrow\"/></svg></a></div>"
+      +"<span class=\"more\"><span data-i18n=\"details\">التفاصيل</span><b>›</b></span></div>"
       +"</div></div>";
+  }
+  function renderBrands(){
+    var host=document.getElementById("brandTiles"); if(!host) return;
+    var map={};
+    ALL.forEach(function(c){var n=norm(c.brand); if(!n)return; if(!map[n])map[n]={label:String(c.brand).trim(),count:0}; map[n].count++;});
+    var keys=Object.keys(map);
+    if(!keys.length){host.innerHTML="";return;}
+    var html="<button class=\"brand-tile"+(BRAND===null?" active":"")+"\" data-b=\"\">الكل</button>";
+    keys.forEach(function(k){html+="<button class=\"brand-tile"+(BRAND===k?" active":"")+"\" data-b=\""+esc(k)+"\">"+esc(map[k].label)+"<small>"+map[k].count+"</small></button>";});
+    host.innerHTML=html;
+  }
+  function renderGrid(){
+    var grid=document.getElementById("stockGrid"); if(!grid) return;
+    var cars=ALL.filter(function(c){return BRAND===null||norm(c.brand)===BRAND;});
+    if(!cars.length && ALL.length===0) return;
+    grid.innerHTML=cars.map(card).join("");
+    try{ setLang(document.documentElement.lang||"ar"); }catch(e){}
+  }
+  function detailNode(){
+    var d=document.getElementById("carDetail");
+    if(!d){ d=document.createElement("div"); d.id="carDetail"; d.className="detail-overlay"; document.body.appendChild(d); }
+    return d;
+  }
+  function openDetail(c){
+    var d=detailNode(), photos=c.photos||[];
+    var gmain=photos.length?photos.map(function(p,i){return "<img class=\"gimg"+(i===0?" active":"")+"\" data-i=\""+i+"\" src=\""+esc(p)+"\">";}).join(""):"<svg viewBox=\"0 0 24 24\" style=\"width:120px;stroke:#999;fill:none;margin:60px auto;display:block\"><use href=\"#i-car\"/></svg>";
+    var thumbs=photos.length>1?("<div class=\"gthumbs\">"+photos.map(function(p,i){return "<button class=\"gthumb"+(i===0?" active":"")+"\" data-i=\""+i+"\"><img src=\""+esc(p)+"\"></button>";}).join("")+"</div>"):"";
+    var st=STATUSMAP[c.status]||{cls:"b-avail",label:c.status||""};
+    var vid=c.video?("<div class=\"detail-video\"><h4>فيديو تفصيلي عن السيارة</h4>"+fbEmbed(c.video)+"</div>"):"";
+    var desc=c.description?("<p class=\"detail-desc\">"+esc(c.description)+"</p>"):"";
+    d.innerHTML="<div class=\"detail-box\">"
+      +"<div class=\"detail-head\"><span class=\"pill badge "+st.cls+"\">"+esc(st.label)+"</span><button class=\"detail-close\" aria-label=\"إغلاق\">×</button></div>"
+      +"<div class=\"detail-body\">"
+      +"<div class=\"gmain\">"+gmain+"</div>"+thumbs
+      +"<h2 class=\"detail-title\">"+esc(c.name)+"</h2>"
+      +(c.trim?("<div class=\"detail-trim\">"+esc(c.trim)+"</div>"):"")
+      +"<div class=\"cc\" style=\"margin-top:12px\">"+chip(c.year)+chip(c.transmission)+chip(c.fuel)+"</div>"
+      +dots(c.colors)+desc+vid
+      +"<div><a class=\"detail-cta\" href=\""+waLink(c)+"\" target=\"_blank\" rel=\"noopener\">احجز عبر واتساب</a></div>"
+      +"</div></div>";
+    d.classList.add("open"); document.body.style.overflow="hidden"; d.scrollTop=0;
+    d.querySelectorAll(".gthumb").forEach(function(b){b.addEventListener("click",function(){
+      var i=b.getAttribute("data-i");
+      d.querySelectorAll(".gimg").forEach(function(g){g.classList.toggle("active",g.getAttribute("data-i")===i);});
+      d.querySelectorAll(".gthumb").forEach(function(t){t.classList.remove("active");}); b.classList.add("active");
+    });});
+    d.querySelector(".detail-close").addEventListener("click",function(){ location.hash=""; });
+    d.addEventListener("click",function(e){ if(e.target===d){ location.hash=""; } });
+  }
+  function closeDetail(){ var d=document.getElementById("carDetail"); if(d){ d.classList.remove("open"); d.innerHTML=""; } document.body.style.overflow=""; }
+  function route(){
+    var m=(location.hash||"").match(/^#car\/(.+)$/);
+    if(m){ var id=decodeURIComponent(m[1]), c=ALL.filter(function(x){return x.id===id;})[0]; if(c){ openDetail(c); return; } }
+    closeDetail();
+  }
+  function bind(){
+    var grid=document.getElementById("stockGrid");
+    if(grid){
+      grid.addEventListener("click",function(e){ var k=e.target.closest&&e.target.closest(".car-card"); if(k&&k.getAttribute("data-id")) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); });
+      grid.addEventListener("keydown",function(e){ if(e.key==="Enter"){ var k=e.target.closest&&e.target.closest(".car-card"); if(k) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); } });
+    }
+    var bt=document.getElementById("brandTiles");
+    if(bt) bt.addEventListener("click",function(e){ var t=e.target.closest&&e.target.closest(".brand-tile"); if(!t)return; var b=t.getAttribute("data-b"); BRAND=b?b:null; renderBrands(); renderGrid(); var s=document.getElementById("stock"); if(s)s.scrollIntoView({behavior:"smooth",block:"start"}); });
+    window.addEventListener("hashchange",route);
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&/^#car\//.test(location.hash||"")) location.hash=""; });
+  }
+  function loadFeatured(){
+    var slot=document.getElementById("featuredSlot"); if(!slot)return;
+    fetch(API_BASE.replace(/\/+$/,"")+"/api/featured").then(function(r){return r.json();}).then(function(d){
+      if(!d||!d.active||!d.video)return;
+      slot.innerHTML="<div class=\"wrap\"><div class=\"featured-inner\"><span class=\"eyebrow\">"+esc(d.headline||"عرض هذا الأسبوع")+"</span>"+fbEmbed(d.video)+"</div></div>";
+      var sec=document.getElementById("featured"); if(sec) sec.style.display="block";
+    }).catch(function(){});
   }
   function loadStock(){
     if(!API_BASE)return;
-    var grid=document.getElementById("stockGrid");
-    if(!grid)return;
     fetch(API_BASE.replace(/\/+$/,"")+"/api/stock").then(function(r){return r.json();}).then(function(d){
       var cars=(d&&d.cars)||[];
       cars=cars.filter(function(c){return c&&c.name&&c.status!=="مُباعة"&&c.photos&&c.photos.length;});
-      if(!cars.length)return;
-      grid.innerHTML=cars.map(card).join("");
-      try{ setLang(document.documentElement.lang||"ar"); }catch(e){}
+      ALL=cars;
+      if(cars.length){ renderBrands(); renderGrid(); }
+      route();
     }).catch(function(){});
   }
-  if(document.readyState!=="loading")loadStock();else document.addEventListener("DOMContentLoaded",loadStock);
+  function init(){ bind(); loadFeatured(); loadStock(); }
+  if(document.readyState!=="loading")init();else document.addEventListener("DOMContentLoaded",init);
 })();
 </script>
 
