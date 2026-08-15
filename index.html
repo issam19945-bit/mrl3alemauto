@@ -388,6 +388,7 @@
     <div class="brand"><div class="logo">ML</div><div>MR L3ALEM AUTO<small>CHINA → ALGERIA</small></div></div>
     <nav class="nav-links">
       <a href="#stock" data-i18n="nav_stock">المخزون</a>
+      <a href="#used">مستعملة</a>
       <a href="#live" data-i18n="nav_track">تتبع الشحنة</a>
       <a href="#why" data-i18n="nav_why">لماذا نحن</a>
       <a href="#about" data-i18n="nav_about">من نحن</a>
@@ -503,6 +504,20 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="used" style="display:none">
+  <div class="wrap">
+    <div class="sec-top">
+      <div>
+        <span class="eyebrow">سيارات مستعملة</span>
+        <h2>سيارات مستعملة بحالة ممتازة</h2>
+        <p>سيارات مستعملة مختارة بعناية — بمسافات قليلة وحالة تقارب الجديدة. اضغط على السيارة لمشاهدة الصور والتفاصيل.</p>
+      </div>
+    </div>
+    <div id="usedBrandTiles" class="brand-tiles"></div>
+    <div class="stock" id="usedGrid"></div>
   </div>
 </section>
 
@@ -980,7 +995,7 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
 (function(){
   var COLORMAP={"أبيض":"#f2f2f2","فضي":"#c7ccd1","رمادي":"#6c7076","أسود":"#1c1f24","أحمر":"#e01e26","أزرق":"#3b6fd1","أخضر":"#2f9e5f","بني":"#7a5a3a","ذهبي":"#d9b382"};
   var STATUSMAP={"متوفرة":{cls:"b-avail",label:"متوفرة"},"في الطريق":{cls:"b-transit",label:"في الطريق"},"تصل قريباً":{cls:"b-soon",label:"تصل قريباً"}};
-  var WA="213554601928", ALL=[], BRAND=null;
+  var WA="213554601928", ALL=[], BRANDS={main:null,used:null};
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c];});}
   function chip(t){return t?("<span class=\"chip\">"+esc(t)+"</span>"):"";}
   function norm(b){return String(b||"").trim().toLowerCase();}
@@ -1014,22 +1029,30 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
       +"<span class=\"more\"><span data-i18n=\"details\">التفاصيل</span><b>›</b></span></div>"
       +"</div></div>";
   }
-  function renderBrands(){
-    var host=document.getElementById("brandTiles"); if(!host) return;
-    var map={};
-    ALL.forEach(function(c){var n=norm(c.brand); if(!n)return; if(!map[n])map[n]={label:String(c.brand).trim(),count:0}; map[n].count++;});
+  function subset(kind){ return ALL.filter(function(c){ return kind==="used" ? !!c.used : !c.used; }); }
+  function renderBrands(kind){
+    var host=document.getElementById(kind==="used"?"usedBrandTiles":"brandTiles"); if(!host) return;
+    var list=subset(kind), map={};
+    list.forEach(function(c){var n=norm(c.brand); if(!n)return; if(!map[n])map[n]={label:String(c.brand).trim(),count:0}; map[n].count++;});
     var keys=Object.keys(map);
     if(!keys.length){host.innerHTML="";return;}
-    var html="<button class=\"brand-tile"+(BRAND===null?" active":"")+"\" data-b=\"\">الكل</button>";
-    keys.forEach(function(k){html+="<button class=\"brand-tile"+(BRAND===k?" active":"")+"\" data-b=\""+esc(k)+"\">"+esc(map[k].label)+"<small>"+map[k].count+"</small></button>";});
+    var cur=BRANDS[kind];
+    var html="<button class=\"brand-tile"+(cur===null?" active":"")+"\" data-k=\""+kind+"\" data-b=\"\">الكل</button>";
+    keys.forEach(function(k){html+="<button class=\"brand-tile"+(cur===k?" active":"")+"\" data-k=\""+kind+"\" data-b=\""+esc(k)+"\">"+esc(map[k].label)+"<small>"+map[k].count+"</small></button>";});
     host.innerHTML=html;
   }
-  function renderGrid(){
-    var grid=document.getElementById("stockGrid"); if(!grid) return;
-    var cars=ALL.filter(function(c){return BRAND===null||norm(c.brand)===BRAND;});
-    if(!cars.length && ALL.length===0) return;
+  function renderGrid(kind){
+    var grid=document.getElementById(kind==="used"?"usedGrid":"stockGrid"); if(!grid) return;
+    var cur=BRANDS[kind];
+    var cars=subset(kind).filter(function(c){return cur===null||norm(c.brand)===cur;});
     grid.innerHTML=cars.map(card).join("");
     try{ setLang(document.documentElement.lang||"ar"); }catch(e){}
+  }
+  function renderAll(){
+    renderBrands("main");
+    if(subset("main").length){ renderGrid("main"); }
+    renderBrands("used"); renderGrid("used");
+    var us=document.getElementById("used"); if(us) us.style.display=subset("used").length?"":"none";
   }
   function detailNode(){
     var d=document.getElementById("carDetail");
@@ -1068,14 +1091,18 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
     if(m){ var id=decodeURIComponent(m[1]), c=ALL.filter(function(x){return x.id===id;})[0]; if(c){ openDetail(c); return; } }
     closeDetail();
   }
+  function bindGrid(id){
+    var grid=document.getElementById(id); if(!grid)return;
+    grid.addEventListener("click",function(e){ var k=e.target.closest&&e.target.closest(".car-card"); if(k&&k.getAttribute("data-id")) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); });
+    grid.addEventListener("keydown",function(e){ if(e.key==="Enter"){ var k=e.target.closest&&e.target.closest(".car-card"); if(k) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); } });
+  }
+  function bindBrands(id){
+    var bt=document.getElementById(id); if(!bt)return;
+    bt.addEventListener("click",function(e){ var t=e.target.closest&&e.target.closest(".brand-tile"); if(!t)return; var kind=t.getAttribute("data-k")||"main"; var b=t.getAttribute("data-b"); BRANDS[kind]=b?b:null; renderBrands(kind); renderGrid(kind); var s=document.getElementById(kind==="used"?"used":"stock"); if(s)s.scrollIntoView({behavior:"smooth",block:"start"}); });
+  }
   function bind(){
-    var grid=document.getElementById("stockGrid");
-    if(grid){
-      grid.addEventListener("click",function(e){ var k=e.target.closest&&e.target.closest(".car-card"); if(k&&k.getAttribute("data-id")) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); });
-      grid.addEventListener("keydown",function(e){ if(e.key==="Enter"){ var k=e.target.closest&&e.target.closest(".car-card"); if(k) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); } });
-    }
-    var bt=document.getElementById("brandTiles");
-    if(bt) bt.addEventListener("click",function(e){ var t=e.target.closest&&e.target.closest(".brand-tile"); if(!t)return; var b=t.getAttribute("data-b"); BRAND=b?b:null; renderBrands(); renderGrid(); var s=document.getElementById("stock"); if(s)s.scrollIntoView({behavior:"smooth",block:"start"}); });
+    bindGrid("stockGrid"); bindGrid("usedGrid");
+    bindBrands("brandTiles"); bindBrands("usedBrandTiles");
     window.addEventListener("hashchange",route);
     document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&/^#car\//.test(location.hash||"")) location.hash=""; });
   }
@@ -1093,7 +1120,7 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
       var cars=(d&&d.cars)||[];
       cars=cars.filter(function(c){return c&&c.name&&c.status!=="مُباعة"&&c.photos&&c.photos.length;});
       ALL=cars;
-      if(cars.length){ renderBrands(); renderGrid(); }
+      renderAll();
       route();
     }).catch(function(){});
   }
