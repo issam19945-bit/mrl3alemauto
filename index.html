@@ -1,279 +1,1004 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MR L3ALEM AUTO — Car Import Brokerage | Djelfa, Algeria</title>
-<meta name="description" content="MR L3ALEM AUTO helps Algerian customers import cars from China through their personal import right — sourcing, supplier coordination, shipping to Algiers port, and full documentation.">
+<title data-i18n="title">مستر لعلام أوطو — استورد سيارتك من الصين إلى الجزائر</title>
+<meta name="description" data-i18n-attr="content" data-i18n="meta" content="تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة من الصين إلى ميناء الجزائر — مع مستر لعلام أوطو.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
-    --ink:#14181d; --ink-soft:#4a5560; --line:#e6e9ee; --bg:#ffffff;
-    --panel:#f6f8fa; --brand:#b11116; --brand-deep:#7d0c10; --gold:#c8a24a;
-    --maxw:1080px;
+    --bg:#0a0b0d; --bg2:#0e1014; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.15);
+    --ink:#f6f7f9; --muted:#a4adb8; --muted2:#6a727d;
+    --brand:#e01e26; --brand2:#ff3a40;
+    --gold:#d9b382; --gold2:#e9d3ad;
+    --ok:#34d27b; --info:#6ea8ff; --warn:#f6b53c;
+    --maxw:1200px; --r:16px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  body{font-family:"Tajawal","Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .bg-fx{position:fixed;inset:0;z-index:-1;
+    background:
+      radial-gradient(1200px 600px at 78% -8%,rgba(224,30,38,.16),transparent 55%),
+      radial-gradient(1000px 700px at 8% 12%,rgba(217,179,130,.06),transparent 55%),
+      linear-gradient(180deg,#0a0b0d,#0b0d10 40%,#0a0b0d)}
+  .bg-fx::after{content:"";position:absolute;inset:0;opacity:.035;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
-  .btn{display:inline-block;padding:13px 22px;border-radius:10px;font-weight:600;font-size:15px;transition:.2s}
-  .btn-primary{background:var(--brand);color:#fff}
-  .btn-primary:hover{background:var(--brand-deep)}
-  .btn-ghost{border:1.5px solid var(--line);color:var(--ink)}
-  .btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+  h1,h2,h3,h4{font-family:"Sora","Tajawal",sans-serif}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
+  .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:12px;font-weight:700;font-size:14.5px;cursor:pointer;transition:.22s;border:1px solid transparent;font-family:inherit}
+  .btn .ico{width:18px;height:18px}
+  .btn-primary{background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff;box-shadow:0 8px 22px -8px rgba(224,30,38,.7)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px -8px rgba(224,30,38,.85)}
+  .btn-light{background:linear-gradient(180deg,#fff,#eef1f4);color:#0a0b0d}
+  .btn-light:hover{transform:translateY(-1px)}
+  .btn-ghost{border-color:var(--line2);color:var(--ink);background:rgba(255,255,255,.02)}
+  .btn-ghost:hover{border-color:var(--gold);color:#fff;background:rgba(217,179,130,.06)}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold2)}
+  .eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+  [dir="rtl"] .eyebrow{letter-spacing:1px}
+  [dir="rtl"] .eyebrow::before{background:linear-gradient(270deg,var(--gold),transparent)}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;letter-spacing:.3px}
 
   /* header */
-  header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);z-index:20}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}
-  .logo{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));
-    color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:0 4px 12px rgba(177,17,22,.25)}
-  .brand small{display:block;font-weight:500;font-size:11px;color:var(--ink-soft);letter-spacing:1.5px}
-  .nav-links{display:flex;gap:26px;font-size:15px;color:var(--ink-soft);font-weight:500}
-  .nav-links a:hover{color:var(--brand)}
-  @media(max-width:760px){.nav-links{display:none}}
+  header{position:sticky;top:0;z-index:60;background:rgba(10,11,13,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.4px;font-family:"Sora",sans-serif;font-size:15px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(140deg,#1a1c20,#0e0f12);display:grid;place-items:center;font-weight:800;font-family:Arial,sans-serif;color:#fff;position:relative;border:1px solid var(--line2)}
+  .logo::after{content:"";position:absolute;inset:0;border-radius:12px;padding:1px;background:linear-gradient(140deg,var(--gold),transparent 55%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .brand small{display:block;font-size:9.5px;font-weight:600;letter-spacing:2px;color:var(--gold2);opacity:.8}
+  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);font-weight:500}
+  .nav-links a{position:relative;padding:4px 0}
+  .nav-links a:hover{color:#fff}
+  .nav-links a::after{content:"";position:absolute;bottom:-2px;inset-inline:0;height:1.5px;background:var(--gold);transform:scaleX(0);transition:.25s}
+  .nav-links a:hover::after{transform:scaleX(1)}
+  .nav-cta{display:flex;align-items:center;gap:10px}
+  .lang{display:flex;border:1px solid var(--line2);border-radius:11px;overflow:hidden;background:rgba(255,255,255,.02)}
+  .lang button{font-family:"Sora",sans-serif;font-weight:700;font-size:12px;padding:8px 11px;background:transparent;color:var(--muted);border:none;cursor:pointer;transition:.15s}
+  .lang button:hover{color:#fff}
+  .lang button.active{background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff}
+  @media(max-width:1040px){.nav-links{display:none}.nav-cta .btn-ghost{display:none}}
+  @media(max-width:540px){.nav-cta .btn-primary{display:none}}
 
   /* hero */
-  .hero{background:linear-gradient(160deg,#fbfcfd 0%,#f2f5f8 100%);border-bottom:1px solid var(--line);
-    padding:72px 0 64px;position:relative;overflow:hidden}
-  .hero:before{content:"";position:absolute;right:-120px;top:-120px;width:360px;height:360px;
-    background:radial-gradient(circle,rgba(177,17,22,.10),transparent 70%);border-radius:50%}
-  .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:2px;color:var(--brand);
-    background:rgba(177,17,22,.08);padding:6px 12px;border-radius:20px;text-transform:uppercase;margin-bottom:20px}
-  .hero h1{font-size:44px;line-height:1.12;letter-spacing:-.5px;max-width:720px}
-  .hero h1 span{color:var(--brand)}
-  .hero p{font-size:18px;color:var(--ink-soft);max-width:600px;margin:20px 0 30px}
-  .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
-  @media(max-width:600px){.hero h1{font-size:32px}}
+  .hero{position:relative;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:48px;align-items:center;padding:86px 0 60px}
+  @media(max-width:920px){.hero-grid{grid-template-columns:1fr;padding:60px 0 40px;gap:36px}}
+  .hero h1{font-size:56px;line-height:1.1;letter-spacing:-1.4px;margin:22px 0 20px;font-weight:800}
+  [dir="rtl"] .hero h1{letter-spacing:-.5px;line-height:1.22}
+  .hero h1 .g{background:linear-gradient(90deg,#fff 20%,#b9c0c8);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero h1 .gold{background:linear-gradient(90deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .lead{font-size:17.5px;color:var(--muted);max-width:500px}
+  .hero-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:32px}
+  .hero-badges{display:flex;gap:0;margin-top:40px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden;width:fit-content}
+  .hero-badges div{padding:14px 22px;border-inline-start:1px solid var(--line)}
+  .hero-badges div:first-child{border-inline-start:none}
+  .hero-badges div b{display:block;font-size:16px;font-weight:800;letter-spacing:-.2px}
+  .hero-badges div span{font-size:12px;color:var(--muted2)}
+  @media(max-width:600px){.hero h1{font-size:36px}.hero-badges{width:100%}.hero-badges div{flex:1}}
 
-  /* sections */
-  section{padding:66px 0}
-  .sec-head{text-align:center;max-width:640px;margin:0 auto 44px}
-  .sec-head .eyebrow{margin-bottom:14px}
-  .sec-head h2{font-size:30px;letter-spacing:-.4px}
-  .sec-head p{color:var(--ink-soft);margin-top:12px;font-size:16.5px}
+  /* showcase */
+  .showcase{position:relative;background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--line2);border-radius:24px;padding:16px;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.06)}
+  .stage{height:230px;border-radius:16px;position:relative;overflow:hidden;
+    background:radial-gradient(120% 90% at 50% 0%,rgba(224,30,38,.18),transparent 55%),radial-gradient(80% 60% at 50% 120%,rgba(217,179,130,.12),transparent 60%),linear-gradient(180deg,#15171c,#0d0f12)}
+  .stage::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 78%,rgba(255,255,255,.08),transparent 70%)}
+  .stage .veh{position:absolute;inset:0;display:grid;place-items:center}
+  .stage .veh svg{width:180px;height:auto;stroke:rgba(255,255,255,.85);fill:none;stroke-width:1.2;filter:drop-shadow(0 18px 22px rgba(0,0,0,.6))}
+  .stage .refl{position:absolute;left:0;right:0;bottom:0;height:44px;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent)}
+  .stage .tag{position:absolute;top:14px;inset-inline-start:14px;background:rgba(110,168,255,.16);color:#a9c8ff;border:1px solid rgba(110,168,255,.32)}
+  .sc-row{display:flex;justify-content:space-between;align-items:center;padding:16px 8px 6px}
+  .sc-row h4{font-size:17px}
+  .sc-row .yr{color:var(--gold2);font-size:13px;font-weight:700;letter-spacing:.5px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 8px 6px}
+  .chip{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:rgba(255,255,255,.02)}
+  .sc-track{display:flex;align-items:center;gap:10px;margin:8px;padding:12px 14px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:13px}
+  .dotline{flex:1;display:flex;align-items:center;gap:5px}
+  .seg{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.1)}
+  .seg.on{background:linear-gradient(90deg,var(--ok),#7ee6ab)}
+  .seg.now{background:linear-gradient(90deg,var(--brand2),var(--gold));box-shadow:0 0 12px rgba(224,30,38,.5)}
 
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  @media(max-width:860px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:26px;transition:.2s}
-  .card:hover{border-color:#d7dbe1;box-shadow:0 10px 30px rgba(20,24,29,.06);transform:translateY(-2px)}
-  .card .ic{width:46px;height:46px;border-radius:11px;background:rgba(177,17,22,.08);color:var(--brand);
-    display:grid;place-items:center;margin-bottom:16px;font-size:22px}
-  .card h3{font-size:18px;margin-bottom:8px}
-  .card p{color:var(--ink-soft);font-size:15px}
+  /* brand strip */
+  .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}
+  .strip .wrap{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;padding:16px 26px}
+  .strip b{font-family:"Sora",sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;color:var(--muted2);text-transform:uppercase}
+  .strip .dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.6}
 
-  /* about */
-  .about{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .about-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
-  @media(max-width:860px){.about-grid{grid-template-columns:1fr;gap:28px}}
-  .about h2{font-size:29px;letter-spacing:-.4px;margin-bottom:16px}
-  .about p{color:var(--ink-soft);font-size:16.5px;margin-bottom:14px}
-  .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .stat{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:20px}
-  .stat b{display:block;font-size:26px;color:var(--brand);letter-spacing:-.5px}
-  .stat span{font-size:13.5px;color:var(--ink-soft)}
+  /* quick actions */
+  .quick{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding:34px 0}
+  @media(max-width:900px){.quick{grid-template-columns:repeat(2,1fr)}}
+  .qtile{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:20px;display:flex;flex-direction:column;gap:9px;transition:.22s;position:relative;overflow:hidden}
+  .qtile::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(217,179,130,.08),transparent 45%);opacity:0;transition:.22s}
+  .qtile:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .qtile:hover::before{opacity:1}
+  .qtile .qi{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:rgba(224,30,38,.12);color:var(--brand2);border:1px solid rgba(224,30,38,.2)}
+  .qtile b{font-size:14.5px}
+  .qtile span{font-size:12px;color:var(--muted2)}
 
-  /* steps */
-  .steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-  @media(max-width:860px){.steps{grid-template-columns:1fr 1fr}}
-  @media(max-width:520px){.steps{grid-template-columns:1fr}}
-  .step{position:relative;padding:24px 20px 20px;border:1px solid var(--line);border-radius:13px;background:var(--bg)}
-  .step:before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:20px;
-    width:32px;height:32px;border-radius:8px;background:var(--brand);color:#fff;font-weight:700;
-    display:grid;place-items:center;font-size:15px}
-  .step h4{margin:10px 0 6px;font-size:16px}
-  .step p{color:var(--ink-soft);font-size:14.5px}
+  section{padding:76px 0}
+  .sec-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px;flex-wrap:wrap}
+  .sec-top h2{font-size:32px;letter-spacing:-.6px;margin-top:12px;font-weight:800}
+  [dir="rtl"] .sec-top h2{letter-spacing:0}
+  .sec-top p{color:var(--muted);font-size:15px;margin-top:8px;max-width:560px}
 
-  /* contact */
-  .contact{background:linear-gradient(160deg,#14181d,#1e252d);color:#fff}
-  .contact .sec-head h2{color:#fff}
-  .contact .sec-head p{color:#aeb7c0}
-  .contact .eyebrow{background:rgba(255,255,255,.08);color:#f0b7b9}
-  .contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:760px;margin:0 auto}
-  @media(max-width:600px){.contact-grid{grid-template-columns:1fr}}
-  .cline{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:18px 20px}
-  .cline .ic{width:42px;height:42px;border-radius:10px;background:rgba(177,17,22,.30);
-    display:grid;place-items:center;font-size:19px;flex:none}
-  .cline b{display:block;font-size:12px;color:#9aa4ad;letter-spacing:.5px;text-transform:uppercase}
-  .cline span{font-size:15.5px;font-weight:600;word-break:break-word}
-  .contact-cta{text-align:center;margin-top:34px}
+  /* stock */
+  .stock{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  @media(max-width:980px){.stock{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.stock{grid-template-columns:1fr}}
+  .car-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.22s;display:flex;flex-direction:column}
+  .car-card:hover{border-color:var(--line2);transform:translateY(-4px);box-shadow:0 30px 50px -24px rgba(0,0,0,.8)}
+  .car-photo{height:158px;position:relative;overflow:hidden;
+    background:radial-gradient(100% 80% at 50% 0%,rgba(224,30,38,.1),transparent 60%),radial-gradient(80% 60% at 50% 120%,rgba(217,179,130,.1),transparent 60%),linear-gradient(180deg,#14161b,#0d0f12);
+    display:grid;place-items:center}
+  .car-photo::before{content:"";position:absolute;inset:0;background:radial-gradient(55% 40% at 50% 74%,rgba(255,255,255,.07),transparent 70%)}
+  .car-photo svg{width:130px;stroke:rgba(255,255,255,.78);fill:none;stroke-width:1.2;filter:drop-shadow(0 12px 16px rgba(0,0,0,.55));position:relative}
+  .car-photo .badge{position:absolute;top:12px;inset-inline-start:12px;z-index:2}
+  .b-avail{background:rgba(52,210,123,.15);color:#5fe39b;border:1px solid rgba(52,210,123,.32)}
+  .b-transit{background:rgba(110,168,255,.15);color:#a9c8ff;border:1px solid rgba(110,168,255,.32)}
+  .b-soon{background:rgba(246,181,60,.15);color:#f9cd77;border:1px solid rgba(246,181,60,.32)}
+  .car-body{padding:17px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .car-body h3{font-size:16.5px;letter-spacing:-.2px}
+  .car-body .cc{display:flex;gap:7px;flex-wrap:wrap}
+  .car-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+  .car-foot .price{font-weight:800;font-size:15px;color:var(--gold2)}
+  .car-foot .price small{display:block;font-size:11px;color:var(--muted2);font-weight:400}
+  .car-foot a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#fff;font-weight:700}
+  .car-foot a .ico{width:15px;height:15px;color:var(--brand2)}
 
-  /* arabic */
-  .ar{direction:rtl;text-align:right;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
-  .ar .sec-head{margin-inline:auto}
+  /* why */
+  .why{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:900px){.why-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.why-grid{grid-template-columns:1fr}}
+  .why-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;transition:.22s}
+  .why-card:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .why-card .wi{width:48px;height:48px;border-radius:13px;background:linear-gradient(160deg,rgba(224,30,38,.18),rgba(224,30,38,.05));color:var(--brand2);display:grid;place-items:center;margin-bottom:16px;border:1px solid rgba(224,30,38,.2)}
+  .why-card .wi .ico{width:22px;height:22px}
+  .why-card h4{font-size:16px;margin-bottom:7px}
+  .why-card p{color:var(--muted);font-size:13.5px}
+
+  /* journey */
+  .journey{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;position:relative}
+  @media(max-width:900px){.journey{grid-template-columns:1fr 1fr 1fr}}
+  @media(max-width:520px){.journey{grid-template-columns:1fr 1fr}}
+  .jstep{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px 14px;text-align:center;position:relative;transition:.22s}
+  .jstep:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .jstep .jn{position:absolute;top:10px;inset-inline-end:12px;font-family:"Sora",sans-serif;font-size:12px;font-weight:800;color:var(--gold);opacity:.5}
+  .jstep .jc{width:46px;height:46px;margin:0 auto 12px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--gold2)}
+  .jstep .jc .ico{width:22px;height:22px}
+  .jstep b{display:block;font-size:14px}
+  .jstep span{font-size:11.5px;color:var(--muted2)}
+
+  /* banners */
+  .banner{position:relative;overflow:hidden;border:1px solid var(--line2);border-radius:24px;padding:48px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
+    background:radial-gradient(700px 320px at 18% 0%,rgba(224,30,38,.22),transparent 58%),radial-gradient(500px 300px at 92% 120%,rgba(217,179,130,.12),transparent 60%),linear-gradient(160deg,#141519,#0d0f12)}
+  .banner h2{font-size:29px;letter-spacing:-.5px;font-weight:800}
+  [dir="rtl"] .banner h2{letter-spacing:0}
+  .banner p{color:var(--muted);margin-top:9px;max-width:540px;font-size:14.5px}
 
   /* footer */
-  footer{background:#0e1216;color:#8b95a0;font-size:14px;padding:34px 0}
-  .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
-  .foot .reg{font-size:13px;color:#6b747e}
-  .foot a{color:#c9d2db}
+  footer{background:#070809;border-top:1px solid var(--line);padding:60px 0 30px;color:var(--muted)}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.1fr;gap:32px;margin-bottom:36px}
+  @media(max-width:820px){.foot-grid{grid-template-columns:1fr 1fr}}
+  .foot-grid h5{color:#fff;font-size:13.5px;margin-bottom:15px;letter-spacing:.3px}
+  .foot-grid a,.foot-grid p{display:block;font-size:13.5px;color:var(--muted2);margin-bottom:10px}
+  .foot-grid a:hover{color:var(--gold2)}
+  .foot-bottom{border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted2)}
+  .socials{display:flex;gap:10px}
+  .socials a{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--muted)}
+  .socials a:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+  .wa-float{position:fixed;inset-inline-end:22px;bottom:22px;z-index:70;display:flex;align-items:center;gap:10px;background:#25d366;color:#fff;padding:14px 18px;border-radius:30px;font-weight:700;font-size:14px;box-shadow:0 14px 30px -8px rgba(37,211,102,.7);transition:.22s}
+  .wa-float:hover{transform:translateY(-2px)}
+  @media(max-width:600px){.wa-float span{display:none}.wa-float{padding:16px;border-radius:50%}}
+
+  /* live tracker */
+  .live-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:22px}
+  @media(max-width:920px){.live-wrap{grid-template-columns:1fr}}
+  .map-box{border:1px solid var(--line2);border-radius:20px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);position:relative}
+  #map{height:520px;width:100%;background:#0d0f12;z-index:1}
+  @media(max-width:920px){#map{height:400px}}
+  .leaflet-container{font-family:inherit!important;background:#0d0f12}
+  .leaflet-tooltip{background:#12151b;border:1px solid var(--line2);color:#fff;font-size:12px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.5)}
+  .leaflet-tooltip-top:before{border-top-color:var(--line2)}
+  .leaflet-bar a{background:#12151b;color:#fff;border-color:var(--line2)}
+  .leaflet-bar a:hover{background:#1a1e26}
+  .leaflet-control-attribution{background:rgba(10,11,13,.7)!important;color:#6a727d!important}
+  .leaflet-control-attribution a{color:#8a929c!important}
+  .ship-mark{position:relative;width:40px;height:40px;display:grid;place-items:center}
+  .ship-mark svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 4px rgba(0,0,0,.9));z-index:3;position:relative}
+  .ship-mark .ping{position:absolute;inset:6px;border-radius:50%;background:rgba(224,30,38,.35);animation:pingA 1.9s ease-out infinite}
+  .ship-mark::after{content:"";position:absolute;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,var(--brand),rgba(224,30,38,.6));box-shadow:0 0 14px rgba(224,30,38,.9);z-index:2}
+  @keyframes pingA{0%{transform:scale(.5);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+  .mpanel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:15px}
+  .mp-head{display:flex;align-items:center;gap:12px}
+  .mp-ship{width:42px;height:42px;border-radius:12px;background:rgba(224,30,38,.12);border:1px solid rgba(224,30,38,.25);color:var(--brand2);display:grid;place-items:center}
+  .mp-ship .ico{width:22px;height:22px}
+  .mp-name{font-family:"Sora",sans-serif;font-weight:700;font-size:15px}
+  .mp-route{font-size:12px;color:var(--gold2)}
+  .mp-eta{background:radial-gradient(120% 100% at 0% 0%,rgba(224,30,38,.14),transparent 60%),rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .mp-eta-l{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:9px}
+  .cd{display:flex;gap:9px}
+  .cd>div{flex:1;text-align:center;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:9px 4px}
+  .cd b{display:block;font-family:"Sora",sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .cd span{font-size:10px;color:var(--muted2)}
+  .mp-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+  .mp-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand2),var(--gold));transition:width .8s ease}
+  .mp-rows{display:flex;flex-direction:column}
+  .mrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .mrow span{color:var(--muted)}
+  .mrow b{font-family:"Sora",sans-serif;font-weight:700;letter-spacing:.2px}
+  .mp-miles{display:flex;flex-direction:column}
+  .mile{display:flex;align-items:center;gap:11px;font-size:12.5px;color:var(--muted2);position:relative;padding:6px 0}
+  .mile .mdot{width:11px;height:11px;border-radius:50%;background:#2a3039;flex:none;z-index:2}
+  .mile.done .mdot{background:var(--ok)}
+  .mile.now .mdot{background:var(--brand);box-shadow:0 0 0 4px rgba(224,30,38,.2)}
+  .mile.done i,.mile.now i{color:#fff;font-style:normal}
+  .mile i{font-style:normal}
+  .mile:not(:last-child)::before{content:"";position:absolute;inset-inline-start:5px;top:17px;width:1.5px;height:100%;background:var(--line);z-index:1}
+  .mp-note{font-size:11.5px;color:var(--muted2);border-top:1px solid var(--line);padding-top:13px;line-height:1.6}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:40px;align-items:center}
+  @media(max-width:820px){.about-grid{grid-template-columns:1fr;gap:28px}}
+  .about-photo{aspect-ratio:4/5;border-radius:22px;border:1px solid var(--line2);position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);
+    background:radial-gradient(120% 80% at 50% 0%,rgba(217,179,130,.16),transparent 60%),linear-gradient(160deg,#16181d,#0d0f12);display:grid;place-items:center}
+  .about-photo .ph-init{font-family:"Sora",sans-serif;font-weight:800;font-size:72px;color:rgba(255,255,255,.13);letter-spacing:2px}
+  .about-photo .ph-note{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted2)}
+  .about-photo .ph-badge{position:absolute;top:14px;inset-inline-start:14px}
+  .about-body h2{font-size:30px;margin:12px 0 16px;letter-spacing:-.4px;font-weight:800}
+  [dir="rtl"] .about-body h2{letter-spacing:0}
+  .about-body p{color:var(--muted);font-size:15px;margin-bottom:13px}
+  .about-pts{display:flex;flex-direction:column;gap:11px;margin:20px 0}
+  .about-pt{display:flex;align-items:center;gap:11px;font-size:14px}
+  .about-pt .ico{width:18px;height:18px;color:var(--ok)}
+  .about-sig{font-family:"Sora",sans-serif;font-weight:800;color:var(--gold2);margin-top:8px;font-size:16px}
+  .about-role{font-size:12.5px;color:var(--muted2)}
+
+  /* delivered gallery */
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:820px){.gal{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.gal{grid-template-columns:1fr}}
+  .gal-item{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;border:1px solid var(--line);transition:.22s;
+    background:radial-gradient(90% 70% at 50% 0%,rgba(224,30,38,.09),transparent 60%),radial-gradient(70% 60% at 50% 120%,rgba(217,179,130,.1),transparent),linear-gradient(180deg,#14161b,#0d0f12);display:grid;place-items:center}
+  .gal-item:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .gal-item>svg{width:92px;stroke:rgba(255,255,255,.62);fill:none;stroke-width:1.2;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5))}
+  .gal-item .g-cap{position:absolute;bottom:0;left:0;right:0;padding:14px;background:linear-gradient(0deg,rgba(0,0,0,.8),transparent);font-size:12.5px;font-weight:600}
+  .gal-item .g-badge{position:absolute;top:12px;inset-inline-start:12px}
+
+  /* testimonials */
+  .rev{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:820px){.rev{grid-template-columns:1fr}}
+  .rev-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:.22s}
+  .rev-card:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .stars{display:flex;gap:3px}
+  .stars svg{width:16px;height:16px;fill:var(--gold);stroke:var(--gold);stroke-width:1}
+  .rev-q{color:var(--ink);font-size:14.5px;line-height:1.75;flex:1}
+  .rev-who{display:flex;align-items:center;gap:11px;border-top:1px solid var(--line);padding-top:14px}
+  .rev-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--brand),#8f1013);display:grid;place-items:center;font-family:"Sora",sans-serif;font-weight:700;font-size:15px;color:#fff;flex:none}
+  .rev-n{font-weight:700;font-size:14px}
+  .rev-l{font-size:12px;color:var(--muted2)}
+
+  /* request form */
+  .req-wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start}
+  @media(max-width:820px){.req-wrap{grid-template-columns:1fr}}
+  .req-form{background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:28px}
+  .req-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:520px){.req-grid{grid-template-columns:1fr}}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:7px;font-weight:600}
+  .field input,.field select,.field textarea{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line2);border-radius:11px;padding:12px 14px;color:var(--ink);font-family:inherit;font-size:14px;transition:.15s}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);background:rgba(0,0,0,.42)}
+  .field select{cursor:pointer}
+  .field select option{background:#12151b;color:#fff}
+  .req-note{font-size:12px;color:var(--muted2);margin-top:8px;text-align:center}
+  .req-aside{background:radial-gradient(500px 240px at 20% 0%,rgba(224,30,38,.16),transparent 60%),linear-gradient(160deg,#141519,#0d0f12);border:1px solid var(--line2);border-radius:20px;padding:26px}
+  .req-aside h4{font-size:17px;margin-bottom:16px;font-weight:800}
+  .req-aside .ra{display:flex;gap:12px;margin-bottom:16px}
+  .req-aside .ra .ico{width:20px;height:20px;color:var(--gold2);flex:none;margin-top:2px}
+  .req-aside .ra b{display:block;font-size:14px;margin-bottom:2px}
+  .req-aside .ra span{font-size:12.5px;color:var(--muted2)}
+
+  /* faq */
+  .faq{max-width:840px;margin:0 auto}
+  .faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:.2s}
+  .faq details[open]{border-color:var(--line2)}
+  .faq summary{cursor:pointer;padding:18px 22px;font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-size:24px;line-height:1;color:var(--gold2);font-weight:300;transition:.25s;flex:none}
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq .faq-a{padding:0 22px 20px;color:var(--muted);font-size:14px;line-height:1.75}
 </style>
 </head>
 <body>
+<div class="bg-fx"></div>
+
+<!-- icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></symbol>
+  <symbol id="i-ship" viewBox="0 0 24 24"><path d="M12 3v5m0-5a2 2 0 1 0 0-.001M6 21c-2 0-3-3-3-3l9-4 9 4s-1 3-3 3M6 21c1.5 0 3-1.2 3-1.2M18 21c-1.5 0-3-1.2-3-1.2M8 9h8M5 12v-2a2 2 0 0 1 2-2M19 12v-2a2 2 0 0 0-2-2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 9.5C8 19.3 5 15.4 5 11V6z"/><path d="M9.5 12l1.8 1.8 3.2-3.6"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M9.5 12h5M9.5 15.5h5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7 12 3l8.5 4v9L12 21l-8.5-5z"/><path d="M12 3v18M3.5 7 12 11l8.5-4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.6 5.4 6 .8-4.4 4.1 1.1 5.9L12 16.9 6.7 19.7l1.1-5.9L3.4 9.6l6-.8z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M6 10.5h12V21H6z"/><path d="M8.5 10.5V7a3.5 3.5 0 0 1 7 0v3.5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 3l3 .8 1 3.8-2 1.3a12 12 0 0 0 6 6l1.3-2 3.8 1 .8 3A2 2 0 0 1 21 22 17 17 0 0 1 4 5a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 13l1.6-4.7A2.5 2.5 0 0 1 9 6.6h6a2.5 2.5 0 0 1 2.4 1.7L19 13m-14 0h14v4H5zm0 4v1.6M19 17v1.6"/><path d="M7.4 15h.01M16.6 15h.01M4.5 13h15"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><path d="M6 20a2.5 2.5 0 0 0 0-5H8a2.5 2.5 0 0 0 0-5H6"/><path d="M18 4a2.5 2.5 0 0 0 0 5h-2a2.5 2.5 0 0 0 0 5h2"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4m0 0h11l-2.5 3.5L17 11H6"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 4v16M6 20h12M12 6 5.5 8 3 13.5a3 3 0 0 0 5 0zM12 6l6.5 2L21 13.5a3 3 0 0 1-5 0z"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2M7.5 9h6M7.5 12h6M7.5 15h4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
 
 <header>
   <div class="wrap nav">
-    <div class="brand">
-      <div class="logo">ML</div>
-      <div>MR L3ALEM AUTO<small>CAR IMPORT BROKERAGE</small></div>
-    </div>
+    <div class="brand"><div class="logo">ML</div><div>MR L3ALEM AUTO<small>CHINA → ALGERIA</small></div></div>
     <nav class="nav-links">
-      <a href="#services">Services</a>
-      <a href="#about">About</a>
-      <a href="#process">Process</a>
-      <a href="#contact">Contact</a>
+      <a href="#stock" data-i18n="nav_stock">المخزون</a>
+      <a href="#live" data-i18n="nav_track">تتبع الشحنة</a>
+      <a href="#why" data-i18n="nav_why">لماذا نحن</a>
+      <a href="#about" data-i18n="nav_about">من نحن</a>
+      <a href="#faq" data-i18n="nav_faq">الأسئلة</a>
+      <a href="#journal" data-i18n="nav_journal">المدوّنة</a>
+      <a href="#contact" data-i18n="nav_contact">اتصل بنا</a>
     </nav>
-    <a href="#contact" class="btn btn-primary" style="padding:10px 18px">Contact us</a>
+    <div class="nav-cta">
+      <div class="lang" id="lang">
+        <button data-lang="ar" class="active">ع</button>
+        <button data-lang="fr">FR</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <a href="#track" class="btn btn-ghost"><svg class="ico"><use href="#i-lock"/></svg><span data-i18n="login">تسجيل الدخول</span></a>
+      <a href="#stock" class="btn btn-primary" data-i18n="browse">تصفّح المخزون</a>
+    </div>
   </div>
 </header>
 
 <section class="hero">
-  <div class="wrap">
-    <span class="eyebrow">Djelfa · Algeria</span>
-    <h1>Import your car from China, <span>the right way</span>.</h1>
-    <p>MR L3ALEM AUTO is a car‑import brokerage that helps customers in Algeria bring a vehicle from China using their personal import right — from choosing the car to delivery at the port of Algiers.</p>
-    <div class="hero-actions">
-      <a href="#contact" class="btn btn-primary">Start your order</a>
-      <a href="#services" class="btn btn-ghost">See what we do</a>
-    </div>
-  </div>
-</section>
-
-<section id="services">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">What we do</span>
-      <h2>A guided, transparent import service</h2>
-      <p>We coordinate every step between you and trusted Chinese suppliers, so the process is clear and stress‑free.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="ic">🚗</div>
-        <h3>Vehicle sourcing</h3>
-        <p>We help you choose the right car and confirm that the specifications match exactly what you asked for.</p>
-      </div>
-      <div class="card">
-        <div class="ic">🤝</div>
-        <h3>Supplier coordination</h3>
-        <p>We deal directly with Chinese suppliers to organise the purchase and issue the proforma invoice.</p>
-      </div>
-      <div class="card">
-        <div class="ic">🚢</div>
-        <h3>Shipping &amp; tracking</h3>
-        <p>We follow the shipment and give you the container number so you can track it to the port of Algiers.</p>
-      </div>
-      <div class="card">
-        <div class="ic">📄</div>
-        <h3>Full documentation</h3>
-        <p>You receive the vehicle's VIN (chassis number) and a copy of the original invoice from the supplier.</p>
-      </div>
-      <div class="card">
-        <div class="ic">🛡️</div>
-        <h3>Clear contract</h3>
-        <p>Every order is covered by a written agreement, so terms, timelines and responsibilities are transparent.</p>
-      </div>
-      <div class="card">
-        <div class="ic">💬</div>
-        <h3>Ongoing updates</h3>
-        <p>We keep you informed at each stage — from registration to shipping — over WhatsApp.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="about" class="about">
-  <div class="wrap about-grid">
+  <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">About us</span>
-      <h2>A registered Algerian brokerage you can trust</h2>
-      <p>MR L3ALEM AUTO is an officially registered business based in Djelfa, Algeria, run by Lalem Issam Bachir. We provide advisory and coordination services to help Algerian customers import a car from China under their own name, in line with Algerian law.</p>
-      <p>We are not the importer — you import under your personal right; we handle the sourcing, supplier relations and logistics so the whole process is simple and reliable for you.</p>
-    </div>
-    <div class="stats">
-      <div class="stat"><b>Djelfa</b><span>Based in Algeria</span></div>
-      <div class="stat"><b>China → DZ</b><span>Direct sourcing</span></div>
-      <div class="stat"><b>Port of Algiers</b><span>Delivery point</span></div>
-      <div class="stat"><b>Registered</b><span>Commercial register</span></div>
-    </div>
-  </div>
-</section>
-
-<section id="process">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">How it works</span>
-      <h2>Four simple steps</h2>
-    </div>
-    <div class="steps">
-      <div class="step"><h4>Choose</h4><p>Tell us the car you want. We confirm availability and specifications with suppliers.</p></div>
-      <div class="step"><h4>Confirm</h4><p>We finalise your order, register it in your name, and prepare the paperwork.</p></div>
-      <div class="step"><h4>Ship</h4><p>Your car is shipped from China. You get the container number to track it.</p></div>
-      <div class="step"><h4>Arrive</h4><p>The vehicle arrives at the port of Algiers, ready for you to take over.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="contact" class="contact">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Get in touch</span>
-      <h2>Talk to us about your car</h2>
-      <p>Reach out on WhatsApp or by phone and we'll guide you through your import.</p>
-    </div>
-    <div class="contact-grid">
-      <a href="https://wa.me/213554601928" class="cline">
-        <div class="ic">💬</div>
-        <div><b>WhatsApp</b><span>+213 554 601 928</span></div>
-      </a>
-      <a href="tel:+213554601928" class="cline">
-        <div class="ic">📞</div>
-        <div><b>Phone</b><span>0554 601 928</span></div>
-      </a>
-      <a href="mailto:L3ALEM@GMAIL.COM" class="cline">
-        <div class="ic">✉️</div>
-        <div><b>Email</b><span>L3ALEM@GMAIL.COM</span></div>
-      </a>
-      <div class="cline">
-        <div class="ic">📍</div>
-        <div><b>Address</b><span>Cité Bakouka, Section 176, Property 25a — Djelfa, Algeria</span></div>
+      <span class="eyebrow" data-i18n="hero_eyebrow">من الصين إلى الجزائر</span>
+      <h1><span class="g" data-i18n="hero_h1a">سيارتك القادمة،</span><br><span class="gold" data-i18n="hero_h1b">من الصين إلى الجزائر.</span></h1>
+      <p class="lead" data-i18n="hero_lead">تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة — من الشراء حتى ميناء الجزائر — في مكان واحد.</p>
+      <div class="hero-actions">
+        <a href="#stock" class="btn btn-light"><svg class="ico"><use href="#i-car"/></svg><span data-i18n="hero_browse">تصفّح المخزون المتوفر</span></a>
+        <a href="#live" class="btn btn-ghost"><svg class="ico"><use href="#i-ship"/></svg><span data-i18n="hero_track">تتبع شحنتي</span></a>
+      </div>
+      <div class="hero-badges">
+        <div><b data-i18n="b1b">توريد مباشر</b><span data-i18n="b1s">من الصين إلى الجزائر</span></div>
+        <div><b data-i18n="b2b">تتبع مباشر</b><span data-i18n="b2s">تابع سيارتك</span></div>
+        <div><b data-i18n="b3b">مسجّلة رسمياً</b><span data-i18n="b3s">الجلفة، الجزائر</span></div>
       </div>
     </div>
-    <div class="contact-cta">
-      <a href="https://wa.me/213554601928" class="btn btn-primary">Message us on WhatsApp</a>
+    <div class="showcase">
+      <div class="stage">
+        <span class="pill tag" data-i18n="sc_tag">● في الطريق</span>
+        <div class="veh"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
+        <div class="refl"></div>
+      </div>
+      <div class="sc-row"><h4 data-i18n="sc_name">جيلي كولراي — فُل أوبسيون</h4><span class="yr">2026</span></div>
+      <div class="chips"><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span><span class="chip" data-i18n="chip_suv">SUV</span><span class="chip" data-i18n="chip_full">فُل أوبسيون</span></div>
+      <div class="sc-track">
+        <span style="font-size:11.5px;color:var(--muted)" data-i18n="sc_journey">الرحلة</span>
+        <div class="dotline"><span class="seg on"></span><span class="seg on"></span><span class="seg on"></span><span class="seg now"></span><span class="seg"></span><span class="seg"></span></div>
+        <span style="font-size:11.5px;color:#a9c8ff" data-i18n="sc_departed">غادرت الصين</span>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="ar" style="background:var(--panel);border-top:1px solid var(--line)">
+<div class="strip">
   <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">من نحن</span>
-      <h2>وسيط جزائري مسجّل لاستيراد السيارات</h2>
-      <p>MR L3ALEM AUTO مؤسسة جزائرية مسجّلة مقرّها بالجلفة، يديرها السيد العالم عصام البشير. نقدّم خدمات استشارية وتنسيقية تساعد العميل على استيراد سيارة من الصين باستخدام حقه الشخصي في الاستيراد، وفق القانون الجزائري.</p>
+    <b>Geely</b><span class="dot"></span><b>Chery</b><span class="dot"></span><b>GAC</b><span class="dot"></span><b>MG</b><span class="dot"></span><b>Changan</b><span class="dot"></span><b>Haval</b><span class="dot"></span><b>BYD</b>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="quick">
+    <a href="#stock" class="qtile"><span class="qi"><svg class="ico"><use href="#i-bolt"/></svg></span><b data-i18n="q1b">المخزون المتوفر</b><span data-i18n="q1s">شاهد المتوفر الآن</span></a>
+    <a href="#live" class="qtile"><span class="qi"><svg class="ico"><use href="#i-ship"/></svg></span><b data-i18n="q2b">تتبع شحنتي</b><span data-i18n="q2s">تابع سيارتك مباشرة</span></a>
+    <a href="#why" class="qtile"><span class="qi"><svg class="ico"><use href="#i-star"/></svg></span><b data-i18n="q3b">لماذا مستر لعلام</b><span data-i18n="q3s">وسيط مسجّل</span></a>
+    <a href="#how" class="qtile"><span class="qi"><svg class="ico"><use href="#i-box"/></svg></span><b data-i18n="q4b">كيف نعمل</b><span data-i18n="q4s">من الطلب إلى التسليم</span></a>
+    <a href="#contact" class="qtile"><span class="qi"><svg class="ico"><use href="#i-chat"/></svg></span><b data-i18n="q5b">اتصل بنا</b><span data-i18n="q5s">تحدّث عبر واتساب</span></a>
+  </div>
+</div>
+
+<section id="stock">
+  <div class="wrap">
+    <div class="sec-top">
+      <div>
+        <span class="eyebrow" data-i18n="stock_eyebrow">المخزون المباشر</span>
+        <h2 data-i18n="stock_h2">سيارات متوفرة وقادمة</h2>
+        <p data-i18n="stock_p">سيارات جاهزة الآن أو في طريقها من الصين. يتم التحديث مع تغيّر مخزوننا.</p>
+      </div>
+      <a href="#contact" class="btn btn-ghost"><span data-i18n="stock_all">عرض كل المخزون</span><svg class="ico"><use href="#i-arrow"/></svg></a>
     </div>
-    <div class="grid">
-      <div class="card"><h3>اختيار السيارة</h3><p>نساعدك في اختيار السيارة المناسبة والتأكد من مطابقة المواصفات لما طلبته.</p></div>
-      <div class="card"><h3>التنسيق مع الموردين</h3><p>نتعامل مباشرة مع الموردين الصينيين لتنظيم عملية الشراء وإصدار الفاتورة الأولية.</p></div>
-      <div class="card"><h3>الشحن والتتبّع</h3><p>نتابع الشحنة ونزوّدك برقم الحاوية لتتبّعها حتى ميناء الجزائر.</p></div>
+    <div class="stock">
+      <div class="car-card">
+        <div class="car-photo"><span class="pill badge b-avail" data-i18n="st_avail">متوفرة</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
+        <div class="car-body">
+          <h3>Geely Coolray — <span data-i18n="st_full">فُل أوبسيون</span></h3>
+          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
+          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="ask_wa">اسأل عبر واتساب</small></div><a href="#contact"><span data-i18n="reserve">احجز</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+        </div>
+      </div>
+      <div class="car-card">
+        <div class="car-photo"><span class="pill badge b-transit" data-i18n="st_transit">في الطريق</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
+        <div class="car-body">
+          <h3>GAC GS3 Emzoom</h3>
+          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
+          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="eta">وصول خلال ~4 أسابيع</small></div><a href="#contact"><span data-i18n="details">التفاصيل</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+        </div>
+      </div>
+      <div class="car-card">
+        <div class="car-photo"><span class="pill badge b-avail" data-i18n="st_avail">متوفرة</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
+        <div class="car-body">
+          <h3>MG 5 GT</h3>
+          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
+          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="ask_wa">اسأل عبر واتساب</small></div><a href="#contact"><span data-i18n="reserve">احجز</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+        </div>
+      </div>
+      <div class="car-card">
+        <div class="car-photo"><span class="pill badge b-soon" data-i18n="st_soon">تصل قريباً</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
+        <div class="car-body">
+          <h3>Chery Tiggo 8 Pro</h3>
+          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
+          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="reserve_now">احجز الآن</small></div><a href="#contact"><span data-i18n="details">التفاصيل</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+        </div>
+      </div>
     </div>
-    <div style="text-align:center;margin-top:30px">
-      <a href="https://wa.me/213554601928" class="btn btn-primary">تواصل معنا عبر واتساب</a>
+  </div>
+</section>
+
+<section id="why" class="why">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="why_eyebrow">لماذا نحن</span><h2 data-i18n="why_h2">وسيط مسجّل تتابعه خطوة بخطوة</h2></div></div>
+    <div class="why-grid">
+      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-shield"/></svg></div><h4 data-i18n="why1h">مسجّل رسمياً</h4><p data-i18n="why1p">نشاط جزائري مسجّل في الجلفة — كل طلب موثّق بعقد مكتوب.</p></div>
+      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-ship"/></svg></div><h4 data-i18n="why2h">تتبع فوري</h4><p data-i18n="why2p">تابع رحلة سيارتك من الصين إلى ميناء الجزائر مباشرة.</p></div>
+      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-doc"/></svg></div><h4 data-i18n="why3h">توثيق كامل</h4><p data-i18n="why3p">الفاتورة، رقم الهيكل، فيديو التحميل وأوراق الشحن — كلها في حسابك.</p></div>
+      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-chat"/></svg></div><h4 data-i18n="why4h">تحديث دائم</h4><p data-i18n="why4p">تحديثات تلقائية عبر واتساب في كل مرحلة — دون الحاجة للسؤال «أين سيارتي؟»</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-photo">
+        <span class="pill tag b-avail ph-badge" data-i18n="ab_badge">وسيط مسجّل</span>
+        <span class="ph-init">ML</span>
+        <span class="ph-note" data-i18n="ab_photo">صورتك هنا</span>
+      </div>
+      <div class="about-body">
+        <span class="eyebrow" data-i18n="ab_eye">من نحن</span>
+        <h2 data-i18n="ab_h2">من هو مستر لعلام؟</h2>
+        <p data-i18n="ab_p1">أنا مستر لعلام، وسيط سيارات جزائري من الجلفة. بدأت هذا النشاط لأنّي رأيت كم يخاف الناس من استيراد سيارة من الصين — من يضمن؟ من يتابع؟ من يشرح؟ فقرّرت أن أكون أنا ذلك الشخص.</p>
+        <p data-i18n="ab_p2">أشتري السيارة مباشرة من الصين، أوثّق كل طلب بعقد باسمك، وأتابع سيارتك معك خطوة بخطوة حتى تصل إلى يدك في الجزائر. لا وعود غامضة — فقط متابعة واضحة وصدق.</p>
+        <div class="about-pts">
+          <div class="about-pt"><svg class="ico"><use href="#i-shield"/></svg><span data-i18n="ab_pt1">نشاط مسجّل رسمياً في الجلفة</span></div>
+          <div class="about-pt"><svg class="ico"><use href="#i-box"/></svg><span data-i18n="ab_pt2">توريد مباشر من الصين</span></div>
+          <div class="about-pt"><svg class="ico"><use href="#i-chat"/></svg><span data-i18n="ab_pt3">متابعة شخصية لكل عميل عبر واتساب</span></div>
+        </div>
+        <div class="about-sig" data-i18n="ab_sig">— مستر لعلام</div>
+        <div class="about-role" data-i18n="ab_role">المؤسّس، مستر لعلام أوطو · الجلفة، الجزائر</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="how_eyebrow">كيف نعمل</span><h2 data-i18n="how_h2">رحلة سيارتك، من الطلب إلى التسليم</h2></div></div>
+    <div class="journey">
+      <div class="jstep"><span class="jn">01</span><div class="jc"><svg class="ico"><use href="#i-doc"/></svg></div><b data-i18n="s1b">الطلب</b><span data-i18n="s1s">اختر واحجز</span></div>
+      <div class="jstep"><span class="jn">02</span><div class="jc"><svg class="ico"><use href="#i-box"/></svg></div><b data-i18n="s2b">الشراء</b><span data-i18n="s2s">تُشترى في الصين</span></div>
+      <div class="jstep"><span class="jn">03</span><div class="jc"><svg class="ico"><use href="#i-play"/></svg></div><b data-i18n="s3b">التحميل</b><span data-i18n="s3s">فيديو التحميل</span></div>
+      <div class="jstep"><span class="jn">04</span><div class="jc"><svg class="ico"><use href="#i-ship"/></svg></div><b data-i18n="s4b">الشحن</b><span data-i18n="s4s">تغادر الصين</span></div>
+      <div class="jstep"><span class="jn">05</span><div class="jc"><svg class="ico"><use href="#i-route"/></svg></div><b data-i18n="s5b">في الطريق</b><span data-i18n="s5s">تتبّع السفينة</span></div>
+      <div class="jstep"><span class="jn">06</span><div class="jc"><svg class="ico"><use href="#i-flag"/></svg></div><b data-i18n="s6b">الوصول</b><span data-i18n="s6s">ميناء الجزائر</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="live">
+  <div class="wrap">
+    <div class="sec-top">
+      <div>
+        <span class="eyebrow" data-i18n="live_eyebrow">تتبع مباشر</span>
+        <h2 data-i18n="live_h2">تابع سيارتك عبر البحر، مباشرة</h2>
+        <p data-i18n="live_p">شاهد الموقع الحالي للسفينة التي تحمل سيارتك، لحظة بلحظة — من ميناء الصين حتى ميناء الجزائر.</p>
+      </div>
+    </div>
+    <div class="live-wrap">
+      <div class="map-box"><div id="map"></div></div>
+      <div class="mpanel">
+        <div class="mp-head">
+          <div class="mp-ship"><svg class="ico"><use href="#i-ship"/></svg></div>
+          <div>
+            <div class="mp-name" id="mVessel">MV Ocean Star</div>
+            <div class="mp-route" data-i18n="live_route">شنغهاي ← الجزائر</div>
+          </div>
+          <span class="pill tag" style="margin-inline-start:auto" data-i18n="sc_tag">● في الطريق</span>
+        </div>
+        <div class="mp-eta">
+          <div class="mp-eta-l" data-i18n="live_eta_l">تصل خلال</div>
+          <div class="cd">
+            <div><b id="cdD">--</b><span data-i18n="u_days">يوم</span></div>
+            <div><b id="cdH">--</b><span data-i18n="u_hrs">ساعة</span></div>
+            <div><b id="cdM">--</b><span data-i18n="u_min">دقيقة</span></div>
+            <div><b id="cdS">--</b><span data-i18n="u_sec">ثانية</span></div>
+          </div>
+        </div>
+        <div class="mp-bar"><span id="mBar"></span></div>
+        <div class="mp-rows">
+          <div class="mrow"><span data-i18n="live_progress">نسبة الرحلة</span><b id="mProgress">--</b></div>
+          <div class="mrow"><span data-i18n="live_leg_l">المنطقة الحالية</span><b id="mLeg">--</b></div>
+          <div class="mrow"><span data-i18n="live_pos_l">الموقع</span><b><span id="mLat">--</span> · <span id="mLng">--</span></b></div>
+          <div class="mrow"><span data-i18n="live_speed_l">السرعة</span><b><span id="mSpeed">--</span> <span data-i18n="u_knots">عقدة</span></b></div>
+        </div>
+        <div class="mp-miles">
+          <div class="mile done"><span class="mdot"></span><i data-i18n="m1">غادرت الصين</i></div>
+          <div class="mile done"><span class="mdot"></span><i data-i18n="m2">مضيق ملقا</i></div>
+          <div class="mile now"><span class="mdot"></span><i data-i18n="m3">قناة السويس</i></div>
+          <div class="mile"><span class="mdot"></span><i data-i18n="m4">البحر المتوسط</i></div>
+          <div class="mile"><span class="mdot"></span><i data-i18n="m5">ميناء الجزائر</i></div>
+        </div>
+        <p class="mp-note" data-i18n="live_note">هذه رحلة توضيحية مباشرة. ستظهر سيارتك أنت هنا بمجرد تسجيل الدخول.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="track">
+  <div class="wrap">
+    <div class="banner">
+      <div>
+        <span class="eyebrow" data-i18n="track_eyebrow">بوابة العملاء</span>
+        <h2 data-i18n="track_h2">تابع شحنتك ومستنداتك</h2>
+        <p data-i18n="track_p">سجّل الدخول برقم هاتفك لرؤية سياراتك، حالة الشحن، فيديوهات التحميل والمستندات — في أي وقت.</p>
+      </div>
+      <a href="#contact" class="btn btn-primary"><svg class="ico"><use href="#i-lock"/></svg><span data-i18n="track_btn">الدخول إلى حسابي</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="delivered">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="dl_eye">سيارات سلّمناها</span><h2 data-i18n="dl_h2">سيارات وصلت إلى أصحابها</h2><p data-i18n="dl_p">لقطات حقيقية لسيارات وصلت من الصين وتسلّمها أصحابها في الجزائر. الثقة تُبنى بالتسليم، لا بالكلام.</p></div></div>
+    <div class="gal">
+      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c1">جيلي كولراي — الجلفة</div></div>
+      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c2">شيري تيغو 8 — الأغواط</div></div>
+      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c3">MG 5 — بومرداس</div></div>
+      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c4">GAC GS3 — تيارت</div></div>
+      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c5">هافال جوليان — الجلفة</div></div>
+      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c6">شانجان أليسفين — المسيلة</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" class="why">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="rv_eye">آراء العملاء</span><h2 data-i18n="rv_h2">ماذا يقول عملاؤنا</h2></div></div>
+    <div class="rev">
+      <div class="rev-card">
+        <div class="stars"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+        <p class="rev-q" data-i18n="rv1q">«كنت خائفاً في البداية، لكن تابعت سيارتي على الخريطة يوماً بيوم حتى وصلت. تعامل صادق ومتابعة ممتازة.»</p>
+        <div class="rev-who"><div class="rev-av">س</div><div><div class="rev-n" data-i18n="rv1n">سفيان ب.</div><div class="rev-l" data-i18n="rv1l">الجلفة</div></div></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+        <p class="rev-q" data-i18n="rv2q">«كل مرحلة كان يوصلني إشعار على الواتساب. عقد واضح ومن غير مفاجآت. أنصح به بشدة.»</p>
+        <div class="rev-who"><div class="rev-av">أ</div><div><div class="rev-n" data-i18n="rv2n">أمين خ.</div><div class="rev-l" data-i18n="rv2l">الأغواط</div></div></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+        <p class="rev-q" data-i18n="rv3q">«أول مرة نستورد سيارة، ومستر لعلام سهّل عليّ كل شيء وشرح لي كل خطوة. سيارتي وصلت كما اتفقنا.»</p>
+        <div class="rev-who"><div class="rev-av">ي</div><div><div class="rev-n" data-i18n="rv3n">ياسين ع.</div><div class="rev-l" data-i18n="rv3l">تيارت</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="journal">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="jr_eyebrow">مدوّنة مستر لعلام</span><h2 data-i18n="jr_h2">أخبار وأدلّة حول الاستيراد من الصين</h2></div><a href="#contact" class="btn btn-ghost"><span data-i18n="jr_all">كل المقالات</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+    <div class="stock">
+      <div class="car-card"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-news"/></svg></div><div class="car-body"><h3 data-i18n="jr1">أفضل السيارات الصينية للجزائر في 2026</h3><div class="cc"><span class="chip" data-i18n="jr1t">دليل</span></div></div></div>
+      <div class="car-card"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div><div class="car-body"><h3 data-i18n="jr2">موديلات جيلي الجديدة تصل هذا الموسم</h3><div class="cc"><span class="chip" data-i18n="jr2t">أخبار</span></div></div></div>
+      <div class="car-card"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-ship"/></svg></div><div class="car-body"><h3 data-i18n="jr3">مدة الشحن من الصين: ماذا تتوقّع</h3><div class="cc"><span class="chip" data-i18n="jr3t">الشحن</span></div></div></div>
+      <div class="car-card"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-scale"/></svg></div><div class="car-body"><h3 data-i18n="jr4">كولراي في مواجهة GAC GS3 — أيّهما تختار؟</h3><div class="cc"><span class="chip" data-i18n="jr4t">مقارنة</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="request">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="rq_eye">اطلب سيارتك</span><h2 data-i18n="rq_h2">لم تجد سيارتك؟ اطلبها ونجدها لك</h2><p data-i18n="rq_p">أخبرنا بالسيارة التي تريدها وميزانيتك، وسنبحث لك عنها في الصين ونعود إليك على واتساب.</p></div></div>
+    <div class="req-wrap">
+      <form class="req-form" id="reqForm" onsubmit="return sendRequest(event)">
+        <div class="req-grid">
+          <div class="field"><label data-i18n="rq_name">الاسم الكامل</label><input id="f_name" type="text" required></div>
+          <div class="field"><label data-i18n="rq_phone">رقم الهاتف (واتساب)</label><input id="f_phone" type="tel" required></div>
+        </div>
+        <div class="field"><label data-i18n="rq_model">السيارة المطلوبة (الماركة / الموديل)</label><input id="f_model" type="text" required></div>
+        <div class="req-grid">
+          <div class="field"><label data-i18n="rq_budget">الميزانية التقريبية</label>
+            <select id="f_budget">
+              <option value="" data-i18n="rq_b0">اختر النطاق</option>
+              <option data-i18n="rq_b1">اقتصادية</option>
+              <option data-i18n="rq_b2">متوسطة</option>
+              <option data-i18n="rq_b3">مرتفعة</option>
+              <option data-i18n="rq_b4">غير محدّد</option>
+            </select>
+          </div>
+          <div class="field"><label data-i18n="rq_notes">ملاحظات إضافية</label><input id="f_notes" type="text"></div>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center"><svg class="ico"><use href="#i-chat"/></svg><span data-i18n="rq_send">إرسال الطلب عبر واتساب</span></button>
+        <p class="req-note" data-i18n="rq_note">سنراجع طلبك ونعود إليك على واتساب في أقرب وقت.</p>
+      </form>
+      <div class="req-aside">
+        <h4 data-i18n="rq_aside_h">كيف يعمل الطلب؟</h4>
+        <div class="ra"><svg class="ico"><use href="#i-box"/></svg><div><b data-i18n="rq_a1t">نبحث في الصين</b><span data-i18n="rq_a1s">نبحث عن سيارتك بأفضل الشروط من مصادرنا.</span></div></div>
+        <div class="ra"><svg class="ico"><use href="#i-chat"/></svg><div><b data-i18n="rq_a2t">نعود إليك على واتساب</b><span data-i18n="rq_a2s">نتواصل معك مباشرة بالتفاصيل والخطوات.</span></div></div>
+        <div class="ra"><svg class="ico"><use href="#i-shield"/></svg><div><b data-i18n="rq_a3t">دون أي التزام</b><span data-i18n="rq_a3s">الطلب مجاني ولا يُلزمك بأي شيء.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="why">
+  <div class="wrap">
+    <div class="sec-top"><div><span class="eyebrow" data-i18n="fq_eye">الأسئلة الشائعة</span><h2 data-i18n="fq_h2">أسئلة يطرحها كل عميل</h2></div></div>
+    <div class="faq">
+      <details open><summary data-i18n="fq1q">كيف تبدأ عملية الطلب؟</summary><div class="faq-a" data-i18n="fq1a">نتفق معك على السيارة وشروطها، ثم يُوثّق كل شيء في عقد مكتوب باسمك قبل بدء الطلب. أنت تعرف ما تدفعه ولماذا في كل مرحلة.</div></details>
+      <details><summary data-i18n="fq2q">من يتكفّل بالجمارك ومصاريف الميناء؟</summary><div class="faq-a" data-i18n="fq2a">نشرح لك كل المراحل والتكاليف المتوقّعة مسبقاً وبوضوح، حتى لا تكون هناك أي مفاجآت بعد وصول السيارة.</div></details>
+      <details><summary data-i18n="fq3q">كم تستغرق مدة الشحن من الصين؟</summary><div class="faq-a" data-i18n="fq3a">عادةً بين 6 و8 أسابيع من مغادرة السفينة حتى وصولها إلى ميناء الجزائر، ويمكنك متابعتها مباشرة على الخريطة طوال الرحلة.</div></details>
+      <details><summary data-i18n="fq4q">ماذا لو تأخّرت السيارة أو حدث طارئ؟</summary><div class="faq-a" data-i18n="fq4a">تبقى على تواصل دائم معنا، وكل طلب موثّق بعقد. نحدّثك في كل مرحلة عبر واتساب، ولا نتركك في الغموض أبداً.</div></details>
+      <details><summary data-i18n="fq5q">كيف تتم عملية الدفع؟</summary><div class="faq-a" data-i18n="fq5a">نتفق على طريقة دفع واضحة وموثّقة في العقد، ونشرحها لك خطوة بخطوة قبل أن تلتزم بأي شيء.</div></details>
+      <details><summary data-i18n="fq6q">هل تسلّمون لكل الولايات؟</summary><div class="faq-a" data-i18n="fq6a">نعم، ننسّق معك التسليم بعد وصول السيارة إلى ميناء الجزائر، مهما كانت ولايتك.</div></details>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="banner">
+      <div>
+        <span class="eyebrow" data-i18n="ct_eyebrow">تواصل معنا</span>
+        <h2 data-i18n="ct_h2">جاهز للعثور على سيارتك؟</h2>
+        <p data-i18n="ct_p">راسلنا عبر واتساب — سنساعدك على الاختيار والحجز والمتابعة حتى الجزائر.</p>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://wa.me/213554601928" class="btn btn-primary"><svg class="ico"><use href="#i-chat"/></svg><span data-i18n="ct_wa">راسلنا على واتساب</span></a>
+        <a href="tel:+213554601928" class="btn btn-ghost"><svg class="ico"><use href="#i-phone"/></svg>0554 601 928</a>
+      </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="wrap foot">
-    <div>
-      <strong style="color:#e7ecf1">MR L3ALEM AUTO</strong> — Car Import Brokerage · Djelfa, Algeria<br>
-      <span class="reg">Commercial Register N° 26 A 1561121‑00/17 · Managed by Lalem Issam Bachir</span>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:16px"><div class="logo">ML</div><div style="color:#fff">MR L3ALEM AUTO<small>CHINA → ALGERIA</small></div></div>
+        <p data-i18n="foot_desc">استورد سيارتك من الصين وتابع رحلتها الكاملة إلى الجزائر. وساطة مسجّلة مقرّها الجلفة.</p>
+      </div>
+      <div><h5 data-i18n="foot_explore">استكشف</h5><a href="#stock" data-i18n="q1b">المخزون المتوفر</a><a href="#live" data-i18n="nav_track">تتبع الشحنة</a><a href="#how" data-i18n="nav_how">كيف نعمل</a><a href="#journal" data-i18n="nav_journal">المدوّنة</a></div>
+      <div><h5 data-i18n="foot_company">الشركة</h5><a href="#why" data-i18n="nav_why">لماذا نحن</a><a href="#contact" data-i18n="nav_contact">اتصل بنا</a><a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a></div>
+      <div><h5 data-i18n="nav_contact">اتصل بنا</h5><p>WhatsApp: +213 554 601 928</p><p>L3ALEM@GMAIL.COM</p><p data-i18n="foot_addr">حي باكوكة، الجلفة، الجزائر</p></div>
     </div>
-    <div><a href="#contact">Contact</a> · <a href="https://wa.me/213554601928">WhatsApp</a></div>
+    <div class="foot-bottom">
+      <div data-i18n="copyright">© 2026 مستر لعلام أوطو · السجل التجاري رقم 26 A 1561121‑00/17</div>
+      <div class="socials">
+        <a href="https://wa.me/213554601928" aria-label="WhatsApp"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3c-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6 1.8 2.8 4.4 3.9c1.6.7 2.2.7 3 .6.5 0 1.4-.6 1.6-1.1s.2-1 .1-1.1z"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.75-1.6 1.5V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg></a>
+      </div>
+    </div>
   </div>
 </footer>
+
+<a href="https://wa.me/213554601928" class="wa-float" aria-label="WhatsApp"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3c-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6 1.8 2.8 4.4 3.9c1.6.7 2.2.7 3 .6.5 0 1.4-.6 1.6-1.1s.2-1 .1-1.1z"/></svg><span data-i18n="wa_float">تحدّث معنا</span></a>
+
+<script>
+const I18N = {
+  ar: {
+    title:"مستر لعلام أوطو — استورد سيارتك من الصين إلى الجزائر",
+    meta:"تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة من الصين إلى ميناء الجزائر — مع مستر لعلام أوطو.",
+    nav_stock:"المخزون",nav_track:"تتبع الشحنة",nav_why:"لماذا نحن",nav_how:"كيف نعمل",nav_journal:"المدوّنة",nav_contact:"اتصل بنا",
+    login:"تسجيل الدخول",browse:"تصفّح المخزون",
+    hero_eyebrow:"من الصين إلى الجزائر",hero_h1a:"سيارتك القادمة،",hero_h1b:"من الصين إلى الجزائر.",
+    hero_lead:"تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة — من الشراء حتى ميناء الجزائر — في مكان واحد.",
+    hero_browse:"تصفّح المخزون المتوفر",hero_track:"تتبع شحنتي",
+    b1b:"توريد مباشر",b1s:"من الصين إلى الجزائر",b2b:"تتبع مباشر",b2s:"تابع سيارتك",b3b:"مسجّلة رسمياً",b3s:"الجلفة، الجزائر",
+    sc_tag:"● في الطريق",sc_name:"جيلي كولراي — فُل أوبسيون",sc_journey:"الرحلة",sc_departed:"غادرت الصين",
+    chip_auto:"أوتوماتيك",chip_petrol:"بنزين",chip_suv:"SUV",chip_full:"فُل أوبسيون",
+    q1b:"المخزون المتوفر",q1s:"شاهد المتوفر الآن",q2b:"تتبع شحنتي",q2s:"تابع سيارتك مباشرة",q3b:"لماذا مستر لعلام",q3s:"وسيط مسجّل",q4b:"كيف نعمل",q4s:"من الطلب إلى التسليم",q5b:"اتصل بنا",q5s:"تحدّث عبر واتساب",
+    stock_eyebrow:"المخزون المباشر",stock_h2:"سيارات متوفرة وقادمة",stock_p:"سيارات جاهزة الآن أو في طريقها من الصين. يتم التحديث مع تغيّر مخزوننا.",stock_all:"عرض كل المخزون",
+    st_avail:"متوفرة",st_transit:"في الطريق",st_soon:"تصل قريباً",st_full:"فُل أوبسيون",
+    onreq:"عند الطلب",ask_wa:"اسأل عبر واتساب",eta:"وصول خلال ~4 أسابيع",reserve_now:"احجز الآن",reserve:"احجز",details:"التفاصيل",
+    why_eyebrow:"لماذا نحن",why_h2:"وسيط مسجّل تتابعه خطوة بخطوة",
+    why1h:"مسجّل رسمياً",why1p:"نشاط جزائري مسجّل في الجلفة — كل طلب موثّق بعقد مكتوب.",
+    why2h:"تتبع فوري",why2p:"تابع رحلة سيارتك من الصين إلى ميناء الجزائر مباشرة.",
+    why3h:"توثيق كامل",why3p:"الفاتورة، رقم الهيكل، فيديو التحميل وأوراق الشحن — كلها في حسابك.",
+    why4h:"تحديث دائم",why4p:"تحديثات تلقائية عبر واتساب في كل مرحلة — دون الحاجة للسؤال «أين سيارتي؟»",
+    how_eyebrow:"كيف نعمل",how_h2:"رحلة سيارتك، من الطلب إلى التسليم",
+    s1b:"الطلب",s1s:"اختر واحجز",s2b:"الشراء",s2s:"تُشترى في الصين",s3b:"التحميل",s3s:"فيديو التحميل",s4b:"الشحن",s4s:"تغادر الصين",s5b:"في الطريق",s5s:"تتبّع السفينة",s6b:"الوصول",s6s:"ميناء الجزائر",
+    track_eyebrow:"بوابة العملاء",track_h2:"تابع شحنتك ومستنداتك",track_p:"سجّل الدخول برقم هاتفك لرؤية سياراتك، حالة الشحن، فيديوهات التحميل والمستندات — في أي وقت.",track_btn:"الدخول إلى حسابي",
+    jr_eyebrow:"مدوّنة مستر لعلام",jr_h2:"أخبار وأدلّة حول الاستيراد من الصين",jr_all:"كل المقالات",
+    jr1:"أفضل السيارات الصينية للجزائر في 2026",jr1t:"دليل",jr2:"موديلات جيلي الجديدة تصل هذا الموسم",jr2t:"أخبار",jr3:"مدة الشحن من الصين: ماذا تتوقّع",jr3t:"الشحن",jr4:"كولراي في مواجهة GAC GS3 — أيّهما تختار؟",jr4t:"مقارنة",
+    ct_eyebrow:"تواصل معنا",ct_h2:"جاهز للعثور على سيارتك؟",ct_p:"راسلنا عبر واتساب — سنساعدك على الاختيار والحجز والمتابعة حتى الجزائر.",ct_wa:"راسلنا على واتساب",
+    foot_desc:"استورد سيارتك من الصين وتابع رحلتها الكاملة إلى الجزائر. وساطة مسجّلة مقرّها الجلفة.",foot_explore:"استكشف",foot_company:"الشركة",foot_addr:"حي باكوكة، الجلفة، الجزائر",
+    live_eyebrow:"تتبع مباشر",live_h2:"تابع سيارتك عبر البحر، مباشرة",live_p:"شاهد الموقع الحالي للسفينة التي تحمل سيارتك، لحظة بلحظة — من ميناء الصين حتى ميناء الجزائر.",
+    live_route:"شنغهاي ← الجزائر",live_eta_l:"تصل خلال",live_progress:"نسبة الرحلة",live_leg_l:"المنطقة الحالية",live_pos_l:"الموقع",live_speed_l:"السرعة",u_knots:"عقدة",
+    u_days:"يوم",u_hrs:"ساعة",u_min:"دقيقة",u_sec:"ثانية",
+    m1:"غادرت الصين",m2:"مضيق ملقا",m3:"قناة السويس",m4:"البحر المتوسط",m5:"ميناء الجزائر",
+    live_note:"هذه رحلة توضيحية مباشرة. ستظهر سيارتك أنت هنا بمجرد تسجيل الدخول.",
+    nav_about:"من نحن",nav_faq:"الأسئلة",
+    ab_eye:"من نحن",ab_h2:"من هو مستر لعلام؟",ab_badge:"وسيط مسجّل",ab_photo:"صورتك هنا",
+    ab_p1:"أنا مستر لعلام، وسيط سيارات جزائري من الجلفة. بدأت هذا النشاط لأنّي رأيت كم يخاف الناس من استيراد سيارة من الصين — من يضمن؟ من يتابع؟ من يشرح؟ فقرّرت أن أكون أنا ذلك الشخص.",
+    ab_p2:"أشتري السيارة مباشرة من الصين، أوثّق كل طلب بعقد باسمك، وأتابع سيارتك معك خطوة بخطوة حتى تصل إلى يدك في الجزائر. لا وعود غامضة — فقط متابعة واضحة وصدق.",
+    ab_pt1:"نشاط مسجّل رسمياً في الجلفة",ab_pt2:"توريد مباشر من الصين",ab_pt3:"متابعة شخصية لكل عميل عبر واتساب",
+    ab_sig:"— مستر لعلام",ab_role:"المؤسّس، مستر لعلام أوطو · الجلفة، الجزائر",
+    dl_eye:"سيارات سلّمناها",dl_h2:"سيارات وصلت إلى أصحابها",dl_p:"لقطات حقيقية لسيارات وصلت من الصين وتسلّمها أصحابها في الجزائر. الثقة تُبنى بالتسليم، لا بالكلام.",dl_badge:"✓ تم التسليم",
+    dl_c1:"جيلي كولراي — الجلفة",dl_c2:"شيري تيغو 8 — الأغواط",dl_c3:"MG 5 — بومرداس",dl_c4:"GAC GS3 — تيارت",dl_c5:"هافال جوليان — الجلفة",dl_c6:"شانجان أليسفين — المسيلة",
+    rv_eye:"آراء العملاء",rv_h2:"ماذا يقول عملاؤنا",
+    rv1q:"«كنت خائفاً في البداية، لكن تابعت سيارتي على الخريطة يوماً بيوم حتى وصلت. تعامل صادق ومتابعة ممتازة.»",rv1n:"سفيان ب.",rv1l:"الجلفة",
+    rv2q:"«كل مرحلة كان يوصلني إشعار على الواتساب. عقد واضح ومن غير مفاجآت. أنصح به بشدة.»",rv2n:"أمين خ.",rv2l:"الأغواط",
+    rv3q:"«أول مرة نستورد سيارة، ومستر لعلام سهّل عليّ كل شيء وشرح لي كل خطوة. سيارتي وصلت كما اتفقنا.»",rv3n:"ياسين ع.",rv3l:"تيارت",
+    rq_eye:"اطلب سيارتك",rq_h2:"لم تجد سيارتك؟ اطلبها ونجدها لك",rq_p:"أخبرنا بالسيارة التي تريدها وميزانيتك، وسنبحث لك عنها في الصين ونعود إليك على واتساب.",
+    rq_name:"الاسم الكامل",rq_phone:"رقم الهاتف (واتساب)",rq_model:"السيارة المطلوبة (الماركة / الموديل)",rq_budget:"الميزانية التقريبية",rq_notes:"ملاحظات إضافية",rq_send:"إرسال الطلب عبر واتساب",
+    rq_b0:"اختر النطاق",rq_b1:"اقتصادية",rq_b2:"متوسطة",rq_b3:"مرتفعة",rq_b4:"غير محدّد",
+    rq_note:"سنراجع طلبك ونعود إليك على واتساب في أقرب وقت.",
+    rq_aside_h:"كيف يعمل الطلب؟",rq_a1t:"نبحث في الصين",rq_a1s:"نبحث عن سيارتك بأفضل الشروط من مصادرنا.",rq_a2t:"نعود إليك على واتساب",rq_a2s:"نتواصل معك مباشرة بالتفاصيل والخطوات.",rq_a3t:"دون أي التزام",rq_a3s:"الطلب مجاني ولا يُلزمك بأي شيء.",
+    fq_eye:"الأسئلة الشائعة",fq_h2:"أسئلة يطرحها كل عميل",
+    fq1q:"كيف تبدأ عملية الطلب؟",fq1a:"نتفق معك على السيارة وشروطها، ثم يُوثّق كل شيء في عقد مكتوب باسمك قبل بدء الطلب. أنت تعرف ما تدفعه ولماذا في كل مرحلة.",
+    fq2q:"من يتكفّل بالجمارك ومصاريف الميناء؟",fq2a:"نشرح لك كل المراحل والتكاليف المتوقّعة مسبقاً وبوضوح، حتى لا تكون هناك أي مفاجآت بعد وصول السيارة.",
+    fq3q:"كم تستغرق مدة الشحن من الصين؟",fq3a:"عادةً بين 6 و8 أسابيع من مغادرة السفينة حتى وصولها إلى ميناء الجزائر، ويمكنك متابعتها مباشرة على الخريطة طوال الرحلة.",
+    fq4q:"ماذا لو تأخّرت السيارة أو حدث طارئ؟",fq4a:"تبقى على تواصل دائم معنا، وكل طلب موثّق بعقد. نحدّثك في كل مرحلة عبر واتساب، ولا نتركك في الغموض أبداً.",
+    fq5q:"كيف تتم عملية الدفع؟",fq5a:"نتفق على طريقة دفع واضحة وموثّقة في العقد، ونشرحها لك خطوة بخطوة قبل أن تلتزم بأي شيء.",
+    fq6q:"هل تسلّمون لكل الولايات؟",fq6a:"نعم، ننسّق معك التسليم بعد وصول السيارة إلى ميناء الجزائر، مهما كانت ولايتك.",
+    copyright:"© 2026 مستر لعلام أوطو · السجل التجاري رقم 26 A 1561121‑00/17",wa_float:"تحدّث معنا"
+  },
+  fr: {
+    title:"MR L3ALEM AUTO — Importez votre voiture de Chine vers l'Algérie",
+    meta:"Parcourez les véhicules disponibles, réservez votre voiture et suivez tout son trajet de la Chine au port d'Alger — avec MR L3ALEM AUTO.",
+    nav_stock:"Stock",nav_track:"Suivi d'expédition",nav_why:"Pourquoi nous",nav_how:"Comment ça marche",nav_journal:"Journal",nav_contact:"Contact",
+    login:"Connexion",browse:"Voir le stock",
+    hero_eyebrow:"Chine — Algérie",hero_h1a:"Votre prochaine voiture,",hero_h1b:"de la Chine vers l'Algérie.",
+    hero_lead:"Parcourez les véhicules disponibles, réservez votre voiture et suivez tout son trajet — de l'achat jusqu'au port d'Alger — au même endroit.",
+    hero_browse:"Voir le stock disponible",hero_track:"Suivre mon expédition",
+    b1b:"Sourcing direct",b1s:"De la Chine vers l'Algérie",b2b:"Suivi en direct",b2s:"Suivez votre voiture",b3b:"Enregistré officiellement",b3s:"Djelfa, Algérie",
+    sc_tag:"● En transit",sc_name:"Geely Coolray — Full Option",sc_journey:"Trajet",sc_departed:"Départ de Chine",
+    chip_auto:"Automatique",chip_petrol:"Essence",chip_suv:"SUV",chip_full:"Full option",
+    q1b:"Stock disponible",q1s:"Voir ce qui est prêt",q2b:"Suivre mon expédition",q2s:"Suivez en direct",q3b:"Pourquoi Mr L3alem",q3s:"Un courtier enregistré",q4b:"Comment ça marche",q4s:"De la commande à la livraison",q5b:"Contactez-nous",q5s:"Discuter sur WhatsApp",
+    stock_eyebrow:"Stock en direct",stock_h2:"Véhicules disponibles et à venir",stock_p:"Voitures prêtes maintenant ou en route depuis la Chine. Mis à jour selon notre stock.",stock_all:"Voir tout le stock",
+    st_avail:"Disponible",st_transit:"En transit",st_soon:"Bientôt disponible",st_full:"Full Option",
+    onreq:"Sur demande",ask_wa:"Demander sur WhatsApp",eta:"Arrivée ~4 semaines",reserve_now:"Réservez maintenant",reserve:"Réserver",details:"Détails",
+    why_eyebrow:"Pourquoi nous",why_h2:"Un courtier enregistré que vous suivez, étape par étape",
+    why1h:"Enregistré officiellement",why1p:"Entreprise algérienne enregistrée à Djelfa — chaque commande garantie par un contrat écrit.",
+    why2h:"Suivi en temps réel",why2p:"Suivez le trajet de votre voiture de la Chine au port d'Alger, en direct.",
+    why3h:"Documentation complète",why3p:"Facture, VIN, vidéo de chargement et documents d'expédition — tout dans votre compte.",
+    why4h:"Toujours informé",why4p:"Mises à jour WhatsApp automatiques à chaque étape — plus besoin de demander « où est ma voiture ? »",
+    how_eyebrow:"Comment ça marche",how_h2:"Le trajet de votre voiture, de la commande à la livraison",
+    s1b:"Commande",s1s:"Choisir & réserver",s2b:"Achat",s2s:"Achetée en Chine",s3b:"Chargement",s3s:"Vidéo de chargement",s4b:"Expédié",s4s:"Départ de Chine",s5b:"En transit",s5s:"Suivez le navire",s6b:"Arrivé",s6s:"Port d'Alger",
+    track_eyebrow:"Espace client",track_h2:"Suivez votre expédition & documents",track_p:"Connectez-vous avec votre numéro pour voir vos voitures, le statut d'expédition, les vidéos de chargement et documents — à tout moment.",track_btn:"Accéder à mon compte",
+    jr_eyebrow:"Journal Mr L3alem",jr_h2:"Actualités et guides sur l'import depuis la Chine",jr_all:"Tous les articles",
+    jr1:"Meilleures voitures chinoises pour l'Algérie en 2026",jr1t:"Guide",jr2:"Nouveaux modèles Geely cette saison",jr2t:"Actu",jr3:"Délais d'expédition depuis la Chine : à quoi s'attendre",jr3t:"Expédition",jr4:"Coolray vs GAC GS3 — lequel choisir ?",jr4t:"Comparatif",
+    ct_eyebrow:"Contactez-nous",ct_h2:"Prêt à trouver votre voiture ?",ct_p:"Écrivez-nous sur WhatsApp — nous vous aidons à choisir, réserver et suivre jusqu'en Algérie.",ct_wa:"WhatsApp",
+    foot_desc:"Importez votre voiture de Chine et suivez tout son trajet vers l'Algérie. Courtage enregistré basé à Djelfa.",foot_explore:"Explorer",foot_company:"Entreprise",foot_addr:"Cité Bakouka, Djelfa, Algérie",
+    live_eyebrow:"Suivi en direct",live_h2:"Suivez votre voiture sur la mer, en direct",live_p:"Visualisez la position actuelle du navire qui transporte votre voiture, en temps réel — du port de Chine au port d'Alger.",
+    live_route:"Shanghai → Alger",live_eta_l:"Arrive dans",live_progress:"Progression",live_leg_l:"Zone actuelle",live_pos_l:"Position",live_speed_l:"Vitesse",u_knots:"nœuds",
+    u_days:"j",u_hrs:"h",u_min:"min",u_sec:"s",
+    m1:"Départ de Chine",m2:"Détroit de Malacca",m3:"Canal de Suez",m4:"Méditerranée",m5:"Port d'Alger",
+    live_note:"Ceci est un trajet de démonstration en direct. Votre voiture apparaîtra ici dès votre connexion.",
+    nav_about:"À propos",nav_faq:"FAQ",
+    ab_eye:"À propos",ab_h2:"Qui est Mr L3alem ?",ab_badge:"Courtier enregistré",ab_photo:"Votre photo ici",
+    ab_p1:"Je suis Mr L3alem, courtier automobile algérien de Djelfa. J'ai lancé cette activité parce que j'ai vu à quel point les gens ont peur d'importer une voiture de Chine — qui garantit ? qui suit ? qui explique ? J'ai décidé d'être cette personne.",
+    ab_p2:"J'achète la voiture directement en Chine, je documente chaque commande par un contrat à votre nom, et je suis votre voiture avec vous étape par étape jusqu'à ce qu'elle arrive entre vos mains en Algérie. Pas de promesses vagues — juste un suivi clair et honnête.",
+    ab_pt1:"Activité enregistrée officiellement à Djelfa",ab_pt2:"Sourcing direct depuis la Chine",ab_pt3:"Suivi personnel de chaque client sur WhatsApp",
+    ab_sig:"— Mr L3alem",ab_role:"Fondateur, Mr L3alem Auto · Djelfa, Algérie",
+    dl_eye:"Voitures livrées",dl_h2:"Des voitures arrivées à leurs propriétaires",dl_p:"Des photos réelles de voitures arrivées de Chine et remises à leurs propriétaires en Algérie. La confiance se construit par la livraison, pas par les mots.",dl_badge:"✓ Livrée",
+    dl_c1:"Geely Coolray — Djelfa",dl_c2:"Chery Tiggo 8 — Laghouat",dl_c3:"MG 5 — Boumerdès",dl_c4:"GAC GS3 — Tiaret",dl_c5:"Haval Jolion — Djelfa",dl_c6:"Changan Alsvin — M'Sila",
+    rv_eye:"Témoignages",rv_h2:"Ce que disent nos clients",
+    rv1q:"« J'avais peur au début, mais j'ai suivi ma voiture sur la carte jour après jour jusqu'à son arrivée. Traitement honnête et excellent suivi. »",rv1n:"Sofiane B.",rv1l:"Djelfa",
+    rv2q:"« À chaque étape je recevais une notification sur WhatsApp. Contrat clair et sans surprises. Je le recommande vivement. »",rv2n:"Amine K.",rv2l:"Laghouat",
+    rv3q:"« Ma première importation, et Mr L3alem m'a tout facilité en m'expliquant chaque étape. Ma voiture est arrivée comme convenu. »",rv3n:"Yacine A.",rv3l:"Tiaret",
+    rq_eye:"Demander une voiture",rq_h2:"Vous ne trouvez pas votre voiture ? Demandez-la",rq_p:"Dites-nous la voiture que vous voulez et votre budget, nous la cherchons en Chine et revenons vers vous sur WhatsApp.",
+    rq_name:"Nom complet",rq_phone:"Numéro de téléphone (WhatsApp)",rq_model:"Voiture souhaitée (marque / modèle)",rq_budget:"Budget approximatif",rq_notes:"Notes supplémentaires",rq_send:"Envoyer la demande via WhatsApp",
+    rq_b0:"Choisir une gamme",rq_b1:"Économique",rq_b2:"Moyenne",rq_b3:"Élevée",rq_b4:"Non défini",
+    rq_note:"Nous étudions votre demande et revenons vers vous sur WhatsApp dès que possible.",
+    rq_aside_h:"Comment ça marche ?",rq_a1t:"Nous cherchons en Chine",rq_a1s:"Nous trouvons votre voiture aux meilleures conditions.",rq_a2t:"Nous revenons sur WhatsApp",rq_a2s:"Nous vous contactons directement avec les détails et les étapes.",rq_a3t:"Sans aucun engagement",rq_a3s:"La demande est gratuite et ne vous engage à rien.",
+    fq_eye:"FAQ",fq_h2:"Les questions que pose chaque client",
+    fq1q:"Comment commence la commande ?",fq1a:"Nous convenons de la voiture et de ses conditions, puis tout est documenté dans un contrat écrit à votre nom avant le début de la commande. Vous savez ce que vous payez et pourquoi, à chaque étape.",
+    fq2q:"Qui prend en charge la douane et les frais de port ?",fq2a:"Nous vous expliquons à l'avance et clairement toutes les étapes et les coûts prévus, pour qu'il n'y ait aucune surprise après l'arrivée de la voiture.",
+    fq3q:"Combien de temps dure l'expédition depuis la Chine ?",fq3a:"Généralement entre 6 et 8 semaines entre le départ du navire et l'arrivée au port d'Alger, et vous pouvez la suivre en direct sur la carte tout au long du trajet.",
+    fq4q:"Et si la voiture est en retard ou qu'un imprévu survient ?",fq4a:"Vous restez en contact permanent avec nous, et chaque commande est documentée par un contrat. Nous vous informons à chaque étape sur WhatsApp, sans jamais vous laisser dans le flou.",
+    fq5q:"Comment se déroule le paiement ?",fq5a:"Nous convenons d'un mode de paiement clair et documenté dans le contrat, et nous vous l'expliquons étape par étape avant tout engagement.",
+    fq6q:"Livrez-vous dans toutes les wilayas ?",fq6a:"Oui, nous coordonnons la livraison avec vous après l'arrivée de la voiture au port d'Alger, quelle que soit votre wilaya.",
+    copyright:"© 2026 MR L3ALEM AUTO · Registre de commerce N° 26 A 1561121‑00/17",wa_float:"Discuter avec nous"
+  },
+  en: {
+    title:"MR L3ALEM AUTO — Import your car from China to Algeria",
+    meta:"Browse available vehicles, reserve your car, and follow its full journey from China to the port of Algiers — with MR L3ALEM AUTO.",
+    nav_stock:"Stock",nav_track:"Track shipment",nav_why:"Why us",nav_how:"How it works",nav_journal:"Journal",nav_contact:"Contact",
+    login:"Log in",browse:"Browse stock",
+    hero_eyebrow:"China to Algeria",hero_h1a:"Your next car,",hero_h1b:"from China to Algeria.",
+    hero_lead:"Browse available vehicles, reserve your car, and follow its complete journey — from purchase to the port of Algiers — all in one place.",
+    hero_browse:"Browse available stock",hero_track:"Track my shipment",
+    b1b:"Direct sourcing",b1s:"From China to Algeria",b2b:"Live tracking",b2s:"Follow your car",b3b:"Registered",b3s:"Djelfa, Algeria",
+    sc_tag:"● In transit",sc_name:"Geely Coolray — Full Option",sc_journey:"Journey",sc_departed:"Departed China",
+    chip_auto:"Automatic",chip_petrol:"Petrol",chip_suv:"SUV",chip_full:"Full option",
+    q1b:"Available stock",q1s:"See what's ready now",q2b:"Track my shipment",q2s:"Follow your car live",q3b:"Why Mr L3alem",q3s:"A registered broker",q4b:"How it works",q4s:"From order to delivery",q5b:"Contact us",q5s:"Talk on WhatsApp",
+    stock_eyebrow:"Live stock",stock_h2:"Available & incoming vehicles",stock_p:"Cars ready now or on their way from China. Updated as our inventory changes.",stock_all:"View all stock",
+    st_avail:"Available",st_transit:"In transit",st_soon:"Arriving soon",st_full:"Full Option",
+    onreq:"On request",ask_wa:"Ask on WhatsApp",eta:"ETA ~ 4 weeks",reserve_now:"Reserve now",reserve:"Reserve",details:"View details",
+    why_eyebrow:"Why us",why_h2:"A registered broker you can follow, step by step",
+    why1h:"Officially registered",why1p:"A registered Algerian business in Djelfa — every order backed by a written contract.",
+    why2h:"Real-time tracking",why2p:"Follow your car's journey from China to the port of Algiers, live.",
+    why3h:"Full documentation",why3p:"Invoice, VIN, loading video and shipping papers — all in your account.",
+    why4h:"Always updated",why4p:"Automatic WhatsApp updates at every stage — no need to ask “where's my car?”",
+    how_eyebrow:"How it works",how_h2:"Your car's journey, from order to delivery",
+    s1b:"Order",s1s:"Choose & reserve",s2b:"Purchase",s2s:"Bought in China",s3b:"Loading",s3s:"Loading video",s4b:"Shipped",s4s:"Departs China",s5b:"In transit",s5s:"Track the vessel",s6b:"Arrived",s6s:"Port of Algiers",
+    track_eyebrow:"Customer portal",track_h2:"Track your shipment & documents",track_p:"Log in with your phone number to see your cars, shipment status, loading videos and documents — anytime.",track_btn:"Log in to my account",
+    jr_eyebrow:"Mr L3alem Journal",jr_h2:"News & guides on importing from China",jr_all:"All articles",
+    jr1:"Best Chinese cars for Algeria in 2026",jr1t:"Guide",jr2:"New Geely models arriving this season",jr2t:"News",jr3:"Shipping times from China: what to expect",jr3t:"Shipping",jr4:"Coolray vs GAC GS3 — which to pick?",jr4t:"Compare",
+    ct_eyebrow:"Get in touch",ct_h2:"Ready to find your car?",ct_p:"Message us on WhatsApp — we'll help you choose, reserve, and follow it all the way to Algeria.",ct_wa:"WhatsApp us",
+    foot_desc:"Import your car from China and follow its entire journey to Algeria. A registered brokerage based in Djelfa.",foot_explore:"Explore",foot_company:"Company",foot_addr:"Cité Bakouka, Djelfa, Algeria",
+    live_eyebrow:"Live tracking",live_h2:"Follow your car across the sea, live",live_p:"See the current position of the ship carrying your car, in real time — from the port in China to the port of Algiers.",
+    live_route:"Shanghai → Algiers",live_eta_l:"Arrives in",live_progress:"Progress",live_leg_l:"Current area",live_pos_l:"Position",live_speed_l:"Speed",u_knots:"knots",
+    u_days:"d",u_hrs:"h",u_min:"m",u_sec:"s",
+    m1:"Departed China",m2:"Malacca Strait",m3:"Suez Canal",m4:"Mediterranean",m5:"Port of Algiers",
+    live_note:"This is a live demo route. Your own car will appear here once you log in.",
+    nav_about:"About",nav_faq:"FAQ",
+    ab_eye:"About us",ab_h2:"Who is Mr L3alem?",ab_badge:"Registered broker",ab_photo:"Your photo here",
+    ab_p1:"I'm Mr L3alem, an Algerian car broker from Djelfa. I started this business because I saw how afraid people are of importing a car from China — who guarantees it? who follows it? who explains? So I decided to be that person.",
+    ab_p2:"I buy the car directly in China, document every order with a contract in your name, and follow your car with you step by step until it reaches your hands in Algeria. No vague promises — just clear follow-up and honesty.",
+    ab_pt1:"Officially registered business in Djelfa",ab_pt2:"Direct sourcing from China",ab_pt3:"Personal follow-up for every customer on WhatsApp",
+    ab_sig:"— Mr L3alem",ab_role:"Founder, Mr L3alem Auto · Djelfa, Algeria",
+    dl_eye:"Delivered cars",dl_h2:"Cars that reached their owners",dl_p:"Real photos of cars that arrived from China and were handed to their owners in Algeria. Trust is built by delivering, not by talking.",dl_badge:"✓ Delivered",
+    dl_c1:"Geely Coolray — Djelfa",dl_c2:"Chery Tiggo 8 — Laghouat",dl_c3:"MG 5 — Boumerdès",dl_c4:"GAC GS3 — Tiaret",dl_c5:"Haval Jolion — Djelfa",dl_c6:"Changan Alsvin — M'Sila",
+    rv_eye:"Testimonials",rv_h2:"What our customers say",
+    rv1q:"“I was scared at first, but I followed my car on the map day by day until it arrived. Honest dealing and excellent follow-up.”",rv1n:"Sofiane B.",rv1l:"Djelfa",
+    rv2q:"“At every stage I got a notification on WhatsApp. Clear contract, no surprises. Highly recommend.”",rv2n:"Amine K.",rv2l:"Laghouat",
+    rv3q:"“My first time importing a car, and Mr L3alem made everything easy and explained every step. My car arrived exactly as agreed.”",rv3n:"Yacine A.",rv3l:"Tiaret",
+    rq_eye:"Request a car",rq_h2:"Can't find your car? Request it",rq_p:"Tell us the car you want and your budget, and we'll search for it in China and get back to you on WhatsApp.",
+    rq_name:"Full name",rq_phone:"Phone number (WhatsApp)",rq_model:"Car requested (brand / model)",rq_budget:"Approximate budget",rq_notes:"Additional notes",rq_send:"Send request via WhatsApp",
+    rq_b0:"Choose a range",rq_b1:"Economy",rq_b2:"Mid-range",rq_b3:"High-end",rq_b4:"Flexible",
+    rq_note:"We'll review your request and get back to you on WhatsApp as soon as possible.",
+    rq_aside_h:"How it works",rq_a1t:"We search in China",rq_a1s:"We find your car on the best terms from our sources.",rq_a2t:"We reply on WhatsApp",rq_a2s:"We contact you directly with the details and steps.",rq_a3t:"No obligation",rq_a3s:"The request is free and commits you to nothing.",
+    fq_eye:"FAQ",fq_h2:"Questions every customer asks",
+    fq1q:"How does the order start?",fq1a:"We agree on the car and its terms, then everything is documented in a written contract in your name before the order begins. You know what you pay and why, at every stage.",
+    fq2q:"Who covers customs and port fees?",fq2a:"We explain all the stages and expected costs to you in advance and clearly, so there are no surprises after the car arrives.",
+    fq3q:"How long does shipping from China take?",fq3a:"Usually between 6 and 8 weeks from the ship's departure to its arrival at the port of Algiers, and you can follow it live on the map throughout the journey.",
+    fq4q:"What if the car is delayed or something happens?",fq4a:"You stay in constant contact with us, and every order is documented by a contract. We update you at every stage on WhatsApp, and never leave you in the dark.",
+    fq5q:"How does payment work?",fq5a:"We agree on a clear payment method documented in the contract, and explain it to you step by step before you commit to anything.",
+    fq6q:"Do you deliver to all wilayas?",fq6a:"Yes, we coordinate delivery with you after the car arrives at the port of Algiers, whatever your wilaya.",
+    copyright:"© 2026 MR L3ALEM AUTO · Commercial Register N° 26 A 1561121‑00/17",wa_float:"Chat with us"
+  }
+};
+
+function setLang(lang){
+  const dict = I18N[lang] || I18N.ar;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    const k = el.getAttribute('data-i18n');
+    const v = dict[k];
+    if(v === undefined) return;
+    const attr = el.getAttribute('data-i18n-attr');
+    if(attr){ el.setAttribute(attr, v); }
+    else if(el.tagName === 'TITLE'){ document.title = v; }
+    else { el.textContent = v; }
+  });
+  document.querySelectorAll('#lang button').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+}
+document.querySelectorAll('#lang button').forEach(function(b){
+  b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
+});
+setLang('ar');
+
+// Request-a-car form -> prefilled WhatsApp message (no backend needed)
+var RQ_LABELS={
+  ar:{t:"طلب سيارة جديد",name:"الاسم",phone:"الهاتف",model:"السيارة المطلوبة",budget:"الميزانية",notes:"ملاحظات"},
+  fr:{t:"Nouvelle demande de voiture",name:"Nom",phone:"Téléphone",model:"Voiture souhaitée",budget:"Budget",notes:"Notes"},
+  en:{t:"New car request",name:"Name",phone:"Phone",model:"Car requested",budget:"Budget",notes:"Notes"}
+};
+function fval(id){var e=document.getElementById(id);return e?e.value.trim():"";}
+function sendRequest(e){
+  e.preventDefault();
+  var lang=document.documentElement.lang||'ar';
+  var L=RQ_LABELS[lang]||RQ_LABELS.ar;
+  var name=fval('f_name'),phone=fval('f_phone'),model=fval('f_model'),budget=fval('f_budget'),notes=fval('f_notes');
+  var lines=[L.t,L.name+": "+name,L.phone+": "+phone,L.model+": "+model];
+  if(budget) lines.push(L.budget+": "+budget);
+  if(notes) lines.push(L.notes+": "+notes);
+  window.open('https://wa.me/213554601928?text='+encodeURIComponent(lines.join("\n")),'_blank');
+  return false;
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+  if(typeof L === 'undefined') return;
+  // China -> Algeria sea route via Malacca & Suez  [lat,lng]
+  var route=[[31.2,121.5],[24,119],[15,113],[6.5,105],[1.3,103.8],[6,80],[9,65],[12.5,51],[14,43],[20,38],[27,34.5],[29.95,32.55],[31.3,32.3],[34,25],[35,15],[37,7],[36.76,3.06]];
+  var map=L.map('map',{zoomControl:true,attributionControl:true,scrollWheelZoom:false,worldCopyJump:true}).setView([24,58],3);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:11,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'}).addTo(map);
+  L.polyline(route,{color:'#3a4150',weight:2,dashArray:'3 8',opacity:.75}).addTo(map);
+  function port(color){return L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';box-shadow:0 0 0 4px '+color+'33,0 0 10px '+color+'"></div>',iconSize:[12,12],iconAnchor:[6,6]});}
+  L.marker(route[0],{icon:port('#6ea8ff')}).addTo(map).bindTooltip('Shanghai',{direction:'top',offset:[0,-6]});
+  L.marker(route[route.length-1],{icon:port('#34d27b')}).addTo(map).bindTooltip('Alger',{direction:'top',offset:[0,-6]});
+
+  var SHIP='<div class="ship-mark"><span class="ping"></span><svg viewBox="0 0 24 24"><path d="M12 3v6m0-6a1.5 1.5 0 1 0 .01 0M4.5 20C3 20 2.3 17.6 2.3 17.6L12 13.2l9.7 4.4S21 20 19.5 20M8 10.5h8M6.2 12.4v-1.6A1.6 1.6 0 0 1 7.8 9.2M17.8 12.4v-1.6A1.6 1.6 0 0 0 16.2 9.2"/></svg></div>';
+  var shipIcon=L.divIcon({className:'',html:SHIP,iconSize:[40,40],iconAnchor:[20,20]});
+
+  // segment lengths for interpolation
+  function segLen(a,b){var dx=a[1]-b[1],dy=a[0]-b[0];return Math.sqrt(dx*dx+dy*dy);}
+  var segs=[],total=0,i;
+  for(i=0;i<route.length-1;i++){var d=segLen(route[i],route[i+1]);segs.push(d);total+=d;}
+  function pointAt(f){
+    if(f<=0)return[route[0][0],route[0][1],0];
+    if(f>=1)return[route[route.length-1][0],route[route.length-1][1],segs.length-1];
+    var target=f*total,acc=0;
+    for(var i=0;i<segs.length;i++){
+      if(acc+segs[i]>=target){var t=(target-acc)/segs[i];
+        return[route[i][0]+(route[i+1][0]-route[i][0])*t, route[i][1]+(route[i+1][1]-route[i][1])*t, i];}
+      acc+=segs[i];
+    }
+    return[route[route.length-1][0],route[route.length-1][1],segs.length-1];
+  }
+
+  var LEGS={
+    ar:["بحر الصين الشرقي","بحر الصين الجنوبي","بحر الصين الجنوبي","مضيق ملقا","المحيط الهندي","المحيط الهندي","بحر العرب","خليج عدن","البحر الأحمر","البحر الأحمر","البحر الأحمر","قناة السويس","شرق المتوسط","وسط المتوسط","وسط المتوسط","غرب المتوسط"],
+    fr:["Mer de Chine orientale","Mer de Chine méridionale","Mer de Chine méridionale","Détroit de Malacca","Océan Indien","Océan Indien","Mer d'Arabie","Golfe d'Aden","Mer Rouge","Mer Rouge","Mer Rouge","Canal de Suez","Méditerranée est","Méditerranée centrale","Méditerranée centrale","Méditerranée ouest"],
+    en:["East China Sea","South China Sea","South China Sea","Malacca Strait","Indian Ocean","Indian Ocean","Arabian Sea","Gulf of Aden","Red Sea","Red Sea","Red Sea","Suez Canal","East Mediterranean","Central Mediterranean","Central Mediterranean","West Mediterranean"]
+  };
+
+  // journey window: departed 18 days ago, arriving in 22 days  (~45%)
+  var dep=Date.now()-18*864e5, arr=Date.now()+22*864e5;
+  var traveled=L.polyline([route[0]],{color:'#e9cfa8',weight:3.5,opacity:.95}).addTo(map);
+  var marker=L.marker(pointAt(0.45),{icon:shipIcon,zIndexOffset:1000}).addTo(map);
+
+  function T(id,v){var e=document.getElementById(id); if(e)e.textContent=v;}
+  function pad(n){return (n<10?'0':'')+n;}
+  function tick(){
+    var now=Date.now();
+    var f=(now-dep)/(arr-dep); if(f<0)f=0; if(f>1)f=1;
+    var p=pointAt(f);
+    marker.setLatLng([p[0],p[1]]);
+    var path=route.slice(0,p[2]+1); path.push([p[0],p[1]]); traveled.setLatLngs(path);
+    T('mProgress',Math.round(f*100)+'%');
+    T('mLat',(p[0]>=0?p[0].toFixed(2)+'°N':(-p[0]).toFixed(2)+'°S'));
+    T('mLng',(p[1]>=0?p[1].toFixed(2)+'°E':(-p[1]).toFixed(2)+'°W'));
+    T('mSpeed',(15.4+Math.sin(now/2600)*1.4).toFixed(1));
+    var lang=document.documentElement.lang||'ar'; var legs=LEGS[lang]||LEGS.ar;
+    T('mLeg',legs[Math.min(p[2],legs.length-1)]);
+    var ms=arr-now; if(ms<0)ms=0;
+    T('cdD',Math.floor(ms/864e5));
+    T('cdH',pad(Math.floor(ms%864e5/36e5)));
+    T('cdM',pad(Math.floor(ms%36e5/6e4)));
+    T('cdS',pad(Math.floor(ms%6e4/1e3)));
+    var bar=document.getElementById('mBar'); if(bar)bar.style.width=(f*100)+'%';
+  }
+  tick(); setInterval(tick,1000);
+  setTimeout(function(){map.invalidateSize();},250);
+  window.addEventListener('resize',function(){map.invalidateSize();});
+})();
+</script>
 
 </body>
 </html>
