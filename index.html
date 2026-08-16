@@ -70,22 +70,22 @@
 
   /* hero */
   .hero{position:relative;overflow:hidden}
-  .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:48px;align-items:stretch;padding:64px 0 52px}
-  .hero-copy{display:flex;flex-direction:column;justify-content:space-between}
-  @media(max-width:920px){.hero-copy{display:block}}
-  @media(max-width:920px){.hero-grid{grid-template-columns:1fr;padding:60px 0 40px;gap:36px}}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding-top:52px;padding-bottom:44px}
+  .hero-copy .eyebrow{margin-bottom:18px}
+  .hero-copy .lead{margin-bottom:4px}
+  @media(max-width:920px){.hero-grid{grid-template-columns:1fr;padding-top:30px;padding-bottom:10px;gap:26px}}
   .hero h1{font-size:56px;line-height:1.1;letter-spacing:-1.4px;margin:22px 0 20px;font-weight:800}
   [dir="rtl"] .hero h1{letter-spacing:-.5px;line-height:1.22}
   .hero h1 .g{background:linear-gradient(90deg,#fff 20%,#b9c0c8);-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero h1 .gold{background:linear-gradient(90deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero .lead{font-size:17.5px;color:var(--muted);max-width:500px}
+  .hero .lead{font-size:23px;line-height:1.55;color:#eaedf1;max-width:540px;font-weight:500}
   .hero-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:32px}
   .hero-badges{display:flex;gap:0;margin-top:40px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden;width:fit-content}
   .hero-badges div{padding:14px 22px;border-inline-start:1px solid var(--line)}
   .hero-badges div:first-child{border-inline-start:none}
   .hero-badges div b{display:block;font-size:16px;font-weight:800;letter-spacing:-.2px}
   .hero-badges div span{font-size:12px;color:var(--muted2)}
-  @media(max-width:600px){.hero h1{font-size:36px}.hero-badges{width:100%}.hero-badges div{flex:1}}
+  @media(max-width:600px){.hero{padding-top:0}.hero-grid{padding-top:14px;padding-bottom:8px}.hero .lead{font-size:19px;padding-inline:2px}.hero-actions{flex-direction:column;align-items:stretch;margin-top:22px}.hero-actions .btn{width:100%;justify-content:center}}
 
   /* showcase */
   .showcase{position:relative;background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--line2);border-radius:24px;padding:16px;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.06)}
@@ -437,16 +437,10 @@
   <div class="wrap hero-grid">
     <div class="hero-copy">
       <span class="eyebrow" data-i18n="hero_eyebrow">من الصين إلى الجزائر</span>
-      <h1><span class="g" data-i18n="hero_h1a">سيارتك القادمة،</span><br><span class="gold" data-i18n="hero_h1b">من الصين إلى الجزائر.</span></h1>
       <p class="lead" data-i18n="hero_lead">تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة — من الشراء حتى ميناء الجزائر — في مكان واحد.</p>
       <div class="hero-actions">
         <a href="#stock" class="btn btn-light"><svg class="ico"><use href="#i-car"/></svg><span data-i18n="hero_browse">تصفّح المخزون المتوفر</span></a>
         <a href="#live" class="btn btn-ghost"><svg class="ico"><use href="#i-ship"/></svg><span data-i18n="hero_track">تتبع شحنتي</span></a>
-      </div>
-      <div class="hero-badges">
-        <div><b data-i18n="b1b">توريد مباشر</b><span data-i18n="b1s">من الصين إلى الجزائر</span></div>
-        <div><b data-i18n="b2b">تتبع مباشر</b><span data-i18n="b2s">تابع سيارتك</span></div>
-        <div><b data-i18n="b3b">مسجّلة رسمياً</b><span data-i18n="b3s">الجلفة، الجزائر</span></div>
       </div>
     </div>
     <div class="showcase">
