@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدوّنة مستر لعلام أوطو — أدلّة وأخبار استيراد السيارات من الصين</title>
+<meta name="description" content="أدلّة ونصائح وأخبار حول استيراد السيارات الصينية إلى الجزائر: أفضل الموديلات، مدة الشحن، ومقارنات بين السيارات — من مستر لعلام أوطو.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d; --bg2:#0e1014; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.15);
+    --ink:#f6f7f9; --muted:#a4adb8; --muted2:#6a727d;
+    --brand:#e01e26; --brand2:#ff3a40;
+    --gold:#d9b382; --gold2:#e9d3ad;
+    --ok:#34d27b; --info:#6ea8ff; --warn:#f6b53c;
+    --maxw:1120px; --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Tajawal","Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .bg-fx{position:fixed;inset:0;z-index:-1;
+    background:
+      radial-gradient(1200px 600px at 78% -8%,rgba(224,30,38,.16),transparent 55%),
+      radial-gradient(1000px 700px at 8% 12%,rgba(217,179,130,.06),transparent 55%),
+      linear-gradient(180deg,#0a0b0d,#0b0d10 40%,#0a0b0d)}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3,h4{font-family:"Sora","Tajawal",sans-serif;line-height:1.35}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
+  .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:12px;font-weight:700;font-size:14.5px;cursor:pointer;transition:.22s;border:1px solid transparent;font-family:inherit}
+  .btn .ico{width:18px;height:18px}
+  .btn-primary{background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff;box-shadow:0 8px 22px -8px rgba(224,30,38,.7)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px -8px rgba(224,30,38,.85)}
+  .btn-ghost{border-color:var(--line2);color:var(--ink);background:rgba(255,255,255,.02)}
+  .btn-ghost:hover{border-color:var(--gold);color:#fff;background:rgba(217,179,130,.06)}
+  .btn-wa{background:linear-gradient(180deg,#2ee27a,#1faf5d);color:#06210f}
+  .btn-wa:hover{transform:translateY(-1px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold2)}
+  .eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(270deg,var(--gold),transparent)}
+  .chip{display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:20px;letter-spacing:.3px;background:rgba(217,179,130,.12);color:var(--gold2);border:1px solid rgba(217,179,130,.25)}
+
+  header{position:sticky;top:0;z-index:60;background:rgba(10,11,13,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:74px;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.4px;font-family:"Sora",sans-serif;font-size:15px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(140deg,#1a1c20,#0e0f12);display:grid;place-items:center;font-weight:800;font-family:Arial,sans-serif;color:#fff;position:relative;border:1px solid var(--line2)}
+  .logo::after{content:"";position:absolute;inset:0;border-radius:12px;padding:1px;background:linear-gradient(140deg,var(--gold),transparent 55%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .brand small{display:block;font-size:9.5px;font-weight:600;letter-spacing:2px;color:var(--gold2);opacity:.8}
+  .nav-cta{display:flex;align-items:center;gap:10px}
+  .nav-cta .btn{padding:11px 18px;font-size:13.5px}
+
+  .hero-b{padding:54px 0 22px}
+  .hero-b h1{font-size:clamp(28px,4.4vw,46px);font-weight:800;margin:14px 0 10px}
+  .hero-b p{color:var(--muted);max-width:640px;font-size:16px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:14px 0 70px}
+  .post{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.22s;cursor:pointer}
+  .post:hover{transform:translateY(-3px);border-color:var(--line2);background:var(--panel2)}
+  .post-top{height:120px;display:grid;place-items:center;background:
+      radial-gradient(120px 80px at 70% 20%,rgba(224,30,38,.18),transparent 60%),
+      linear-gradient(160deg,#141619,#0d0f12);border-bottom:1px solid var(--line)}
+  .post-top svg{width:44px;height:44px;stroke:var(--gold2);fill:none;stroke-width:1.4;opacity:.9}
+  .post-b{padding:16px 17px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .post-b h3{font-size:17px;font-weight:700}
+  .post-b .ex{color:var(--muted);font-size:13.5px;line-height:1.7;flex:1}
+  .post-b .rd{color:var(--gold2);font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+
+  /* article */
+  .art{display:none;padding:26px 0 60px}
+  .art.on{display:block}
+  .grid-view.off{display:none}
+  .back{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;font-weight:600;margin-bottom:22px;transition:.2s}
+  .back:hover{color:var(--gold2)}
+  .art-head{max-width:760px;margin:0 auto}
+  .art-head .meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted2);font-size:13px;margin-top:14px}
+  .art h1{font-size:clamp(26px,3.8vw,40px);font-weight:800;margin-top:14px}
+  .art-body{max-width:760px;margin:26px auto 0;font-size:16.5px;color:#dfe3e8}
+  .art-body h2{font-size:23px;font-weight:700;margin:34px 0 12px;color:#fff}
+  .art-body h3{font-size:18.5px;font-weight:700;margin:24px 0 8px;color:var(--gold2)}
+  .art-body p{margin:0 0 15px}
+  .art-body ul{margin:0 0 16px;padding-inline-start:22px}
+  .art-body li{margin:0 0 8px}
+  .art-body strong{color:#fff;font-weight:700}
+  .art-body a.inl{color:var(--gold2);border-bottom:1px solid rgba(217,179,130,.4)}
+  .lede{font-size:18px;color:var(--muted);border-inline-start:3px solid var(--gold);padding-inline-start:16px;margin:0 0 22px}
+  .callout{background:rgba(217,179,130,.07);border:1px solid rgba(217,179,130,.22);border-radius:14px;padding:18px 20px;margin:22px 0;font-size:15.5px}
+  .callout b{color:var(--gold2)}
+  .note{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:22px 0;font-size:14.5px;color:var(--muted)}
+
+  table.spec{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table.spec th,table.spec td{padding:12px 14px;text-align:start;border-bottom:1px solid var(--line)}
+  table.spec thead th{background:rgba(255,255,255,.04);color:#fff;font-weight:700;font-size:13.5px}
+  table.spec tbody th{color:var(--muted);font-weight:600}
+  table.spec td{color:#eef1f4}
+  table.spec tr:last-child td,table.spec tr:last-child th{border-bottom:0}
+  .win{color:var(--gold2);font-weight:700}
+
+  .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:linear-gradient(160deg,rgba(224,30,38,.10),rgba(217,179,130,.06));border:1px solid var(--line2);border-radius:16px;padding:22px 24px;margin:34px 0 8px}
+  .cta div{flex:1;min-width:220px}
+  .cta h4{font-size:18px;font-weight:700;color:#fff}
+  .cta p{color:var(--muted);font-size:14px;margin-top:4px}
+
+  .sources{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted2)}
+  .sources a{color:var(--muted);border-bottom:1px solid var(--line2)}
+  .sources h5{color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+
+  .more{max-width:760px;margin:44px auto 0}
+  .more h4{font-size:16px;color:var(--muted);margin-bottom:14px}
+  .more-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .more-row a{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;font-size:14.5px;font-weight:600;transition:.2s;display:flex;gap:9px;align-items:flex-start}
+  .more-row a:hover{border-color:var(--gold);color:#fff}
+  .more-row a span{color:var(--gold2);font-weight:800}
+
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:34px 0}
+  .foot{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;color:var(--muted);font-size:13.5px}
+  .foot a{color:var(--muted)}.foot a:hover{color:#fff}
+
+  .wa-float{position:fixed;inset-inline-start:20px;bottom:20px;z-index:70;display:inline-flex;align-items:center;gap:9px;background:linear-gradient(180deg,#2ee27a,#1faf5d);color:#06210f;font-weight:800;padding:12px 18px;border-radius:40px;box-shadow:0 12px 30px -8px rgba(31,175,93,.6);font-size:14px}
+  .wa-float:hover{transform:translateY(-2px)}
+
+  @media(max-width:640px){
+    .nav-cta .btn-ghost{display:none}
+    .hero-b{padding:36px 0 14px}
+    .art-body{font-size:16px}
+  }
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html"><div class="logo">ML</div><div>MR L3ALEM AUTO<small>CHINA → ALGERIA</small></div></a>
+    <div class="nav-cta">
+      <a href="index.html" class="btn btn-ghost">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span>العودة إلى الموقع</span>
+      </a>
+      <a href="index.html#stock" class="btn btn-primary">تصفّح المخزون</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- INDEX VIEW -->
+  <section class="grid-view" id="gridView">
+    <div class="hero-b">
+      <span class="eyebrow">مدوّنة مستر لعلام</span>
+      <h1>أخبار وأدلّة حول الاستيراد من الصين</h1>
+      <p>كل ما تحتاج معرفته قبل استيراد سيارتك: أفضل الموديلات للجزائر، مدة الشحن الحقيقية، ومقارنات صريحة بين السيارات — بخبرة ميدانية من مستر لعلام أوطو.</p>
+    </div>
+    <div class="grid" id="postGrid"></div>
+  </section>
+
+  <!-- ARTICLE VIEW -->
+  <article class="art" id="artView">
+    <a class="back" href="blog.html">
+      <svg class="ico" viewBox="0 0 24 24" style="transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      كل المقالات
+    </a>
+    <div class="art-head">
+      <span class="chip" id="artCat"></span>
+      <h1 id="artTitle"></h1>
+      <div class="meta"><span id="artRead"></span> · <span>مستر لعلام أوطو</span></div>
+    </div>
+    <div class="art-body" id="artBody"></div>
+    <div class="more">
+      <h4>مقالات أخرى</h4>
+      <div class="more-row" id="moreRow"></div>
+    </div>
+  </article>
+
+</main>
+
+<a class="wa-float" href="https://wa.me/213554601928" target="_blank" rel="noopener">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.9c0 2.1.55 4.06 1.6 5.83L2 22l4.4-1.15a9.9 9.9 0 0 0 5.64 1.73h.01c5.46 0 9.9-4.45 9.9-9.9 0-2.65-1.03-5.14-2.9-7.01A9.8 9.8 0 0 0 12.04 2zm0 18.13c-1.7 0-3.35-.46-4.8-1.32l-.34-.2-2.6.68.7-2.53-.22-.36a8.2 8.2 0 0 1-1.26-4.4c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.4-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.48-1.38-1.73-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.43l-.48-.01c-.16 0-.43.06-.65.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.2 3.7.58.26 1.04.4 1.4.51.59.19 1.12.16 1.54.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+  تحدّث معنا
+</a>
+
+<footer>
+  <div class="wrap foot">
+    <div>© 2026 مستر لعلام أوطو · الجلفة، الجزائر</div>
+    <div style="display:flex;gap:18px">
+      <a href="index.html">الموقع الرئيسي</a>
+      <a href="index.html#stock">المخزون</a>
+      <a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const WA = "https://wa.me/213554601928";
+function waLink(msg){ return WA + "?text=" + encodeURIComponent(msg); }
+
+const ICONS = {
+  news:'<path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2M7.5 9h6M7.5 12h6M7.5 15h4"/>',
+  car:'<path d="M5 16l1.5-5A2 2 0 0 1 8.4 9.6h7.2a2 2 0 0 1 1.9 1.4L19 16"/><path d="M4 16h16v3H4z"/><circle cx="7.5" cy="18.5" r="1.2"/><circle cx="16.5" cy="18.5" r="1.2"/>',
+  ship:'<path d="M3 15l1.5 4.5a2 2 0 0 0 1.9 1.4h11.2a2 2 0 0 0 1.9-1.4L21 15"/><path d="M5 15V9h14v6M12 3v6M9 9V6h6v3"/>',
+  scale:'<path d="M12 3v18M7 21h10M6 7h12l-3 6H9zM3 13a3 3 0 0 0 6 0M15 13a3 3 0 0 0 6 0"/>'
+};
+
+const ART = {
+  "best-2026": {
+    cat:"دليل", icon:"news", read:"قراءة 6 دقائق",
+    title:"أفضل السيارات الصينية للجزائر في 2026",
+    ex:"لماذا صارت السيارات الصينية الخيار الأذكى في الجزائر، وأيّ الموديلات تستحق أموالك هذا العام.",
+    body:`
+      <p class="lede">لم تعد السيارات الصينية «بديلاً رخيصاً»؛ صارت اليوم منافساً حقيقياً بتجهيزات لا تجدها في سيارات أغلى منها بكثير. لكن مع كثرة الموديلات، أيّها يناسب الطريق والجيب الجزائري فعلاً؟</p>
+
+      <p>خلال السنوات الأخيرة تصدّرت العلامات الصينية — جيلي، شيري، GAC، شانجان، هافال و MG — قوائم المبيعات في الجزائر، وذلك لسبب بسيط: قيمة أعلى مقابل السعر. محرّكات تيربو حديثة، شاشات كبيرة، كاميرات محيطية، وأنظمة أمان، كلها في فئة سعرية يصعب على المنافس الأوروبي أو الكوري مجاراتها.</p>
+
+      <p>لكن ليست كل سيارة صينية خياراً موفّقاً للاستيراد. قبل أن تحجز، ننصحك بالتركيز على أربعة معايير عملية:</p>
+      <ul>
+        <li><strong>اقتصاد الوقود:</strong> المحرّكات التيربو 1.5 لتر الحديثة تمنحك قوة سيدان أكبر باستهلاك سيارة صغيرة.</li>
+        <li><strong>توفّر قطع الغيار:</strong> اختر علامة لها حضور وخدمة في الجزائر حتى لا تعلق مع قطعة نادرة.</li>
+        <li><strong>قيمة إعادة البيع:</strong> بعض العلامات (مثل جيلي) تحافظ على سعرها في السوق الجزائرية أكثر من غيرها.</li>
+        <li><strong>الضمان والموثوقية:</strong> اقرأ تاريخ الموديل، لا الإعلان فقط.</li>
+      </ul>
+
+      <h2>الفئات الأنسب للسوق الجزائرية</h2>
+
+      <h3>1) الكروس أوفر المدمج — اختيارنا الأول</h3>
+      <p>هنا يتصدّر <strong>جيلي كولراي</strong> المشهد. بمحرّك 1.5 لتر تيربو يمنح نحو 172 حصاناً و290 نيوتن.متر مع علبة DCT بسبع سرعات، يجمع بين المتعة والاقتصاد (نحو 17.8 كلم/لتر). وفي نسخة الفل أوبسيون تحصل على مقاعد مهوّاة، كاميرا 540 درجة، وركن آلي — تجهيز يضاهي سيارات في فئة أعلى. أضف إلى ذلك سمعة جيلي القوية في الحفاظ على قيمتها عند إعادة البيع.</p>
+
+      <h3>2) الـ SUV الاقتصادي العائلي</h3>
+      <p><strong>GAC GS3</strong> و<strong>شيري تيغو</strong> خياران ممتازان لمن يريد مساحة وارتفاعاً بسعر في المتناول. الـ GS3 خصوصاً يقدّم محرّك 1.5 تيربو بقوة 177 حصاناً، فتحة سقف بانورامية وكاميرا 360 في النسخة الميديوم.</p>
+
+      <h3>3) السيدان العائلية العملية</h3>
+      <p>إن كنت تفضّل السيدان، فإن <strong>جيتا VS5</strong> (بمحرّك 1.5 تيربو 150 حصاناً) و<strong>روي i5</strong> (1.5 لتر 129 حصاناً بناقل يدوي) يوفّران راحة واقتصاداً يوميّاً بميزانية معقولة.</p>
+
+      <div class="callout"><b>نصيحة مستر لعلام:</b> إذا كنت تبحث عن التوازن المثالي بين الأداء، التجهيز، واقتصاد الوقود مع أفضل قيمة إعادة بيع — فإن <b>كولراي فل أوبسيون</b> يبقى خيارنا الأول لغالبية العملاء في 2026.</p></div>
+
+      <h2>ماذا نوفّر لك الآن؟</h2>
+      <p>كل الموديلات التي ذكرناها — وأكثر — متوفرة أو قابلة للطلب عبر مستر لعلام أوطو، بألوان الأبيض والفضي والرمادي وموديل 2026. نتكفّل بالشراء من الصين، تصوير التحميل، والشحن حتى ميناء الجزائر مع تتبّع مباشر.</p>
+
+      <div class="cta">
+        <div><h4>لست متأكداً أيّ سيارة تناسبك؟</h4><p>أرسل لنا ميزانيتك واحتياجك على واتساب ونرشّح لك الأنسب.</p></div>
+        <a class="btn btn-wa" target="_blank" rel="noopener" href="${'WA_BEST'}">تحدّث معنا على واتساب</a>
+        <a class="btn btn-ghost" href="index.html#stock">تصفّح المخزون</a>
+      </div>
+
+      <div class="sources">
+        <h5>مصادر التقنية</h5>
+        <a href="https://jinyuautos.com/blog/6-best-chinese-cars-in-algeria/" target="_blank" rel="noopener">Jinyu Autos — أفضل السيارات الصينية في الجزائر</a> ·
+        <a href="https://syarah.com/carsguide/en/geely-coolray-2026-specs/" target="_blank" rel="noopener">Syarah — مواصفات جيلي كولراي 2026</a>
+      </div>
+    `
+  },
+
+  "geely-2026": {
+    cat:"أخبار", icon:"car", read:"قراءة 5 دقائق",
+    title:"موديلات جيلي الجديدة تصل هذا الموسم",
+    ex:"تشكيلة جيلي 2026 توسّعت بقوة — إليك أبرز الموديلات المهمّة للمستورد الجزائري.",
+    body:`
+      <p class="lede">جيلي لم تعد مجرّد علامة اقتصادية؛ صارت واحدة من أسرع صانعي السيارات نموّاً في العالم، وتشكيلة 2026 تعكس ذلك بوضوح — من كروس أوفر مدمج إلى SUV عائلي كبير.</p>
+
+      <p>يقود هذا الزخم في السوق الجزائرية <strong>كولراي الجديد</strong>. النسخة المحدّثة تأتي بمحرّك 1.5 لتر تيربو يطوّر نحو 172 حصاناً و290 نيوتن.متر، مع علبة DCT بسبع سرعات وتسارع 0-100 في حدود 7.6 ثانية. أما التجهيز فقفزة حقيقية: شاشة 12 بوصة، لوحة عدّادات رقمية 10.25 بوصة، كاميرا 540 درجة، مقاعد مهوّاة، وركن آلي في النسخة العليا.</p>
+
+      <h2>ما وراء كولراي: تشكيلة 2026 الكاملة</h2>
+      <p>إلى جانب كولراي، وسّعت جيلي حضورها في منطقتنا بموديلات تستحق المتابعة:</p>
+      <ul>
+        <li><strong>جيلي إمجراند (Emgrand):</strong> سيدان اقتصادية عملية، من أكثر السيارات الصينية مبيعاً في الجزائر لبساطتها واقتصادها.</li>
+        <li><strong>ستاراي / Starray:</strong> كروس أوفر أكبر قليلاً من كولراي، لمن يريد مساحة إضافية وحضوراً أقوى.</li>
+        <li><strong>أوكافانغو (Okavango):</strong> SUV عائلي بسبعة مقاعد — خيار مثالي للعائلات الكبيرة.</li>
+        <li><strong>مونجارو (Monjaro):</strong> الـ SUV الرائد لدى جيلي، بتجهيز فاخر ومحرّك أقوى.</li>
+        <li><strong>بريفيس (Preface):</strong> سيدان متوسطة أنيقة تنافس في فئة أعلى.</li>
+      </ul>
+
+      <div class="callout"><b>الأهم للمستورد:</b> ليست كل هذه الموديلات عملية للاستيراد إلى الجزائر بنفس الدرجة. الأكثر طلباً وسهولة في قطع الغيار وإعادة البيع تبقى <b>كولراي</b> و<b>إمجراند</b> — ولهذا نركّز عليهما في مخزوننا.</div>
+
+      <h2>لماذا جيلي تحديداً؟</h2>
+      <p>ثلاثة أسباب تجعل جيلي رهاناً آمناً: شبكة قطع غيار متنامية في الجزائر، سمعة قوية في الحفاظ على قيمة السيارة، وتجهيزات تكنولوجية تسبق فئتها السعرية. لهذا تتصدّر قوائم المبيعات عاماً بعد عام.</p>
+
+      <div class="cta">
+        <div><h4>تريد كولراي أو موديل جيلي محدّد؟</h4><p>أخبرنا بالموديل والنسخة، ونجدها لك ونشحنها من الصين.</p></div>
+        <a class="btn btn-wa" target="_blank" rel="noopener" href="${'WA_GEELY'}">اطلب عبر واتساب</a>
+        <a class="btn btn-ghost" href="index.html#stock">شاهد كولراي في المخزون</a>
+      </div>
+
+      <div class="sources">
+        <h5>مصادر التقنية</h5>
+        <a href="https://uae.yallamotor.com/new-cars/geely" target="_blank" rel="noopener">YallaMotor — تشكيلة جيلي 2026</a> ·
+        <a href="https://syarah.com/carsguide/en/geely-coolray-2026-specs/" target="_blank" rel="noopener">Syarah — مواصفات كولراي 2026</a>
+      </div>
+    `
+  },
+
+  "shipping": {
+    cat:"الشحن", icon:"ship", read:"قراءة 5 دقائق",
+    title:"مدة الشحن من الصين: ماذا تتوقّع",
+    ex:"كم تستغرق سيارتك فعلاً حتى ميناء الجزائر؟ سياستنا في اختيار خطوط الشحن، والمدد الحقيقية.",
+    body:`
+      <p class="lede">أكثر سؤال يصلنا: «كم تبقى سيارتي في البحر؟» الجواب الصادق يعتمد على خطّ الشحن — وهنا نشرح لك سياستنا بوضوح، بلا وعود مبالغ فيها.</p>
+
+      <h2>رحلة سيارتك خطوة بخطوة</h2>
+      <p>قبل الحديث عن المدّة، إليك مسار السيارة كاملاً:</p>
+      <ul>
+        <li><strong>الشراء في الصين:</strong> نشتري السيارة ونجهّز أوراقها.</li>
+        <li><strong>التحميل:</strong> نصوّر لك فيديو تحميل سيارتك داخل الحاوية قبل الإبحار.</li>
+        <li><strong>الإبحار:</strong> تغادر السفينة الميناء الصيني نحو المتوسط.</li>
+        <li><strong>الوصول:</strong> تصل إلى ميناء الجزائر، ثم تبدأ إجراءات الجمرك والتسليم.</li>
+      </ul>
+
+      <h2>سياستنا في اختيار خطّ الشحن</h2>
+      <p>اعتماداً على تجربتنا الميدانية، لا نغامر بأيّ شركة شحن. اخترنا الالتزام بما يصل فعلاً وفي الوقت:</p>
+
+      <div class="callout">
+        <p><b>MSC — خيارنا الأساسي.</b> بعد تجربة عدّة خطوط، قرّرنا الاعتماد على شركة <b>MSC</b> لأنها الشركة الوحيدة الموثوقة فعلاً في هذا المسار. تستغرق الرحلة معها عادةً بين <b>45 و65 يوماً</b> من مغادرة السفينة حتى ميناء الجزائر.</p>
+        <p style="margin-top:10px"><b>موهيل (Mohill) — عندما يتوفّر.</b> نستخدم أيضاً خطّ <b>موهيل</b> كلما كان متاحاً، وهو أسرع — تصل السيارة في نحو <b>35 يوماً</b>.</p>
+      </div>
+
+      <p>هذا الوضوح مقصود: نفضّل أن نعطيك مدّة واقعية نلتزم بها، بدل وعد جميل لا يتحقّق. وطوال الرحلة يمكنك متابعة موقع السفينة مباشرة على الخريطة من حسابك.</p>
+
+      <h2>ما الذي قد يؤثّر على المدّة؟</h2>
+      <ul>
+        <li>توفّر خطّ موهيل من عدمه في تاريخ الشحن.</li>
+        <li>ازدحام الموانئ ومواعيد الإبحار.</li>
+        <li>إجراءات الجمرك بعد الوصول (خارجة عن مدّة البحر).</li>
+      </ul>
+
+      <div class="note">ملاحظة: المدد المذكورة تخصّ الرحلة البحرية من مغادرة السفينة حتى وصولها ميناء الجزائر. إجراءات التخليص الجمركي والتسليم النهائي تُحسب بعدها.</div>
+
+      <div class="cta">
+        <div><h4>تريد تقديراً دقيقاً لسيارتك؟</h4><p>راسلنا بالموديل وتاريخ الطلب ونعطيك المدّة المتوقّعة حسب الخطّ المتاح.</p></div>
+        <a class="btn btn-wa" target="_blank" rel="noopener" href="${'WA_SHIP'}">اسأل عن مدة الشحن</a>
+        <a class="btn btn-ghost" href="index.html#live">تتبّع مباشر</a>
+      </div>
+    `
+  },
+
+  "coolray-vs-gs3": {
+    cat:"مقارنة", icon:"scale", read:"قراءة 7 دقائق",
+    title:"كولراي في مواجهة GAC GS3 — أيّهما تختار؟",
+    ex:"مقارنة صريحة بالأرقام بين اثنين من أكثر الكروس أوفر طلباً في الجزائر — وأيّهما نرشّحه.",
+    body:`
+      <p class="lede">كلاهما كروس أوفر مدمج بمحرّك 1.5 تيربو وعلبة DCT، وكلاهما مطلوب بشدّة في الجزائر. لكن حين تنزل إلى التفاصيل، يظهر الفرق. إليك المقارنة كاملة — بالأرقام.</p>
+
+      <h2>المواصفات وجهاً لوجه</h2>
+      <table class="spec">
+        <thead><tr><th>المواصفة</th><th>جيلي كولراي</th><th>GAC GS3 (إمزوم)</th></tr></thead>
+        <tbody>
+          <tr><th>المحرّك</th><td>1.5 لتر تيربو</td><td>1.5 لتر تيربو</td></tr>
+          <tr><th>القوة</th><td>≈ 172 حصاناً</td><td>≈ 172 حصاناً</td></tr>
+          <tr><th>العزم</th><td class="win">290 نيوتن.متر</td><td>270 نيوتن.متر</td></tr>
+          <tr><th>ناقل الحركة</th><td>DCT · 7 سرعات</td><td>DCT · 7 سرعات</td></tr>
+          <tr><th>0-100 كلم/س</th><td>7.6 ثانية</td><td class="win">7.0 ثوانٍ</td></tr>
+          <tr><th>الاقتصاد</th><td class="win">≈ 17.8 كلم/لتر</td><td>≈ 15–17 كلم/لتر</td></tr>
+          <tr><th>الطول / قاعدة العجلات</th><td>4380 / 2600 ملم</td><td class="win">4410 / 2650 ملم</td></tr>
+          <tr><th>حجز الصندوق</th><td>—</td><td class="win">341 لتراً</td></tr>
+        </tbody>
+      </table>
+
+      <h2>جولة بجولة</h2>
+      <h3>المحرّك والسحب</h3>
+      <p>القوة متقاربة جداً (نحو 172 حصاناً لكليهما)، لكن <strong>كولراي يتفوّق في العزم (290 مقابل 270 نيوتن.متر)</strong>، ما يعني سحباً أقوى في المدينة وعند التجاوز. الـ GS3 أسرع قليلاً في التسارع الرقمي (7.0 مقابل 7.6 ثانية)، لكن الفرق لا يكاد يُلمس في القيادة اليومية.</p>
+
+      <h3>اقتصاد الوقود</h3>
+      <p>هنا يعود التفوّق لكولراي بمعدّل استهلاك أفضل (نحو 17.8 كلم/لتر)، وهو فارق تشعر به شهرياً على الطريق الجزائري.</p>
+
+      <h3>المساحة</h3>
+      <p>الـ GS3 هو الأكبر: قاعدة عجلات أطول وصندوق 341 لتراً. إن كانت الأولوية القصوى لديك هي رحابة المقصورة والصندوق، فهذه نقطة لصالحه.</p>
+
+      <h3>التجهيز في الفل أوبسيون</h3>
+      <p>وهنا يصنع كولراي الفارق. نسخة <strong>الفل أوبسيون</strong> تأتي بـ<strong>مقاعد مهوّاة، كاميرا محيطية 540 درجة، ركن آلي، جنوط 18 بوصة وإضاءة LED كاملة</strong> مع لوحة عدّادات رقمية. الـ GS3 مجهّز جيّداً أيضاً (كاميرا 360، مثبّت سرعة تكيّفي، فرملة طوارئ) لكنّ باقة كولراي العليا تبدو أرقى قيمةً.</p>
+
+      <h3>قطع الغيار وإعادة البيع</h3>
+      <p>لجيلي حضور أوسع وشبكة قطع غيار أنضج في الجزائر، وسمعة أقوى في الحفاظ على قيمة السيارة عند البيع — عاملان يوفّران عليك المال على المدى الطويل.</p>
+
+      <div class="callout"><b>خلاصتنا:</b> إن كنت تريد الأكبر مساحةً والأطول ضماناً، فالـ GS3 خيار ممتاز. لكن لغالبية عملائنا، يبقى <b>كولراي فل أوبسيون</b> الاختيار الأذكى: عزم أعلى، استهلاك أقل، تجهيز فاخر، وقيمة إعادة بيع أفضل — توازن يصعب هزمه.</div>
+
+      <div class="cta">
+        <div><h4>حسمت أمرك؟</h4><p>كولراي فل أوبسيون و GAC GS3 كلاهما متوفر لدينا — راسلنا لتفاصيل الطلب.</p></div>
+        <a class="btn btn-wa" target="_blank" rel="noopener" href="${'WA_CMP'}">اطلب كولراي فل أوبسيون</a>
+        <a class="btn btn-ghost" href="index.html#stock">قارن في المخزون</a>
+      </div>
+
+      <div class="sources">
+        <h5>مصادر التقنية</h5>
+        <a href="https://syarah.com/carsguide/en/geely-coolray-2026-specs/" target="_blank" rel="noopener">Syarah — جيلي كولراي 2026</a> ·
+        <a href="https://www.dubicars.com/new-cars/gac/gs3-emzoom/specifications" target="_blank" rel="noopener">Dubicars — GAC GS3 Emzoom</a>
+      </div>
+    `
+  }
+};
+
+// prefilled WhatsApp messages per article
+const WA_MSG = {
+  "best-2026":"مرحباً مستر لعلام، قرأت مقال «أفضل السيارات الصينية لـ2026» وأريد ترشيحاً يناسبني.",
+  "geely-2026":"مرحباً مستر لعلام، مهتم بموديل جيلي (كولراي/إمجراند). أريد التفاصيل والسعر.",
+  "shipping":"مرحباً مستر لعلام، أريد معرفة مدة الشحن المتوقّعة لسيارة عبر MSC أو موهيل.",
+  "coolray-vs-gs3":"مرحباً مستر لعلام، بعد قراءة مقارنة كولراي و GAC GS3 أريد طلب كولراي فل أوبسيون."
+};
+
+const ORDER = ["best-2026","geely-2026","shipping","coolray-vs-gs3"];
+
+function svg(icon){ return '<svg viewBox="0 0 24 24">'+ICONS[icon]+'</svg>'; }
+
+function renderIndex(){
+  const g = document.getElementById('postGrid');
+  g.innerHTML = ORDER.map(slug=>{
+    const a = ART[slug];
+    return `<a class="post" href="blog.html#${slug}">
+      <div class="post-top">${svg(a.icon)}</div>
+      <div class="post-b">
+        <span class="chip">${a.cat}</span>
+        <h3>${a.title}</h3>
+        <p class="ex">${a.ex}</p>
+        <span class="rd">اقرأ المقال
+          <svg class="ico" viewBox="0 0 24 24" style="width:15px;height:15px;transform:scaleX(-1)"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+function renderArticle(slug){
+  const a = ART[slug];
+  document.getElementById('artCat').textContent = a.cat;
+  document.getElementById('artTitle').textContent = a.title;
+  document.getElementById('artRead').textContent = a.read;
+  let html = a.body
+    .replace('WA_BEST', waLink(WA_MSG['best-2026']))
+    .replace('WA_GEELY', waLink(WA_MSG['geely-2026']))
+    .replace('WA_SHIP', waLink(WA_MSG['shipping']))
+    .replace('WA_CMP', waLink(WA_MSG['coolray-vs-gs3']));
+  document.getElementById('artBody').innerHTML = html;
+  document.title = a.title + " — مدوّنة مستر لعلام أوطو";
+  // related
+  const more = ORDER.filter(s=>s!==slug).map(s=>`<a href="blog.html#${s}"><span>›</span>${ART[s].title}</a>`).join('');
+  document.getElementById('moreRow').innerHTML = more;
+  document.getElementById('gridView').classList.add('off');
+  document.getElementById('artView').classList.add('on');
+  window.scrollTo(0,0);
+}
+
+function route(){
+  const slug = decodeURIComponent((location.hash||'').replace('#',''));
+  if(slug && ART[slug]){ renderArticle(slug); }
+  else {
+    document.getElementById('artView').classList.remove('on');
+    document.getElementById('gridView').classList.remove('off');
+    document.title = "مدوّنة مستر لعلام أوطو — أدلّة وأخبار استيراد السيارات من الصين";
+  }
+}
+
+renderIndex();
+route();
+window.addEventListener('hashchange', route);
+</script>
+</body>
+</html>
