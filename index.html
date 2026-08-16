@@ -161,6 +161,9 @@
   .featured-inner .eyebrow{margin-bottom:14px}
   .vwrap{position:relative;width:100%;max-width:900px;margin:0 auto;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;border:1px solid var(--line2)}
   .vwrap iframe{position:absolute;inset:0;width:100%;height:100%}
+  .vreel{position:relative;width:100%;max-width:430px;margin:0 auto;aspect-ratio:9/16;background:#0a0b0d;border-radius:22px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 30px 60px -30px rgba(0,0,0,.85)}
+  .vreel iframe{position:absolute;inset:0;width:100%;height:100%}
+  @media(max-width:920px){.vreel{max-width:340px}}
   /* brand tiles */
   .brand-tiles{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
   .brand-tile{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:700;font-size:14px;cursor:pointer;transition:.2s;font-family:inherit}
@@ -390,7 +393,7 @@
       <a href="#stock" data-i18n="nav_stock">المخزون</a>
       <a href="#used">مستعملة</a>
       <a href="#live" data-i18n="nav_track">تتبع الشحنة</a>
-      <a href="#why" data-i18n="nav_why">لماذا نحن</a>
+      <a href="#about" data-i18n="nav_why">لماذا نحن</a>
       <a href="#about" data-i18n="nav_about">من نحن</a>
       <a href="#faq" data-i18n="nav_faq">الأسئلة</a>
       <a href="#journal" data-i18n="nav_journal">المدوّنة</a>
@@ -427,37 +430,11 @@
       </div>
     </div>
     <div class="showcase">
-      <div class="stage">
-        <span class="pill tag" data-i18n="sc_tag">● في الطريق</span>
-        <div class="veh"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
-        <div class="refl"></div>
-      </div>
-      <div class="sc-row"><h4 data-i18n="sc_name">جيلي كولراي — فُل أوبسيون</h4><span class="yr">2026</span></div>
-      <div class="chips"><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span><span class="chip" data-i18n="chip_suv">SUV</span><span class="chip" data-i18n="chip_full">فُل أوبسيون</span></div>
-      <div class="sc-track">
-        <span style="font-size:11.5px;color:var(--muted)" data-i18n="sc_journey">الرحلة</span>
-        <div class="dotline"><span class="seg on"></span><span class="seg on"></span><span class="seg on"></span><span class="seg now"></span><span class="seg"></span><span class="seg"></span></div>
-        <span style="font-size:11.5px;color:#a9c8ff" data-i18n="sc_departed">غادرت الصين</span>
-      </div>
+      <span class="eyebrow" style="display:block;margin-bottom:14px">عرض هذا الأسبوع</span>
+      <div class="vreel"><iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1035011309434063&show_text=false&width=430&height=764" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe></div>
     </div>
   </div>
 </section>
-
-<div class="strip">
-  <div class="wrap">
-    <b>Geely</b><span class="dot"></span><b>Chery</b><span class="dot"></span><b>GAC</b><span class="dot"></span><b>MG</b><span class="dot"></span><b>Changan</b><span class="dot"></span><b>Haval</b><span class="dot"></span><b>BYD</b>
-  </div>
-</div>
-
-<div class="wrap">
-  <div class="quick">
-    <a href="#stock" class="qtile"><span class="qi"><svg class="ico"><use href="#i-bolt"/></svg></span><b data-i18n="q1b">المخزون المتوفر</b><span data-i18n="q1s">شاهد المتوفر الآن</span></a>
-    <a href="#live" class="qtile"><span class="qi"><svg class="ico"><use href="#i-ship"/></svg></span><b data-i18n="q2b">تتبع شحنتي</b><span data-i18n="q2s">تابع سيارتك مباشرة</span></a>
-    <a href="#why" class="qtile"><span class="qi"><svg class="ico"><use href="#i-star"/></svg></span><b data-i18n="q3b">لماذا مستر لعلام</b><span data-i18n="q3s">وسيط مسجّل</span></a>
-    <a href="#how" class="qtile"><span class="qi"><svg class="ico"><use href="#i-box"/></svg></span><b data-i18n="q4b">كيف نعمل</b><span data-i18n="q4s">من الطلب إلى التسليم</span></a>
-    <a href="#contact" class="qtile"><span class="qi"><svg class="ico"><use href="#i-chat"/></svg></span><b data-i18n="q5b">اتصل بنا</b><span data-i18n="q5s">تحدّث عبر واتساب</span></a>
-  </div>
-</div>
 
 <section id="stock">
   <div class="wrap">
@@ -521,17 +498,15 @@
   </div>
 </section>
 
-<section id="why" class="why">
-  <div class="wrap">
-    <div class="sec-top"><div><span class="eyebrow" data-i18n="why_eyebrow">لماذا نحن</span><h2 data-i18n="why_h2">وسيط مسجّل تتابعه خطوة بخطوة</h2></div></div>
-    <div class="why-grid">
-      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-shield"/></svg></div><h4 data-i18n="why1h">مسجّل رسمياً</h4><p data-i18n="why1p">نشاط جزائري مسجّل في الجلفة — كل طلب موثّق بعقد مكتوب.</p></div>
-      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-ship"/></svg></div><h4 data-i18n="why2h">تتبع فوري</h4><p data-i18n="why2p">تابع رحلة سيارتك من الصين إلى ميناء الجزائر مباشرة.</p></div>
-      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-doc"/></svg></div><h4 data-i18n="why3h">توثيق كامل</h4><p data-i18n="why3p">الفاتورة، رقم الهيكل، فيديو التحميل وأوراق الشحن — كلها في حسابك.</p></div>
-      <div class="why-card"><div class="wi"><svg class="ico"><use href="#i-chat"/></svg></div><h4 data-i18n="why4h">تحديث دائم</h4><p data-i18n="why4p">تحديثات تلقائية عبر واتساب في كل مرحلة — دون الحاجة للسؤال «أين سيارتي؟»</p></div>
-    </div>
+<div class="wrap" style="margin-top:8px">
+  <div class="quick">
+    <a href="#stock" class="qtile"><span class="qi"><svg class="ico"><use href="#i-bolt"/></svg></span><b data-i18n="q1b">المخزون المتوفر</b><span data-i18n="q1s">شاهد المتوفر الآن</span></a>
+    <a href="#live" class="qtile"><span class="qi"><svg class="ico"><use href="#i-ship"/></svg></span><b data-i18n="q2b">تتبع شحنتي</b><span data-i18n="q2s">تابع سيارتك مباشرة</span></a>
+    <a href="#about" class="qtile"><span class="qi"><svg class="ico"><use href="#i-star"/></svg></span><b data-i18n="q3b">لماذا مستر لعلام</b><span data-i18n="q3s">وسيط مسجّل</span></a>
+    <a href="#how" class="qtile"><span class="qi"><svg class="ico"><use href="#i-box"/></svg></span><b data-i18n="q4b">كيف نعمل</b><span data-i18n="q4s">من الطلب إلى التسليم</span></a>
+    <a href="#contact" class="qtile"><span class="qi"><svg class="ico"><use href="#i-chat"/></svg></span><b data-i18n="q5b">اتصل بنا</b><span data-i18n="q5s">تحدّث عبر واتساب</span></a>
   </div>
-</section>
+</div>
 
 <section id="about">
   <div class="wrap">
@@ -757,7 +732,7 @@
         <p data-i18n="foot_desc">استورد سيارتك من الصين وتابع رحلتها الكاملة إلى الجزائر. وساطة مسجّلة مقرّها الجلفة.</p>
       </div>
       <div><h5 data-i18n="foot_explore">استكشف</h5><a href="#stock" data-i18n="q1b">المخزون المتوفر</a><a href="#live" data-i18n="nav_track">تتبع الشحنة</a><a href="#how" data-i18n="nav_how">كيف نعمل</a><a href="#journal" data-i18n="nav_journal">المدوّنة</a></div>
-      <div><h5 data-i18n="foot_company">الشركة</h5><a href="#why" data-i18n="nav_why">لماذا نحن</a><a href="#contact" data-i18n="nav_contact">اتصل بنا</a><a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a></div>
+      <div><h5 data-i18n="foot_company">الشركة</h5><a href="#about" data-i18n="nav_why">لماذا نحن</a><a href="#contact" data-i18n="nav_contact">اتصل بنا</a><a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a></div>
       <div><h5 data-i18n="nav_contact">اتصل بنا</h5><p>WhatsApp: +213 554 601 928</p><p><a href="mailto:contact@mrl3alemauto.com" style="color:inherit;text-decoration:none">contact@mrl3alemauto.com</a></p><p data-i18n="foot_addr">حي باكوكة، الجلفة، الجزائر</p></div>
     </div>
     <div class="foot-bottom">
@@ -1115,15 +1090,17 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
       var sec=document.getElementById("featured"); if(sec) sec.style.display="block";
     }).catch(function(){});
   }
-  function loadStock(){
+  function loadStock(tries){
     if(!API_BASE)return;
-    fetch(API_BASE.replace(/\/+$/,"")+"/api/stock").then(function(r){return r.json();}).then(function(d){
-      var cars=(d&&d.cars)||[];
-      cars=cars.filter(function(c){return c&&c.name&&c.status!=="مُباعة"&&c.photos&&c.photos.length;});
-      ALL=cars;
-      renderAll();
-      route();
-    }).catch(function(){});
+    tries=(tries==null)?15:tries;
+    var g=document.getElementById("stockGrid");
+    if(g&&!g.getAttribute("data-loaded")) g.innerHTML="<div style=\"grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted2);font-size:15px\">جارٍ تحميل المخزون…</div>";
+    fetch(API_BASE.replace(/\/+$/,"")+"/api/stock",{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+      var cars=((d&&d.cars)||[]).filter(function(c){return c&&c.name&&c.status!=="مُباعة"&&c.photos&&c.photos.length;});
+      if(!cars.length){ if(tries>0) setTimeout(function(){loadStock(tries-1);},3000); return; }
+      if(g) g.setAttribute("data-loaded","1");
+      ALL=cars; renderAll(); route();
+    }).catch(function(){ if(tries>0) setTimeout(function(){loadStock(tries-1);},3000); });
   }
   function init(){ bind(); loadFeatured(); loadStock(); }
   if(document.readyState!=="loading")init();else document.addEventListener("DOMContentLoaded",init);
