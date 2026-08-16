@@ -122,7 +122,7 @@
   .qtile b{font-size:14.5px}
   .qtile span{font-size:12px;color:var(--muted2)}
 
-  section{padding:76px 0}
+  section{padding:38px 0}
   .sec-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px;flex-wrap:wrap}
   .sec-top h2{font-size:32px;letter-spacing:-.6px;margin-top:12px;font-weight:800}
   [dir="rtl"] .sec-top h2{letter-spacing:0}
@@ -244,6 +244,24 @@
   .wa-float{position:fixed;inset-inline-end:22px;bottom:22px;z-index:70;display:flex;align-items:center;gap:10px;background:#25d366;color:#fff;padding:14px 18px;border-radius:30px;font-weight:700;font-size:14px;box-shadow:0 14px 30px -8px rgba(37,211,102,.7);transition:.22s}
   .wa-float:hover{transform:translateY(-2px)}
   @media(max-width:600px){.wa-float span{display:none}.wa-float{padding:16px;border-radius:50%}}
+  /* premium documents / BL float */
+  .doc-float{position:fixed;inset-inline-start:22px;bottom:22px;z-index:70;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(150deg,rgba(26,21,13,.97),rgba(13,14,17,.97));
+    border:1px solid rgba(217,179,130,.42);padding:11px 16px 11px 12px;border-radius:16px;
+    box-shadow:0 18px 44px -14px rgba(217,179,130,.5),inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(10px);transition:.24s;overflow:hidden}
+  .doc-float::before{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;
+    background:linear-gradient(120deg,transparent 40%,rgba(233,211,173,.16) 50%,transparent 60%);
+    transform:translateX(-120%);transition:.6s}
+  .doc-float:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 24px 54px -14px rgba(217,179,130,.62)}
+  .doc-float:hover::before{transform:translateX(120%)}
+  .doc-float .df-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;
+    background:linear-gradient(140deg,#f0dcb8,#d9b382);box-shadow:0 6px 16px -4px rgba(217,179,130,.65)}
+  .doc-float .df-ic svg{width:21px;height:21px;stroke:#1a1205;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .doc-float .df-tx{display:flex;flex-direction:column;line-height:1.35}
+  .doc-float .df-tx b{font-size:13.5px;font-weight:800;color:#fff;letter-spacing:.2px}
+  .doc-float .df-tx small{font-size:10.5px;color:var(--gold2);font-weight:700;letter-spacing:.3px}
+  @media(max-width:600px){.doc-float .df-tx{display:none}.doc-float{padding:11px;border-radius:14px}}
 
   /* live tracker */
   .live-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:22px}
@@ -498,15 +516,6 @@
   </div>
 </section>
 
-<div class="wrap" style="margin-top:8px">
-  <div class="quick">
-    <a href="#stock" class="qtile"><span class="qi"><svg class="ico"><use href="#i-bolt"/></svg></span><b data-i18n="q1b">المخزون المتوفر</b><span data-i18n="q1s">شاهد المتوفر الآن</span></a>
-    <a href="#live" class="qtile"><span class="qi"><svg class="ico"><use href="#i-ship"/></svg></span><b data-i18n="q2b">تتبع شحنتي</b><span data-i18n="q2s">تابع سيارتك مباشرة</span></a>
-    <a href="#about" class="qtile"><span class="qi"><svg class="ico"><use href="#i-star"/></svg></span><b data-i18n="q3b">لماذا مستر لعلام</b><span data-i18n="q3s">وسيط مسجّل</span></a>
-    <a href="blog.html" class="qtile"><span class="qi"><svg class="ico"><use href="#i-news"/></svg></span><b data-i18n="q4b">المدوّنة</b><span data-i18n="q4s">أدلّة ونصائح الاستيراد</span></a>
-    <a href="#contact" class="qtile"><span class="qi"><svg class="ico"><use href="#i-chat"/></svg></span><b data-i18n="q5b">اتصل بنا</b><span data-i18n="q5s">تحدّث عبر واتساب</span></a>
-  </div>
-</div>
 
 <section id="about">
   <div class="wrap">
@@ -578,19 +587,6 @@
         </div>
         <p class="mp-note" data-i18n="live_note">هذه رحلة توضيحية مباشرة. ستظهر سيارتك أنت هنا بمجرد تسجيل الدخول.</p>
       </div>
-    </div>
-  </div>
-</section>
-
-<section id="track">
-  <div class="wrap">
-    <div class="banner">
-      <div>
-        <span class="eyebrow" data-i18n="track_eyebrow">بوابة العملاء</span>
-        <h2 data-i18n="track_h2">تابع شحنتك ومستنداتك</h2>
-        <p data-i18n="track_p">سجّل الدخول برقم هاتفك لرؤية سياراتك، حالة الشحن، فيديوهات التحميل والمستندات — في أي وقت.</p>
-      </div>
-      <a href="portal.html" class="btn btn-primary"><svg class="ico"><use href="#i-lock"/></svg><span data-i18n="track_btn">الدخول إلى حسابي</span></a>
     </div>
   </div>
 </section>
@@ -733,6 +729,11 @@
 
 <a href="https://wa.me/213554601928" class="wa-float" aria-label="WhatsApp"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3c-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6 1.8 2.8 4.4 3.9c1.6.7 2.2.7 3 .6.5 0 1.4-.6 1.6-1.1s.2-1 .1-1.1z"/></svg><span data-i18n="wa_float">تحدّث معنا</span></a>
 
+<a href="portal.html" class="doc-float" aria-label="مستنداتك">
+  <span class="df-ic"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15.5h5"/></svg></span>
+  <span class="df-tx"><b data-i18n="doc_b">استلم مستنداتك</b><small data-i18n="doc_s">وثيقة الشحن (BL) والمستندات</small></span>
+</a>
+
 <script>
 const I18N = {
   ar: {
@@ -791,7 +792,7 @@ const I18N = {
     fq4q:"ماذا لو تأخّرت السيارة أو حدث طارئ؟",fq4a:"تبقى على تواصل دائم معنا، وكل طلب موثّق بعقد. نحدّثك في كل مرحلة عبر واتساب، ولا نتركك في الغموض أبداً.",
     fq5q:"كيف تتم عملية الدفع؟",fq5a:"نتفق على طريقة دفع واضحة وموثّقة في العقد، ونشرحها لك خطوة بخطوة قبل أن تلتزم بأي شيء.",
     fq6q:"هل تسلّمون لكل الولايات؟",fq6a:"نعم، ننسّق معك التسليم بعد وصول السيارة إلى ميناء الجزائر، مهما كانت ولايتك.",
-    copyright:"© 2026 مستر لعلام أوطو · السجل التجاري رقم 26 A 1561121‑00/17",wa_float:"تحدّث معنا"
+    copyright:"© 2026 مستر لعلام أوطو · السجل التجاري رقم 26 A 1561121‑00/17",wa_float:"تحدّث معنا",doc_b:"استلم مستنداتك",doc_s:"وثيقة الشحن (BL) والمستندات"
   },
   fr: {
     title:"MR L3ALEM AUTO — Importez votre voiture de Chine vers l'Algérie",
@@ -849,7 +850,7 @@ const I18N = {
     fq4q:"Et si la voiture est en retard ou qu'un imprévu survient ?",fq4a:"Vous restez en contact permanent avec nous, et chaque commande est documentée par un contrat. Nous vous informons à chaque étape sur WhatsApp, sans jamais vous laisser dans le flou.",
     fq5q:"Comment se déroule le paiement ?",fq5a:"Nous convenons d'un mode de paiement clair et documenté dans le contrat, et nous vous l'expliquons étape par étape avant tout engagement.",
     fq6q:"Livrez-vous dans toutes les wilayas ?",fq6a:"Oui, nous coordonnons la livraison avec vous après l'arrivée de la voiture au port d'Alger, quelle que soit votre wilaya.",
-    copyright:"© 2026 MR L3ALEM AUTO · Registre de commerce N° 26 A 1561121‑00/17",wa_float:"Discuter avec nous"
+    copyright:"© 2026 MR L3ALEM AUTO · Registre de commerce N° 26 A 1561121‑00/17",wa_float:"Discuter avec nous",doc_b:"Vos documents",doc_s:"Connaissement (BL) & documents"
   },
   en: {
     title:"MR L3ALEM AUTO — Import your car from China to Algeria",
@@ -907,7 +908,7 @@ const I18N = {
     fq4q:"What if the car is delayed or something happens?",fq4a:"You stay in constant contact with us, and every order is documented by a contract. We update you at every stage on WhatsApp, and never leave you in the dark.",
     fq5q:"How does payment work?",fq5a:"We agree on a clear payment method documented in the contract, and explain it to you step by step before you commit to anything.",
     fq6q:"Do you deliver to all wilayas?",fq6a:"Yes, we coordinate delivery with you after the car arrives at the port of Algiers, whatever your wilaya.",
-    copyright:"© 2026 MR L3ALEM AUTO · Commercial Register N° 26 A 1561121‑00/17",wa_float:"Chat with us"
+    copyright:"© 2026 MR L3ALEM AUTO · Commercial Register N° 26 A 1561121‑00/17",wa_float:"Chat with us",doc_b:"Get your documents",doc_s:"Bill of Lading (BL) & docs"
   }
 };
 
