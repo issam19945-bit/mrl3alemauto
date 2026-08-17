@@ -412,10 +412,15 @@
   .detail-cta{margin-block-start:32px}
   @media(max-width:640px){.detail-box{margin:0;border-radius:0;min-height:100vh}}
 
-  /* container tracking widget (SeaRates) */
-  .track-widget{background:var(--white);border:1px solid var(--line);
-    border-radius:var(--r-card);overflow:hidden;min-height:620px}
-  .track-widget #tracking_system_root{min-height:620px}
+  /* container tracking box */
+  .track-widget{background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-card);padding:clamp(28px,4vw,56px)}
+  .track-label{display:block;font-size:.875rem;color:var(--ink-2);margin-block-end:12px}
+  .track-row{display:flex;gap:12px;flex-wrap:wrap;max-width:640px}
+  .track-row input{flex:1;min-width:220px;background:var(--white);border:1px solid var(--line);
+    border-radius:var(--r-button);padding:14px 22px;font-family:inherit;font-size:1rem;color:var(--ink)}
+  .track-row input:focus{outline:none;border-color:var(--ink)}
+  .track-note{font-size:.875rem;color:var(--ink-3);margin-block-start:16px;max-width:640px}
 
   /* ---------- scroll reveal (hidden ONLY when js-anim is active; visible by default) ---------- */
   html.js-anim .reveal{opacity:0;transform:translateY(16px);
@@ -583,7 +588,12 @@
       </div>
     </div>
     <div class="track-widget reveal">
-      <div id="tracking_system_root" data-filter='{"platform":0,"lang":"ar"}'></div>
+      <label class="track-label" for="ctnum" data-i18n="trk_label">رقم الحاوية أو وثيقة الشحن (BL)</label>
+      <div class="track-row">
+        <input id="ctnum" type="text" placeholder="MSCU1234567" autocomplete="off" spellcheck="false">
+        <button type="button" class="btn btn-primary" onclick="trackContainer()"><span data-i18n="trk_btn">تتبع الشحنة</span></button>
+      </div>
+      <p class="track-note" data-i18n="trk_note">يفتح التتبع المباشر على الخريطة مع مراحل الرحلة ووقت الوصول المتوقّع.</p>
     </div>
   </div>
 </section>
@@ -795,6 +805,7 @@ const I18N = {
     ct_eyebrow:"تواصل معنا",ct_h2:"جاهز للعثور على سيارتك؟",ct_p:"راسلنا عبر واتساب — سنساعدك على الاختيار والحجز والمتابعة حتى الجزائر.",ct_wa:"راسلنا على واتساب",
     foot_desc:"استورد سيارتك من الصين وتابع رحلتها الكاملة إلى الجزائر. وساطة مسجّلة مقرّها الجلفة.",foot_explore:"استكشف",foot_company:"الشركة",foot_addr:"حي باكوكة، الجلفة، الجزائر",
     live_eyebrow:"تتبع مباشر",live_h2:"تابع سيارتك عبر البحر، مباشرة",live_p:"أدخل رقم الحاوية أو وثيقة الشحن (BL) لتتبع شحنتك مباشرة — الموقع على الخريطة، مراحل الرحلة، ووقت الوصول المتوقّع.",
+    trk_label:"رقم الحاوية أو وثيقة الشحن (BL)",trk_btn:"تتبع الشحنة",trk_note:"يفتح التتبع المباشر على الخريطة مع مراحل الرحلة ووقت الوصول المتوقّع.",
     live_route:"شنغهاي ← الجزائر",live_eta_l:"تصل خلال",live_progress:"نسبة الرحلة",live_leg_l:"المنطقة الحالية",live_pos_l:"الموقع",live_speed_l:"السرعة",u_knots:"عقدة",
     u_days:"يوم",u_hrs:"ساعة",u_min:"دقيقة",u_sec:"ثانية",
     m1:"غادرت الصين",m2:"مضيق ملقا",m3:"قناة السويس",m4:"البحر المتوسط",m5:"ميناء الجزائر",
@@ -854,6 +865,7 @@ const I18N = {
     ct_eyebrow:"Contactez-nous",ct_h2:"Prêt à trouver votre voiture ?",ct_p:"Écrivez-nous sur WhatsApp — nous vous aidons à choisir, réserver et suivre jusqu'en Algérie.",ct_wa:"WhatsApp",
     foot_desc:"Importez votre voiture de Chine et suivez tout son trajet vers l'Algérie. Courtage enregistré basé à Djelfa.",foot_explore:"Explorer",foot_company:"Entreprise",foot_addr:"Cité Bakouka, Djelfa, Algérie",
     live_eyebrow:"Suivi en direct",live_h2:"Suivez votre voiture sur la mer, en direct",live_p:"Saisissez votre numéro de conteneur ou de connaissement (BL) pour suivre votre expédition en direct — position sur la carte, étapes du trajet et heure d'arrivée estimée.",
+    trk_label:"Numéro de conteneur ou connaissement (BL)",trk_btn:"Suivre l'expédition",trk_note:"Le suivi s'ouvre sur la carte avec les étapes du trajet et l'heure d'arrivée estimée.",
     live_route:"Shanghai → Alger",live_eta_l:"Arrive dans",live_progress:"Progression",live_leg_l:"Zone actuelle",live_pos_l:"Position",live_speed_l:"Vitesse",u_knots:"nœuds",
     u_days:"j",u_hrs:"h",u_min:"min",u_sec:"s",
     m1:"Départ de Chine",m2:"Détroit de Malacca",m3:"Canal de Suez",m4:"Méditerranée",m5:"Port d'Alger",
@@ -913,6 +925,7 @@ const I18N = {
     ct_eyebrow:"Get in touch",ct_h2:"Ready to find your car?",ct_p:"Message us on WhatsApp — we'll help you choose, reserve, and follow it all the way to Algeria.",ct_wa:"WhatsApp us",
     foot_desc:"Import your car from China and follow its entire journey to Algeria. A registered brokerage based in Djelfa.",foot_explore:"Explore",foot_company:"Company",foot_addr:"Cité Bakouka, Djelfa, Algeria",
     live_eyebrow:"Live tracking",live_h2:"Follow your car across the sea, live",live_p:"Enter your container or Bill of Lading (BL) number to track your shipment live — map position, journey milestones, and estimated arrival.",
+    trk_label:"Container or Bill of Lading (BL) number",trk_btn:"Track shipment",trk_note:"Live tracking opens on the map with journey milestones and estimated arrival.",
     live_route:"Shanghai → Algiers",live_eta_l:"Arrives in",live_progress:"Progress",live_leg_l:"Current area",live_pos_l:"Position",live_speed_l:"Speed",u_knots:"knots",
     u_days:"d",u_hrs:"h",u_min:"m",u_sec:"s",
     m1:"Departed China",m2:"Malacca Strait",m3:"Suez Canal",m4:"Mediterranean",m5:"Port of Algiers",
@@ -1040,6 +1053,15 @@ function sendRequest(e){
   if(notes) lines.push(L.notes+": "+notes);
   window.open('https://wa.me/213554601928?text='+encodeURIComponent(lines.join("\n")),'_blank');
   return false;
+}
+
+// Container tracking -> opens the live tracker for the entered container / BL number
+function trackContainer(){
+  var el=document.getElementById('ctnum');
+  var v=el?String(el.value||'').trim():'';
+  var base='https://www.searates.com/container/tracking/';
+  var url=v ? base+'?number='+encodeURIComponent(v)+'&type=CT' : base;
+  window.open(url,'_blank','noopener');
 }
 
 // ---- Live showroom from Airtable: featured video, brands, models, detail pages ----
@@ -1181,7 +1203,6 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
 })();
 </script>
 
-<script async src="https://www.searates.com/container/widget"></script>
 
 </body>
 </html>
