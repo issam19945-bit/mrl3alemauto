@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معاينة المخزون — مستر العالم أوطو</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.15);
+    --ink:#f6f7f9; --muted:#a4adb8; --muted2:#6a727d;
+    --brand:#e01e26; --brand2:#ff3a40; --gold:#d9b382; --gold2:#e9d3ad;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Tajawal","Sora",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;
+    background-image:radial-gradient(1200px 600px at 78% -8%,rgba(224,30,38,.16),transparent 55%),radial-gradient(1000px 700px at 8% 12%,rgba(217,179,130,.06),transparent 55%);min-height:100vh}
+  h1,h2,h3,h4{font-family:"Sora","Tajawal",sans-serif}
+  .wrap{max-width:1200px;margin:0 auto;padding:34px 26px 60px}
+  .head{margin-bottom:26px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold2)}
+  .eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(270deg,var(--gold),transparent)}
+  .head h1{font-size:30px;margin:10px 0 6px;letter-spacing:-.3px}
+  .head p{color:var(--muted);font-size:14.5px;max-width:640px}
+  .note{margin:18px 0 26px;background:rgba(110,168,255,.08);border:1px solid rgba(110,168,255,.25);border-radius:14px;padding:14px 18px;color:#bcd4ff;font-size:13.5px}
+  .stock{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  @media(max-width:980px){.stock{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.stock{grid-template-columns:1fr}}
+  .car-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.22s;display:flex;flex-direction:column;position:relative}
+  .car-card:hover{border-color:var(--line2);transform:translateY(-4px);box-shadow:0 30px 50px -24px rgba(0,0,0,.8)}
+  .idx{position:absolute;top:10px;inset-inline-end:10px;z-index:3;background:rgba(10,11,13,.8);border:1px solid var(--line2);color:var(--gold2);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:"Sora",sans-serif}
+  .car-photo{height:176px;position:relative;overflow:hidden;background:linear-gradient(180deg,#f6f7f9,#e6e9ec);display:grid;place-items:center}
+  .car-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:4px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px}
+  .badge{position:absolute;top:12px;inset-inline-start:12px;z-index:2}
+  .b-avail{background:rgba(52,210,123,.9);color:#04220f;border:1px solid rgba(52,210,123,.4)}
+  .b-transit{background:rgba(110,168,255,.92);color:#04173a;border:1px solid rgba(110,168,255,.4)}
+  .car-body{padding:17px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .car-body h3{font-size:16.5px;letter-spacing:-.2px}
+  .cc{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
+  .colors{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted2)}
+  .colors i{width:15px;height:15px;border-radius:50%;border:1px solid rgba(255,255,255,.3);display:inline-block}
+  .car-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+  .car-foot .price{font-weight:800;font-size:15px;color:var(--gold2)}
+  .car-foot .price small{display:block;font-size:11px;color:var(--muted2);font-weight:400}
+  .car-foot .rsv{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#fff;font-weight:700}
+  .car-foot .rsv b{color:var(--brand2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <span class="eyebrow">معاينة — للموافقة قبل النشر</span>
+    <h1>قسم المخزون الجديد — ٧ سيارات</h1>
+    <p>هذه معاينة لكيفية ظهور السيارات على موقعك بصورها الحقيقية. الأسعار تبقى «عند الطلب» كما اخترت. راجعها وأخبرني بأي تعديل.</p>
+  </div>
+  <div class="note">الصور رسمية استوديو للموديلات نفسها بالألوان المطلوبة. جيلي كولراي معروضة بالتصميم السابق (قبل الفيسليفت)، وبطاقة الفُل أوبسيون تُظهر حزمة «Black Package» بسقف أسود ومحرك 1.5 DCT. كل بطاقة تحمل رقماً (①..⑦) لتسهيل طلب أي تغيير.</p>
+  <div class="stock">
+
+    <div class="car-card">
+      <span class="idx">① Livan منقولة عادية</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://aicarglobal.com/wp-content/uploads/2025/04/Livan-X3-Pro.jpg" alt="Livan X3 Pro"></div>
+      <div class="car-body">
+        <h3>Livan X3 Pro — <span>عادية</span></h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">عادية (مانيوال)</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#c7ccd1"></i><i style="background:#6c7076"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <span class="idx">② Livan أوتوماتيك</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://www.borderlesscar.com/wp-content/uploads/2024/08/Livan-X3-Pro-1024x616.jpg" alt="Livan X3 Pro"></div>
+      <div class="car-body">
+        <h3>Livan X3 Pro — <span>أوتوماتيك</span></h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">أوتوماتيك</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#c7ccd1"></i><i style="background:#6c7076"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <span class="idx">③ Coolray عادية</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://d1hv7ee95zft1i.cloudfront.net/custom/car-model-color-photo/gallery/geely-coolray-white-philippines-5dd4f658dbd9d.jpg" alt="Geely Coolray"></div>
+      <div class="car-body">
+        <h3>Geely Coolray — <span>عادية</span></h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">عادية (مانيوال)</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#c7ccd1"></i><i style="background:#6c7076"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <span class="idx">④ Coolray فُل أوبسيون</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://img4.bitautoimg.com/autoalbum/files/20230424/619/202304248628233993061990589_3000x2000_w1.jpg" alt="Geely Coolray Full Option Black Package"></div>
+      <div class="car-body">
+        <h3>Geely Coolray — <span>فُل أوبسيون</span></h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">1.5 DCT</span><span class="chip">Black Package</span><span class="chip">فُل أوبسيون</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#c7ccd1"></i><i style="background:#6c7076"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <span class="idx">⑤ GAC GS3 أساسية</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://imgcdn.zigwheels.my/large/gallery/color/114/2066/gac-gs3-emzoom-color-507260.jpg" alt="GAC GS3 Emzoom"></div>
+      <div class="car-body">
+        <h3>GAC GS3 — <span>أساسية</span></h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">أوتوماتيك DCT</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#6c7076"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <span class="idx">⑥ GAC GS3 ميديوم</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://imagecdnsa.zigwheels.ae/large/gallery/color/84/1885/gac-gs3-emzoom-color-676601.jpg" alt="GAC GS3 Emzoom grey"></div>
+      <div class="car-body">
+        <h3>GAC GS3 — <span>ميديوم</span></h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">أوتوماتيك</span><span class="chip">ميديوم</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#c7ccd1"></i><i style="background:#6c7076"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <span class="idx">⑦ MG5 GT</span>
+      <div class="car-photo"><span class="pill badge b-avail">متوفرة</span><img referrerpolicy="no-referrer" src="https://imgcdn.oto.com/large/gallery/color/139/2604/mg-5-gt-color-651871.jpg" alt="MG5 GT"></div>
+      <div class="car-body">
+        <h3>MG5 GT</h3>
+        <div class="cc"><span class="chip">2026</span><span class="chip">أوتوماتيك</span><span class="chip">بنزين</span></div>
+        <div class="colors">الألوان: <i style="background:#f2f2f2"></i><i style="background:#c7ccd1"></i></div>
+        <div class="car-foot"><div class="price">عند الطلب<small>اسأل عبر واتساب</small></div><span class="rsv">احجز <b>›</b></span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
