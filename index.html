@@ -1068,6 +1068,14 @@ function sendRequest(e){
   var lang=document.documentElement.lang||'ar';
   var L=RQ_LABELS[lang]||RQ_LABELS.ar;
   var name=fval('f_name'),phone=fval('f_phone'),model=fval('f_model'),budget=fval('f_budget'),notes=fval('f_notes');
+  // Capture the lead on our server first, so the owner is alerted instantly even
+  // if the visitor never actually sends the WhatsApp message.
+  try{
+    fetch(API_BASE.replace(/\/+$/,"")+"/api/lead",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:name,phone:phone,car:model,budget:budget,notes:notes,lang:lang})
+    }).catch(function(){});
+  }catch(_e){}
   var lines=[L.t,L.name+": "+name,L.phone+": "+phone,L.model+": "+model];
   if(budget) lines.push(L.budget+": "+budget);
   if(notes) lines.push(L.notes+": "+notes);
