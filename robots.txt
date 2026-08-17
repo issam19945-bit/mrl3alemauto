@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mrl3alemauto.com/sitemap.xml
