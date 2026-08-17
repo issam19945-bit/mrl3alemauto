@@ -1075,7 +1075,10 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
       var id="", m=u.match(/[?&]v=([^&]+)/)||u.match(/youtu\.be\/([^?&]+)/)||u.match(/embed\/([^?&]+)/); if(m)id=m[1];
       if(id) return "<div class=\"v-frame\"><iframe src=\"https://www.youtube.com/embed/"+esc(id)+"\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></div>";
     }
-    return ""; // Facebook iframe intentionally omitted (premium redesign)
+    if(/facebook\.com|fb\.watch|fb\.me/i.test(u)){
+      return "<div class=\"v-frame\"><iframe src=\"https://www.facebook.com/plugins/video.php?href="+encodeURIComponent(u)+"&show_text=false&autoplay=true&mute=true&width=560\" style=\"border:none;overflow:hidden\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"true\" allow=\"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share\"></iframe></div>";
+    }
+    return ""; // unknown link type
   }
   function waLink(c){ return "https://wa.me/"+WA+"?text="+encodeURIComponent("مرحبا، مهتم بـ "+(c.name||"")+(c.trim?(" — "+c.trim):"")); }
   function specsLine(c){
