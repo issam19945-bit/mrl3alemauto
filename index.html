@@ -1247,32 +1247,75 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
     en:["East China Sea","South China Sea","South China Sea","Malacca Strait","Indian Ocean","Indian Ocean","Arabian Sea","Gulf of Aden","Red Sea","Red Sea","Red Sea","Suez Canal","East Mediterranean","Central Mediterranean","Central Mediterranean","West Mediterranean"]
   };
 
-  // journey window: departed 18 days ago, arriving in 22 days  (~45%)
-  var dep=Date.now()-18*864e5, arr=Date.now()+22*864e5;
   var traveled=L.polyline([route[0]],{color:'#ffffff',weight:3,opacity:.95}).addTo(map);
+  var liveLine=L.polyline([],{color:'#ffffff',weight:2,dashArray:'4 8',opacity:.55});
   var marker=L.marker(pointAt(0.45),{icon:shipIcon,zIndexOffset:1000}).addTo(map);
+  var LIVE=null, etaMs=null, fittedLive=false;
+
+  // demo journey window: departed 18 days ago, arriving in 22 days (~45%) — used only
+  // until the backend reports a real vessel to track.
+  var dep=Date.now()-18*864e5, arr=Date.now()+22*864e5;
 
   function T(id,v){var e=document.getElementById(id); if(e)e.textContent=v;}
   function pad(n){return (n<10?'0':'')+n;}
+  function fmtLat(x){return x>=0?x.toFixed(2)+'°N':(-x).toFixed(2)+'°S';}
+  function fmtLon(x){return x>=0?x.toFixed(2)+'°E':(-x).toFixed(2)+'°W';}
+  function cd(ms){ if(ms<0)ms=0; T('cdD',Math.floor(ms/864e5)); T('cdH',pad(Math.floor(ms%864e5/36e5))); T('cdM',pad(Math.floor(ms%36e5/6e4))); T('cdS',pad(Math.floor(ms%6e4/1e3))); }
+
+  // rough progress %: nearest reference-route vertex to the real position
+  function liveProgress(v){
+    var best=0,bd=1e9,i;
+    for(i=0;i<route.length;i++){var dy=route[i][0]-v.lat,dx=route[i][1]-v.lon,d=dy*dy+dx*dx;if(d<bd){bd=d;best=i;}}
+    var acc=0; for(i=0;i<best;i++)acc+=segs[i];
+    return Math.round(acc/total*100);
+  }
+  function applyLive(){
+    var v=LIVE; if(!v)return;
+    marker.setLatLng([v.lat,v.lon]);
+    traveled.setLatLngs([]);
+    liveLine.addTo(map); liveLine.setLatLngs([[v.lat,v.lon],route[route.length-1]]);
+    var nm=document.getElementById('mVessel'); if(nm&&v.name) nm.textContent=v.name;
+    T('mLat',fmtLat(v.lat)); T('mLng',fmtLon(v.lon));
+    T('mSpeed',(v.speed!=null&&isFinite(v.speed))?Number(v.speed).toFixed(1):'—');
+    T('mLeg', v.destination || '—');
+    var pr=liveProgress(v); T('mProgress', isFinite(pr)?pr+'%':'—');
+    if(!fittedLive){ try{ map.fitBounds([[v.lat,v.lon],route[route.length-1]],{padding:[50,50],maxZoom:6}); }catch(e){} fittedLive=true; }
+  }
+  function fetchLive(){
+    if(typeof API_BASE==='undefined'||!API_BASE) return;
+    fetch(API_BASE.replace(/\/+$/,'')+'/api/vessel',{cache:'no-store'})
+      .then(function(r){return r.json();})
+      .then(function(v){
+        if(v&&v.active&&isFinite(v.lat)&&isFinite(v.lon)){
+          LIVE=v; etaMs=null;
+          if(v.eta){ var s=String(v.eta).trim().replace(' ','T'); if(!/[zZ]|[+\-]\d\d:?\d\d$/.test(s)) s+='Z'; var t=Date.parse(s); if(!isNaN(t)&&t>Date.now()) etaMs=t; }
+          applyLive();
+        } else if(LIVE){ LIVE=null; liveLine.setLatLngs([]); fittedLive=false; }
+      }).catch(function(){});
+  }
+
   function tick(){
+    if(LIVE){
+      if(etaMs) cd(etaMs-Date.now());
+      else { T('cdD','—'); T('cdH','—'); T('cdM','—'); T('cdS','—'); }
+      return;
+    }
+    // demo animation (fallback until a real vessel is configured)
     var now=Date.now();
     var f=(now-dep)/(arr-dep); if(f<0)f=0; if(f>1)f=1;
     var p=pointAt(f);
     marker.setLatLng([p[0],p[1]]);
     var path=route.slice(0,p[2]+1); path.push([p[0],p[1]]); traveled.setLatLngs(path);
     T('mProgress',Math.round(f*100)+'%');
-    T('mLat',(p[0]>=0?p[0].toFixed(2)+'°N':(-p[0]).toFixed(2)+'°S'));
-    T('mLng',(p[1]>=0?p[1].toFixed(2)+'°E':(-p[1]).toFixed(2)+'°W'));
+    T('mLat',fmtLat(p[0]));
+    T('mLng',fmtLon(p[1]));
     T('mSpeed',(15.4+Math.sin(now/2600)*1.4).toFixed(1));
     var lang=document.documentElement.lang||'ar'; var legs=LEGS[lang]||LEGS.ar;
     T('mLeg',legs[Math.min(p[2],legs.length-1)]);
-    var ms=arr-now; if(ms<0)ms=0;
-    T('cdD',Math.floor(ms/864e5));
-    T('cdH',pad(Math.floor(ms%864e5/36e5)));
-    T('cdM',pad(Math.floor(ms%36e5/6e4)));
-    T('cdS',pad(Math.floor(ms%6e4/1e3)));
+    cd(arr-now);
   }
   tick(); setInterval(tick,1000);
+  fetchLive(); setInterval(fetchLive, 5*60*1000);
   setTimeout(function(){map.invalidateSize();},250);
   window.addEventListener('resize',function(){map.invalidateSize();});
 })();
