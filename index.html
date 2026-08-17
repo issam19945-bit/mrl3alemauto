@@ -7,529 +7,548 @@
 <meta name="description" data-i18n-attr="content" data-i18n="meta" content="تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة من الصين إلى ميناء الجزائر — مع مستر لعلام أوطو.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script>/* enable reveal-animation only when JS + IntersectionObserver are available; otherwise all content stays visible */
+(function(){try{var m=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(('IntersectionObserver' in window)&&!m){document.documentElement.className+=' js-anim';}}catch(e){}})();</script>
 <style>
   :root{
-    --bg:#0a0b0d; --bg2:#0e1014; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
-    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.15);
-    --ink:#f6f7f9; --muted:#a4adb8; --muted2:#6a727d;
-    --brand:#e01e26; --brand2:#ff3a40;
-    --gold:#d9b382; --gold2:#e9d3ad;
-    --ok:#34d27b; --info:#6ea8ff; --warn:#f6b53c;
-    --maxw:1200px; --r:16px;
+    --ink:#0E1418;
+    --ink-2:#6B6D70;
+    --ink-3:#96989A;
+    --line:#E3E4E5;
+    --surface:#F2F3F4;
+    --white:#FFFFFF;
+    --brand:#A4162A;
+    --brand-hover:#C41230;
+    --green:#1F7A3D;
+
+    --font:'IBM Plex Sans Arabic','Inter',system-ui,sans-serif;
+
+    --container:1600px;
+    --gutter:clamp(20px,5vw,80px);
+    --section-y:clamp(80px,10vw,160px);
+
+    --r-card:4px;
+    --r-button:999px;
+    --ease:cubic-bezier(0.25,0.1,0.25,1);
+    --dur:400ms;
+
+    --header-h:72px;
   }
+
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{font-family:"Tajawal","Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  .bg-fx{position:fixed;inset:0;z-index:-1;
-    background:
-      radial-gradient(1200px 600px at 78% -8%,rgba(224,30,38,.16),transparent 55%),
-      radial-gradient(1000px 700px at 8% 12%,rgba(217,179,130,.06),transparent 55%),
-      linear-gradient(180deg,#0a0b0d,#0b0d10 40%,#0a0b0d)}
-  .bg-fx::after{content:"";position:absolute;inset:0;opacity:.035;mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  body{
+    font-family:var(--font);
+    background:var(--white);
+    color:var(--ink);
+    font-size:1rem;
+    line-height:1.6;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+    padding-block-start:var(--header-h);
+  }
   a{color:inherit;text-decoration:none}
-  h1,h2,h3,h4{font-family:"Sora","Tajawal",sans-serif}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
-  .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
-  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:12px;font-weight:700;font-size:14.5px;cursor:pointer;transition:.22s;border:1px solid transparent;font-family:inherit}
-  .btn .ico{width:18px;height:18px}
-  .btn-primary{background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff;box-shadow:0 8px 22px -8px rgba(224,30,38,.7)}
-  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px -8px rgba(224,30,38,.85)}
-  .btn-light{background:linear-gradient(180deg,#fff,#eef1f4);color:#0a0b0d}
-  .btn-light:hover{transform:translateY(-1px)}
-  .btn-ghost{border-color:var(--line2);color:var(--ink);background:rgba(255,255,255,.02)}
-  .btn-ghost:hover{border-color:var(--gold);color:#fff;background:rgba(217,179,130,.06)}
-  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold2)}
-  .eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
-  [dir="rtl"] .eyebrow{letter-spacing:1px}
-  [dir="rtl"] .eyebrow::before{background:linear-gradient(270deg,var(--gold),transparent)}
-  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;letter-spacing:.3px}
+  img{max-width:100%;display:block}
+  button{font-family:inherit}
 
-  /* header */
-  header{position:sticky;top:0;z-index:60;background:rgba(10,11,13,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.4px;font-family:"Sora",sans-serif;font-size:15px}
-  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(140deg,#1a1c20,#0e0f12);display:grid;place-items:center;font-weight:800;font-family:Arial,sans-serif;color:#fff;position:relative;border:1px solid var(--line2)}
-  .logo::after{content:"";position:absolute;inset:0;border-radius:12px;padding:1px;background:linear-gradient(140deg,var(--gold),transparent 55%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-  .brand small{display:block;font-size:9.5px;font-weight:600;letter-spacing:2px;color:var(--gold2);opacity:.8}
-  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);font-weight:500}
-  .nav-links a{position:relative;padding:4px 0}
-  .nav-links a:hover{color:#fff}
-  .nav-links a::after{content:"";position:absolute;bottom:-2px;inset-inline:0;height:1.5px;background:var(--gold);transform:scaleX(0);transition:.25s}
-  .nav-links a:hover::after{transform:scaleX(1)}
-  .nav-cta{display:flex;align-items:center;gap:10px}
-  .lang{display:flex;border:1px solid var(--line2);border-radius:11px;overflow:hidden;background:rgba(255,255,255,.02)}
-  .lang button{font-family:"Sora",sans-serif;font-weight:700;font-size:12px;padding:8px 11px;background:transparent;color:var(--muted);border:none;cursor:pointer;transition:.15s}
-  .lang button:hover{color:#fff}
-  .lang button.active{background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff}
-  @media(max-width:1040px){.nav-links{display:none}.nav-cta .btn-ghost{display:none}}
-  @media(max-width:540px){.nav-cta .btn-primary{display:none}}
+  .wrap{max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
 
-  /* hero */
-  .hero{position:relative;overflow:hidden}
-  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding-top:52px;padding-bottom:44px}
-  .hero-copy .eyebrow{margin-bottom:18px}
-  .hero-copy .lead{margin-bottom:4px}
-  @media(max-width:920px){.hero-grid{grid-template-columns:1fr;padding-top:30px;padding-bottom:10px;gap:26px}}
-  .hero h1{font-size:56px;line-height:1.1;letter-spacing:-1.4px;margin:22px 0 20px;font-weight:800}
-  [dir="rtl"] .hero h1{letter-spacing:-.5px;line-height:1.22}
-  .hero h1 .g{background:linear-gradient(90deg,#fff 20%,#b9c0c8);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero h1 .gold{background:linear-gradient(90deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero .lead{font-size:23px;line-height:1.55;color:#eaedf1;max-width:540px;font-weight:500}
-  .hero-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:32px}
-  .hero-badges{display:flex;gap:0;margin-top:40px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden;width:fit-content}
-  .hero-badges div{padding:14px 22px;border-inline-start:1px solid var(--line)}
-  .hero-badges div:first-child{border-inline-start:none}
-  .hero-badges div b{display:block;font-size:16px;font-weight:800;letter-spacing:-.2px}
-  .hero-badges div span{font-size:12px;color:var(--muted2)}
-  @media(max-width:600px){.hero{padding-top:0}.hero-grid{padding-top:14px;padding-bottom:8px}.hero .lead{font-size:19px;padding-inline:2px}.hero-actions{flex-direction:column;align-items:stretch;margin-top:22px}.hero-actions .btn{width:100%;justify-content:center}}
+  /* ---------- type scale ---------- */
+  .display{font-weight:600;line-height:1.05;font-size:clamp(2.75rem,6vw,5.5rem)}
+  h2,.h2{font-weight:600;line-height:1.1;font-size:clamp(2rem,3.5vw,3.25rem)}
+  h3,.h3{font-weight:600;line-height:1.25;font-size:clamp(1.25rem,1.8vw,1.75rem)}
+  .body-lg{font-size:1.125rem;line-height:1.6;font-weight:400}
+  .caption{font-size:.875rem;line-height:1.5}
+  [lang="en"] .display,[lang="fr"] .display{letter-spacing:-0.02em}
+  [lang="en"] h2,[lang="fr"] h2,[lang="en"] .h2,[lang="fr"] .h2{letter-spacing:-0.015em}
+  [lang="ar"] .display,[lang="ar"] h2,[lang="ar"] .h2{letter-spacing:0}
 
-  /* showcase */
-  .showcase{position:relative;background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--line2);border-radius:24px;padding:16px;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.06)}
-  .stage{height:230px;border-radius:16px;position:relative;overflow:hidden;
-    background:radial-gradient(120% 90% at 50% 0%,rgba(224,30,38,.18),transparent 55%),radial-gradient(80% 60% at 50% 120%,rgba(217,179,130,.12),transparent 60%),linear-gradient(180deg,#15171c,#0d0f12)}
-  .stage::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 78%,rgba(255,255,255,.08),transparent 70%)}
-  .stage .veh{position:absolute;inset:0;display:grid;place-items:center}
-  .stage .veh svg{width:180px;height:auto;stroke:rgba(255,255,255,.85);fill:none;stroke-width:1.2;filter:drop-shadow(0 18px 22px rgba(0,0,0,.6))}
-  .stage .refl{position:absolute;left:0;right:0;bottom:0;height:44px;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent)}
-  .stage .tag{position:absolute;top:14px;inset-inline-start:14px;background:rgba(110,168,255,.16);color:#a9c8ff;border:1px solid rgba(110,168,255,.32)}
-  .sc-row{display:flex;justify-content:space-between;align-items:center;padding:16px 8px 6px}
-  .sc-row h4{font-size:17px}
-  .sc-row .yr{color:var(--gold2);font-size:13px;font-weight:700;letter-spacing:.5px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 8px 6px}
-  .chip{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:rgba(255,255,255,.02)}
-  .sc-track{display:flex;align-items:center;gap:10px;margin:8px;padding:12px 14px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:13px}
-  .dotline{flex:1;display:flex;align-items:center;gap:5px}
-  .seg{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.1)}
-  .seg.on{background:linear-gradient(90deg,var(--ok),#7ee6ab)}
-  .seg.now{background:linear-gradient(90deg,var(--brand2),var(--gold));box-shadow:0 0 12px rgba(224,30,38,.5)}
+  .eyebrow{display:block;font-size:.8125rem;font-weight:500;line-height:1.4;color:var(--ink-2)}
+  .eyebrow:lang(en),.eyebrow:lang(fr){text-transform:uppercase;letter-spacing:.08em}
+  .eyebrow:lang(ar){text-transform:none;letter-spacing:0}
 
-  /* brand strip */
-  .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}
-  .strip .wrap{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;padding:16px 26px}
-  .strip b{font-family:"Sora",sans-serif;font-weight:700;letter-spacing:3px;font-size:13px;color:var(--muted2);text-transform:uppercase}
-  .strip .dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.6}
+  bdi{unicode-bidi:isolate}
 
-  /* quick actions */
-  .quick{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding:34px 0}
-  @media(max-width:900px){.quick{grid-template-columns:repeat(2,1fr)}}
-  .qtile{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:20px;display:flex;flex-direction:column;gap:9px;transition:.22s;position:relative;overflow:hidden}
-  .qtile::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(217,179,130,.08),transparent 45%);opacity:0;transition:.22s}
-  .qtile:hover{border-color:var(--line2);transform:translateY(-3px)}
-  .qtile:hover::before{opacity:1}
-  .qtile .qi{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:rgba(224,30,38,.12);color:var(--brand2);border:1px solid rgba(224,30,38,.2)}
-  .qtile b{font-size:14.5px}
-  .qtile span{font-size:12px;color:var(--muted2)}
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:inherit;font-size:1rem;font-weight:500;line-height:1;cursor:pointer;
+    border:1px solid transparent;border-radius:var(--r-button);padding:14px 32px;
+    transition:background var(--dur) var(--ease),color var(--dur) var(--ease),border-color var(--dur) var(--ease);
+    text-decoration:none;white-space:nowrap}
+  .btn-primary{background:var(--ink);color:var(--white)}
+  .btn-primary:hover{background:var(--brand)}
+  .btn-secondary{background:transparent;border-color:var(--ink);color:var(--ink)}
+  .btn-secondary:hover{background:var(--ink);color:var(--white)}
 
-  section{padding:38px 0}
-  .sec-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px;flex-wrap:wrap}
-  .sec-top h2{font-size:32px;letter-spacing:-.6px;margin-top:12px;font-weight:800}
-  [dir="rtl"] .sec-top h2{letter-spacing:0}
-  .sec-top p{color:var(--muted);font-size:15px;margin-top:8px;max-width:560px}
+  .tlink{display:inline-flex;align-items:center;gap:8px;background:none;border:none;
+    color:var(--ink);font-family:inherit;font-size:1rem;font-weight:500;cursor:pointer;
+    text-decoration:none;transition:color var(--dur) var(--ease);padding:0}
+  .tlink:hover{color:var(--brand)}
+  .tlink .arw{display:inline-block;transition:transform var(--dur) var(--ease);font-weight:400}
+  .tlink .arw::before{content:"\2192"}
+  [dir="rtl"] .tlink .arw::before{content:"\2190"}
+  .tlink:hover .arw{transform:translateX(4px)}
+  [dir="rtl"] .tlink:hover .arw{transform:translateX(-4px)}
+  .tlink.small{font-size:.9375rem}
 
-  /* stock */
-  .stock{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-  @media(max-width:980px){.stock{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:560px){.stock{grid-template-columns:1fr}}
-  .car-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.22s;display:flex;flex-direction:column}
-  .car-card:hover{border-color:var(--line2);transform:translateY(-4px);box-shadow:0 30px 50px -24px rgba(0,0,0,.8)}
-  .car-photo{height:158px;position:relative;overflow:hidden;
-    background:radial-gradient(100% 80% at 50% 0%,rgba(224,30,38,.1),transparent 60%),radial-gradient(80% 60% at 50% 120%,rgba(217,179,130,.1),transparent 60%),linear-gradient(180deg,#14161b,#0d0f12);
-    display:grid;place-items:center}
-  .car-photo::before{content:"";position:absolute;inset:0;background:radial-gradient(55% 40% at 50% 74%,rgba(255,255,255,.07),transparent 70%)}
-  .car-photo svg{width:130px;stroke:rgba(255,255,255,.78);fill:none;stroke-width:1.2;filter:drop-shadow(0 12px 16px rgba(0,0,0,.55));position:relative}
-  .car-photo .badge{position:absolute;top:12px;inset-inline-start:12px;z-index:2}
-  .b-avail{background:rgba(52,210,123,.15);color:#5fe39b;border:1px solid rgba(52,210,123,.32)}
-  .b-transit{background:rgba(110,168,255,.15);color:#a9c8ff;border:1px solid rgba(110,168,255,.32)}
-  .b-soon{background:rgba(246,181,60,.15);color:#f9cd77;border:1px solid rgba(246,181,60,.32)}
-  .car-body{padding:17px;display:flex;flex-direction:column;gap:12px;flex:1}
-  .car-body h3{font-size:16.5px;letter-spacing:-.2px}
-  .car-body .cc{display:flex;gap:7px;flex-wrap:wrap}
-  .car-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
-  .car-foot .price{font-weight:800;font-size:15px;color:var(--gold2)}
-  .car-foot .price small{display:block;font-size:11px;color:var(--muted2);font-weight:400}
-  .car-foot a{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#fff;font-weight:700}
-  .car-foot a .ico{width:15px;height:15px;color:var(--brand2)}
-  .car-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#ffffff;padding:0;z-index:1}
-  .car-trim{font-size:12.5px;color:var(--gold2);font-weight:600;margin-top:-4px}
-  .car-colors{display:flex;gap:7px;align-items:center;margin-top:2px}
-  .car-colors i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,.28);display:inline-block}
-  /* featured offer video */
-  .featured-hero{border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(224,30,38,.07),transparent)}
-  .featured-inner{padding:24px 0 30px}
-  .featured-inner .eyebrow{margin-bottom:14px}
-  .vwrap{position:relative;width:100%;max-width:900px;margin:0 auto;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;border:1px solid var(--line2)}
-  .vwrap iframe{position:absolute;inset:0;width:100%;height:100%}
-  .vreel{position:relative;width:100%;max-width:300px;margin:0 auto;aspect-ratio:9/16;background:#0a0b0d;border-radius:22px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 30px 60px -30px rgba(0,0,0,.85)}
-  .vreel iframe{position:absolute;inset:0;width:100%;height:100%}
-  @media(max-width:920px){.vreel{max-width:340px}}
-  /* brand tiles */
-  .brand-tiles{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
-  .brand-tile{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:700;font-size:14px;cursor:pointer;transition:.2s;font-family:inherit}
-  .brand-tile:hover{border-color:var(--gold);color:#fff}
-  .brand-tile.active{background:linear-gradient(180deg,var(--brand2),var(--brand));border-color:transparent;color:#fff}
-  .brand-tile small{color:var(--muted2);font-weight:600;margin-inline-start:7px}
-  .brand-tile.active small{color:rgba(255,255,255,.85)}
-  .car-card{cursor:pointer}
-  .car-foot .more{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#fff;font-weight:700}
-  .car-foot .more b{color:var(--brand2);font-size:16px}
-  /* model detail overlay */
-  .detail-overlay{position:fixed;inset:0;z-index:200;background:rgba(6,7,9,.93);backdrop-filter:blur(6px);overflow-y:auto;display:none}
-  .detail-overlay.open{display:block}
-  .detail-box{max-width:1000px;margin:38px auto;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;overflow:hidden}
-  .detail-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg2);z-index:2}
-  .detail-close{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center}
-  .detail-close:hover{border-color:var(--brand);color:#fff}
-  .detail-body{padding:22px}
-  .gmain{position:relative;width:100%;aspect-ratio:16/10;background:#ffffff;border-radius:16px;overflow:hidden}
-  .gmain .gimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;opacity:0;transition:opacity .2s}
-  .gmain .gimg.active{opacity:1}
-  .gthumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-  .gthumb{width:78px;height:54px;border-radius:8px;overflow:hidden;border:2px solid transparent;background:#f2f2f2;cursor:pointer;padding:0}
-  .gthumb.active{border-color:var(--brand)}
-  .gthumb img{width:100%;height:100%;object-fit:cover}
-  .detail-title{font-size:24px;margin-top:20px;letter-spacing:-.3px}
-  .detail-trim{color:var(--gold2);font-weight:600;margin-top:3px}
-  .detail-desc{color:var(--muted);font-size:14.5px;margin-top:14px;line-height:1.9;white-space:pre-line}
-  .detail-video{margin-top:24px}
-  .detail-video h4{font-size:16px;margin-bottom:12px;color:var(--gold2)}
-  .detail-cta{display:inline-flex;align-items:center;gap:9px;margin-top:22px;padding:14px 28px;border-radius:12px;background:linear-gradient(180deg,#25d366,#1eb257);color:#04220f;font-weight:800;font-size:15px;text-decoration:none}
-  .detail-cta:hover{transform:translateY(-1px)}
-  @media(max-width:640px){.detail-box{margin:0;border-radius:0;min-height:100vh}}
+  /* ---------- header ---------- */
+  header{position:fixed;inset-block-start:0;inset-inline:0;height:var(--header-h);
+    background:var(--white);z-index:100;
+    border-block-end:1px solid transparent;transition:border-color var(--dur) var(--ease)}
+  header.is-scrolled{border-block-end:1px solid var(--line)}
+  .nav{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:600;font-size:.9375rem;letter-spacing:.01em}
+  .brand .mark{width:32px;height:32px;border:1.5px solid var(--ink);border-radius:var(--r-card);
+    display:grid;place-items:center;font-weight:600;font-size:12px;letter-spacing:.02em;flex:none}
+  .brand small{display:block;font-size:.625rem;font-weight:400;letter-spacing:.14em;color:var(--ink-2);margin-block-start:2px}
+  .nav-links{display:flex;gap:28px}
+  .nav-links a{position:relative;font-size:.9375rem;font-weight:400;color:var(--ink);padding-block:4px}
+  .nav-links a::after{content:"";position:absolute;inset-block-end:-2px;inset-inline:0;height:2px;
+    background:var(--brand);transform:scaleX(0);transform-origin:center;transition:transform var(--dur) var(--ease)}
+  .nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
+  .nav-right{display:flex;align-items:center;gap:20px}
+  .lang{display:flex;gap:2px}
+  .lang button{background:none;border:none;color:var(--ink-3);font-family:inherit;font-size:.9375rem;
+    font-weight:500;cursor:pointer;padding:4px 6px;transition:color var(--dur) var(--ease)}
+  .lang button:hover{color:var(--ink)}
+  .lang button.active{color:var(--ink)}
+  .nav-login{font-size:.9375rem;color:var(--ink)}
+  .nav-login:hover{color:var(--brand)}
+  @media(max-width:1180px){.nav-links{display:none}}
+  @media(max-width:640px){.nav-login{display:none}.nav-right{gap:14px}}
 
-  /* why */
-  .why{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-  @media(max-width:900px){.why-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:520px){.why-grid{grid-template-columns:1fr}}
-  .why-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;transition:.22s}
-  .why-card:hover{border-color:var(--line2);transform:translateY(-3px)}
-  .why-card .wi{width:48px;height:48px;border-radius:13px;background:linear-gradient(160deg,rgba(224,30,38,.18),rgba(224,30,38,.05));color:var(--brand2);display:grid;place-items:center;margin-bottom:16px;border:1px solid rgba(224,30,38,.2)}
-  .why-card .wi .ico{width:22px;height:22px}
-  .why-card h4{font-size:16px;margin-bottom:7px}
-  .why-card p{color:var(--muted);font-size:13.5px}
+  /* ---------- section header pattern ---------- */
+  section{padding-block:var(--section-y)}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;
+    flex-wrap:wrap;margin-block-end:48px}
+  .sec-head .sh-text{max-width:60ch}
+  .sec-head .eyebrow{margin-block-end:12px}
+  .sec-head h2{margin-block-end:16px}
+  .sec-head .sh-intro{color:var(--ink-2);max-width:60ch}
+  .sec-head .sh-text h2:last-child{margin-block-end:0}
 
-  /* journey */
-  .journey{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;position:relative}
-  @media(max-width:900px){.journey{grid-template-columns:1fr 1fr 1fr}}
-  @media(max-width:520px){.journey{grid-template-columns:1fr 1fr}}
-  .jstep{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px 14px;text-align:center;position:relative;transition:.22s}
-  .jstep:hover{border-color:var(--line2);transform:translateY(-3px)}
-  .jstep .jn{position:absolute;top:10px;inset-inline-end:12px;font-family:"Sora",sans-serif;font-size:12px;font-weight:800;color:var(--gold);opacity:.5}
-  .jstep .jc{width:46px;height:46px;margin:0 auto 12px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--gold2)}
-  .jstep .jc .ico{width:22px;height:22px}
-  .jstep b{display:block;font-size:14px}
-  .jstep span{font-size:11.5px;color:var(--muted2)}
+  /* ---------- hero (headline + weekly offer video) ---------- */
+  .hero{position:relative;background:var(--ink);color:var(--white);
+    min-height:calc(100svh - var(--header-h));display:flex;align-items:center;
+    padding-block:56px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px);
+    align-items:center;width:100%}
+  .hero-copy .eyebrow{color:rgba(255,255,255,.75);margin-block-end:20px}
+  .hero-copy .display{color:var(--white);margin-block-end:24px;
+    font-size:clamp(2.5rem,4.6vw,4.5rem)}
+  .hero-lead{color:rgba(255,255,255,.85);max-width:52ch;margin-block-end:32px}
+  .hero-actions{display:flex;gap:32px;flex-wrap:wrap}
+  .hero-actions .tlink{color:var(--white)}
+  .hero-actions .tlink:hover{color:var(--white);opacity:.72}
+  .hero-offer .offer-eyebrow{display:block;font-size:.8125rem;font-weight:500;
+    color:rgba(255,255,255,.75);margin-block-end:12px}
+  @media(max-width:900px){
+    .hero{min-height:0;padding-block:32px 48px;align-items:stretch}
+    .hero-grid{grid-template-columns:1fr;gap:28px}
+    .hero-copy .display{font-size:clamp(2.25rem,8vw,3.25rem)}
+    .hero-lead{margin-block-end:24px}
+    .hero-actions{gap:24px}
+  }
 
-  /* banners */
-  .banner{position:relative;overflow:hidden;border:1px solid var(--line2);border-radius:24px;padding:48px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
-    background:radial-gradient(700px 320px at 18% 0%,rgba(224,30,38,.22),transparent 58%),radial-gradient(500px 300px at 92% 120%,rgba(217,179,130,.12),transparent 60%),linear-gradient(160deg,#141519,#0d0f12)}
-  .banner h2{font-size:29px;letter-spacing:-.5px;font-weight:800}
-  [dir="rtl"] .banner h2{letter-spacing:0}
-  .banner p{color:var(--muted);margin-top:9px;max-width:540px;font-size:14.5px}
+  /* offer video frame (used in hero and in the Airtable featured slot) */
+  .offer-media{position:relative;width:100%;aspect-ratio:16/9;background:#000;
+    border-radius:var(--r-card);overflow:hidden}
+  .offer-media video,.offer-media .v-frame{position:absolute;inset:0;width:100%;height:100%}
+  .offer-media video{object-fit:cover}
+  .offer-media .v-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
-  /* footer */
-  footer{background:#070809;border-top:1px solid var(--line);padding:60px 0 30px;color:var(--muted)}
-  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.1fr;gap:32px;margin-bottom:36px}
-  @media(max-width:820px){.foot-grid{grid-template-columns:1fr 1fr}}
-  .foot-grid h5{color:#fff;font-size:13.5px;margin-bottom:15px;letter-spacing:.3px}
-  .foot-grid a,.foot-grid p{display:block;font-size:13.5px;color:var(--muted2);margin-bottom:10px}
-  .foot-grid a:hover{color:var(--gold2)}
-  .foot-bottom{border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted2)}
-  .socials{display:flex;gap:10px}
-  .socials a{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--muted)}
-  .socials a:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+  /* ---------- vehicle cards ---------- */
+  .grid-cars{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px 32px}
+  .v-card{display:flex;flex-direction:column;cursor:pointer;background:none;border:none;
+    text-align:start;font-family:inherit;padding:0;color:inherit}
+  .v-media{aspect-ratio:16/9;overflow:hidden;border-radius:var(--r-card);
+    background:var(--surface);margin-block-end:16px}
+  .v-media img{width:100%;height:100%;object-fit:cover;transition:transform 600ms var(--ease)}
+  .v-card:hover .v-media img{transform:scale(1.03)}
+  .v-status{margin-block-end:8px}
+  .v-title{margin-block-end:8px}
+  .v-specs{color:var(--ink-2);margin-block-end:16px}
+  .v-more{margin-block-start:auto}
+  .grid-empty{grid-column:1/-1;text-align:center;padding-block:48px;color:var(--ink-3);font-size:1rem}
 
-  .wa-float{position:fixed;inset-inline-end:22px;bottom:22px;z-index:70;display:flex;align-items:center;gap:10px;background:#25d366;color:#fff;padding:14px 18px;border-radius:30px;font-weight:700;font-size:14px;box-shadow:0 14px 30px -8px rgba(37,211,102,.7);transition:.22s}
-  .wa-float:hover{transform:translateY(-2px)}
-  @media(max-width:600px){.wa-float span{display:none}.wa-float{padding:16px;border-radius:50%}}
-  /* premium documents / BL float */
-  .doc-float{position:fixed;inset-inline-start:22px;bottom:22px;z-index:70;display:flex;align-items:center;gap:12px;
-    background:linear-gradient(150deg,rgba(26,21,13,.97),rgba(13,14,17,.97));
-    border:1px solid rgba(217,179,130,.42);padding:11px 16px 11px 12px;border-radius:16px;
-    box-shadow:0 18px 44px -14px rgba(217,179,130,.5),inset 0 1px 0 rgba(255,255,255,.06);
-    backdrop-filter:blur(10px);transition:.24s;overflow:hidden}
-  .doc-float::before{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;
-    background:linear-gradient(120deg,transparent 40%,rgba(233,211,173,.16) 50%,transparent 60%);
-    transform:translateX(-120%);transition:.6s}
-  .doc-float:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 24px 54px -14px rgba(217,179,130,.62)}
-  .doc-float:hover::before{transform:translateX(120%)}
-  .doc-float .df-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;
-    background:linear-gradient(140deg,#f0dcb8,#d9b382);box-shadow:0 6px 16px -4px rgba(217,179,130,.65)}
-  .doc-float .df-ic svg{width:21px;height:21px;stroke:#1a1205;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
-  .doc-float .df-tx{display:flex;flex-direction:column;line-height:1.35}
-  .doc-float .df-tx b{font-size:13.5px;font-weight:800;color:#fff;letter-spacing:.2px}
-  .doc-float .df-tx small{font-size:10.5px;color:var(--gold2);font-weight:700;letter-spacing:.3px}
-  @media(max-width:600px){.doc-float .df-tx{display:none}.doc-float{padding:11px;border-radius:14px}}
+  /* alternating surface section */
+  .surface{background:var(--surface)}
 
-  /* live tracker */
-  .live-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:22px}
+  /* ---------- about ---------- */
+  .about-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(32px,6vw,96px);align-items:center}
+  .about-photo{aspect-ratio:4/5;background:var(--surface);border-radius:var(--r-card);overflow:hidden}
+  .about-photo img{width:100%;height:100%;object-fit:cover}
+  .about-body .eyebrow{margin-block-end:12px}
+  .about-body h2{margin-block-end:24px}
+  .about-body p{color:var(--ink-2);margin-block-end:16px;max-width:60ch}
+  .about-list{margin-block:32px 24px;border-block-start:1px solid var(--line)}
+  .about-list .row{padding-block:16px;border-block-end:1px solid var(--line);font-size:1rem}
+  .about-sig{color:var(--ink-2);font-weight:500}
+  .about-role{color:var(--ink-3);font-size:.875rem;margin-block-start:4px}
+  @media(max-width:820px){.about-grid{grid-template-columns:1fr;gap:32px}}
+
+  /* ---------- live dark tracker ---------- */
+  .live{background:var(--ink);color:var(--white)}
+  .live .eyebrow{color:var(--ink-3)}
+  .live .sh-intro{color:rgba(255,255,255,.7)}
+  .live h2{color:var(--white)}
+  .live-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:48px 40px;align-items:start}
   @media(max-width:920px){.live-wrap{grid-template-columns:1fr}}
-  .map-box{border:1px solid var(--line2);border-radius:20px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);position:relative}
-  #map{height:520px;width:100%;background:#0d0f12;z-index:1}
+  .map-box{border-radius:var(--r-card);overflow:hidden}
+  #map{height:520px;width:100%;background:#0b0f12;z-index:1}
   @media(max-width:920px){#map{height:400px}}
-  .leaflet-container{font-family:inherit!important;background:#0d0f12}
-  .leaflet-tooltip{background:#12151b;border:1px solid var(--line2);color:#fff;font-size:12px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.5)}
-  .leaflet-tooltip-top:before{border-top-color:var(--line2)}
-  .leaflet-bar a{background:#12151b;color:#fff;border-color:var(--line2)}
+  .leaflet-container{font-family:inherit!important;background:#0b0f12}
+  .leaflet-tooltip{background:#12151b;border:1px solid rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:500;box-shadow:none}
+  .leaflet-tooltip-top:before{border-top-color:rgba(255,255,255,.18)}
+  .leaflet-bar a{background:#12151b;color:#fff;border-color:rgba(255,255,255,.18)}
   .leaflet-bar a:hover{background:#1a1e26}
-  .leaflet-control-attribution{background:rgba(10,11,13,.7)!important;color:#6a727d!important}
-  .leaflet-control-attribution a{color:#8a929c!important}
-  .ship-mark{position:relative;width:40px;height:40px;display:grid;place-items:center}
-  .ship-mark svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 4px rgba(0,0,0,.9));z-index:3;position:relative}
-  .ship-mark .ping{position:absolute;inset:6px;border-radius:50%;background:rgba(224,30,38,.35);animation:pingA 1.9s ease-out infinite}
-  .ship-mark::after{content:"";position:absolute;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,var(--brand),rgba(224,30,38,.6));box-shadow:0 0 14px rgba(224,30,38,.9);z-index:2}
-  @keyframes pingA{0%{transform:scale(.5);opacity:.9}100%{transform:scale(2.6);opacity:0}}
-  .mpanel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:15px}
+  .leaflet-control-attribution{background:rgba(14,20,24,.7)!important;color:#96989A!important}
+  .leaflet-control-attribution a{color:#b7bcc2!important}
+  .ship-mark{position:relative;width:22px;height:22px}
+  .ship-mark .dot{position:absolute;inset:0;width:12px;height:12px;margin:5px;border-radius:50%;
+    background:var(--brand)}
+
+  .mpanel{display:flex;flex-direction:column;gap:28px}
   .mp-head{display:flex;align-items:center;gap:12px}
-  .mp-ship{width:42px;height:42px;border-radius:12px;background:rgba(224,30,38,.12);border:1px solid rgba(224,30,38,.25);color:var(--brand2);display:grid;place-items:center}
-  .mp-ship .ico{width:22px;height:22px}
-  .mp-name{font-family:"Sora",sans-serif;font-weight:700;font-size:15px}
-  .mp-route{font-size:12px;color:var(--gold2)}
-  .mp-eta{background:radial-gradient(120% 100% at 0% 0%,rgba(224,30,38,.14),transparent 60%),rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-  .mp-eta-l{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:9px}
-  .cd{display:flex;gap:9px}
-  .cd>div{flex:1;text-align:center;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:9px 4px}
-  .cd b{display:block;font-family:"Sora",sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
-  .cd span{font-size:10px;color:var(--muted2)}
-  .mp-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
-  .mp-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand2),var(--gold));transition:width .8s ease}
+  .mp-name{font-weight:600;font-size:1.125rem}
+  .mp-route{font-size:.875rem;color:var(--ink-3)}
+  .mp-status{display:inline-flex;align-items:center;gap:7px;margin-inline-start:auto;
+    font-size:.8125rem;color:rgba(255,255,255,.75)}
+  .mp-status .cd6{width:6px;height:6px;border-radius:50%;background:var(--brand);flex:none}
+  .mp-eta-l{font-size:.8125rem;color:var(--ink-3);margin-block-end:12px}
+  .cd{display:flex;gap:24px}
+  .cd>div{text-align:center}
+  .cd b{display:block;font-weight:600;font-size:clamp(2.5rem,5vw,4rem);line-height:1;color:var(--white);
+    font-variant-numeric:tabular-nums;margin-block-end:6px}
+  .cd span{font-size:.8125rem;color:var(--ink-3)}
   .mp-rows{display:flex;flex-direction:column}
-  .mrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
-  .mrow span{color:var(--muted)}
-  .mrow b{font-family:"Sora",sans-serif;font-weight:700;letter-spacing:.2px}
-  .mp-miles{display:flex;flex-direction:column}
-  .mile{display:flex;align-items:center;gap:11px;font-size:12.5px;color:var(--muted2);position:relative;padding:6px 0}
-  .mile .mdot{width:11px;height:11px;border-radius:50%;background:#2a3039;flex:none;z-index:2}
-  .mile.done .mdot{background:var(--ok)}
-  .mile.now .mdot{background:var(--brand);box-shadow:0 0 0 4px rgba(224,30,38,.2)}
-  .mile.done i,.mile.now i{color:#fff;font-style:normal}
-  .mile i{font-style:normal}
-  .mile:not(:last-child)::before{content:"";position:absolute;inset-inline-start:5px;top:17px;width:1.5px;height:100%;background:var(--line);z-index:1}
-  .mp-note{font-size:11.5px;color:var(--muted2);border-top:1px solid var(--line);padding-top:13px;line-height:1.6}
+  .mrow{display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding-block:12px;border-block-end:1px solid rgba(255,255,255,.12);font-size:.9375rem}
+  .mrow>span{color:var(--ink-3)}
+  .mrow b{font-weight:500;color:var(--white)}
+  .mrow b bdi{color:var(--white)}
+  /* route stages: thin line + 6px dots */
+  .stages{display:flex;align-items:flex-start;gap:0;position:relative;margin-block-start:4px}
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;
+    font-size:.75rem;color:rgba(255,255,255,.3);text-align:center;line-height:1.35}
+  .stage .sdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);z-index:2}
+  .stage::before{content:"";position:absolute;inset-block-start:2px;inset-inline-start:-50%;
+    width:100%;height:1px;background:rgba(255,255,255,.3);z-index:1}
+  .stage:first-child::before{display:none}
+  .stage.done,.stage.now{color:var(--white)}
+  .stage.done .sdot,.stage.now .sdot{background:var(--white)}
+  .stage.done::before,.stage.now::before{background:var(--white)}
+  .mp-note{font-size:.8125rem;color:var(--ink-3);line-height:1.6;
+    border-block-start:1px solid rgba(255,255,255,.12);padding-block-start:20px}
 
-  /* about */
-  .about-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:40px;align-items:center}
-  @media(max-width:820px){.about-grid{grid-template-columns:1fr;gap:28px}}
-  .about-photo{aspect-ratio:4/5;border-radius:22px;border:1px solid var(--line2);position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);
-    background:radial-gradient(120% 80% at 50% 0%,rgba(217,179,130,.16),transparent 60%),linear-gradient(160deg,#16181d,#0d0f12);display:grid;place-items:center}
-  .about-photo .ph-init{font-family:"Sora",sans-serif;font-weight:800;font-size:72px;color:rgba(255,255,255,.13);letter-spacing:2px}
-  .about-photo .ph-note{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted2)}
-  .about-photo .ph-badge{position:absolute;top:14px;inset-inline-start:14px}
-  .about-body h2{font-size:30px;margin:12px 0 16px;letter-spacing:-.4px;font-weight:800}
-  [dir="rtl"] .about-body h2{letter-spacing:0}
-  .about-body p{color:var(--muted);font-size:15px;margin-bottom:13px}
-  .about-pts{display:flex;flex-direction:column;gap:11px;margin:20px 0}
-  .about-pt{display:flex;align-items:center;gap:11px;font-size:14px}
-  .about-pt .ico{width:18px;height:18px;color:var(--ok)}
-  .about-sig{font-family:"Sora",sans-serif;font-weight:800;color:var(--gold2);margin-top:8px;font-size:16px}
-  .about-role{font-size:12.5px;color:var(--muted2)}
-
-  /* delivered gallery */
-  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  /* ---------- delivered (edge-to-edge) ---------- */
+  .gal-bleed{width:100%}
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   @media(max-width:820px){.gal{grid-template-columns:1fr 1fr}}
   @media(max-width:520px){.gal{grid-template-columns:1fr}}
-  .gal-item{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;border:1px solid var(--line);transition:.22s;
-    background:radial-gradient(90% 70% at 50% 0%,rgba(224,30,38,.09),transparent 60%),radial-gradient(70% 60% at 50% 120%,rgba(217,179,130,.1),transparent),linear-gradient(180deg,#14161b,#0d0f12);display:grid;place-items:center}
-  .gal-item:hover{border-color:var(--line2);transform:translateY(-3px)}
-  .gal-item>svg{width:92px;stroke:rgba(255,255,255,.62);fill:none;stroke-width:1.2;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5))}
-  .gal-item .g-cap{position:absolute;bottom:0;left:0;right:0;padding:14px;background:linear-gradient(0deg,rgba(0,0,0,.8),transparent);font-size:12.5px;font-weight:600}
-  .gal-item .g-badge{position:absolute;top:12px;inset-inline-start:12px}
+  .gal-item .g-media{aspect-ratio:16/9;background:var(--surface);overflow:hidden}
+  .gal-item .g-media img{width:100%;height:100%;object-fit:cover;transition:transform 600ms var(--ease)}
+  .gal-item:hover .g-media img{transform:scale(1.03)}
+  .g-cap{padding:12px 8px 0}
+  .g-city{font-size:1rem;color:var(--ink)}
+  .g-done{font-size:.875rem;color:var(--green);margin-block-start:2px}
 
-  /* testimonials */
-  .rev{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  @media(max-width:820px){.rev{grid-template-columns:1fr}}
-  .rev-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:.22s}
-  .rev-card:hover{border-color:var(--line2);transform:translateY(-3px)}
-  .stars{display:flex;gap:3px}
-  .stars svg{width:16px;height:16px;fill:var(--gold);stroke:var(--gold);stroke-width:1}
-  .rev-q{color:var(--ink);font-size:14.5px;line-height:1.75;flex:1}
-  .rev-who{display:flex;align-items:center;gap:11px;border-top:1px solid var(--line);padding-top:14px}
-  .rev-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--brand),#8f1013);display:grid;place-items:center;font-family:"Sora",sans-serif;font-weight:700;font-size:15px;color:#fff;flex:none}
-  .rev-n{font-weight:700;font-size:14px}
-  .rev-l{font-size:12px;color:var(--muted2)}
+  /* ---------- testimonials ---------- */
+  .rev{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+  @media(max-width:820px){.rev{grid-template-columns:1fr;gap:0}}
+  .rev-card{padding-inline:40px;border-inline-start:1px solid var(--line);display:flex;flex-direction:column}
+  .rev-card:first-child{border-inline-start:none;padding-inline-start:0}
+  @media(max-width:820px){
+    .rev-card{padding-inline:0;border-inline-start:none;
+      border-block-start:1px solid var(--line);padding-block:32px}
+    .rev-card:first-child{border-block-start:none;padding-block-start:0}
+  }
+  .rev-q{font-size:1.125rem;line-height:1.6;color:var(--ink);margin-block-end:32px}
+  .rev-n{font-size:.875rem;color:var(--ink)}
+  .rev-l{font-size:.875rem;color:var(--ink-2);margin-block-start:2px}
 
-  /* request form */
-  .req-wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start}
-  @media(max-width:820px){.req-wrap{grid-template-columns:1fr}}
-  .req-form{background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:28px}
-  .req-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  /* ---------- blog ---------- */
+  .grid-posts{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+  @media(max-width:900px){.grid-posts{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.grid-posts{grid-template-columns:1fr}}
+  .post-card .p-media{aspect-ratio:16/9;background:var(--surface);border-radius:var(--r-card);
+    overflow:hidden;margin-block-end:16px}
+  .post-card .p-media img{width:100%;height:100%;object-fit:cover;transition:transform 600ms var(--ease)}
+  .post-card:hover .p-media img{transform:scale(1.03)}
+  .post-card .eyebrow{margin-block-end:8px}
+  .post-card h3{color:var(--ink)}
+
+  /* ---------- order form ---------- */
+  .req-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(40px,6vw,96px);align-items:start}
+  @media(max-width:820px){.req-wrap{grid-template-columns:1fr;gap:48px}}
+  .req-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
   @media(max-width:520px){.req-grid{grid-template-columns:1fr}}
-  .field{margin-bottom:14px}
-  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:7px;font-weight:600}
-  .field input,.field select,.field textarea{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line2);border-radius:11px;padding:12px 14px;color:var(--ink);font-family:inherit;font-size:14px;transition:.15s}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);background:rgba(0,0,0,.42)}
-  .field select{cursor:pointer}
-  .field select option{background:#12151b;color:#fff}
-  .req-note{font-size:12px;color:var(--muted2);margin-top:8px;text-align:center}
-  .req-aside{background:radial-gradient(500px 240px at 20% 0%,rgba(224,30,38,.16),transparent 60%),linear-gradient(160deg,#141519,#0d0f12);border:1px solid var(--line2);border-radius:20px;padding:26px}
-  .req-aside h4{font-size:17px;margin-bottom:16px;font-weight:800}
-  .req-aside .ra{display:flex;gap:12px;margin-bottom:16px}
-  .req-aside .ra .ico{width:20px;height:20px;color:var(--gold2);flex:none;margin-top:2px}
-  .req-aside .ra b{display:block;font-size:14px;margin-bottom:2px}
-  .req-aside .ra span{font-size:12.5px;color:var(--muted2)}
+  .field{margin-block-end:24px}
+  .field label{display:block;font-size:.875rem;color:var(--ink-2);margin-block-end:8px}
+  .field input,.field select,.field textarea{width:100%;background:transparent;
+    border:none;border-block-end:1px solid var(--line);border-radius:0;
+    padding:8px 0;color:var(--ink);font-family:inherit;font-size:1rem;
+    transition:border-color var(--dur) var(--ease)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;
+    border-block-end:2px solid var(--ink);padding-block-end:7px}
+  .field select{cursor:pointer;appearance:none}
+  .req-form .btn{margin-block-start:8px}
+  .req-note{font-size:.875rem;color:var(--ink-3);margin-block-start:16px}
+  .steps{display:flex;flex-direction:column}
+  .step{display:flex;gap:20px;padding-block:20px;border-block-end:1px solid var(--line)}
+  .step:first-child{padding-block-start:0}
+  .step:last-child{border-block-end:none;padding-block-end:0}
+  .step .num{font-size:2rem;font-weight:600;color:var(--ink-3);line-height:1;flex:none;min-width:1.4em}
+  .step b{display:block;font-size:1rem;font-weight:600;margin-block-end:4px}
+  .step span{font-size:.9375rem;color:var(--ink-2)}
+  .req-aside h3{margin-block-end:24px}
 
-  /* faq */
-  .faq{max-width:840px;margin:0 auto}
-  .faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:.2s}
-  .faq details[open]{border-color:var(--line2)}
-  .faq summary{cursor:pointer;padding:18px 22px;font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  /* ---------- faq ---------- */
+  .faq{max-width:840px}
+  .faq details{border-block-end:1px solid var(--line)}
+  .faq details:first-child{border-block-start:1px solid var(--line)}
+  .faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+    align-items:center;gap:20px;padding-block:24px;font-size:1.125rem;font-weight:500;color:var(--ink)}
   .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";font-size:24px;line-height:1;color:var(--gold2);font-weight:300;transition:.25s;flex:none}
-  .faq details[open] summary::after{transform:rotate(45deg)}
-  .faq .faq-a{padding:0 22px 20px;color:var(--muted);font-size:14px;line-height:1.75}
+  .faq summary .pm{position:relative;width:16px;height:16px;flex:none;transition:transform var(--dur) var(--ease)}
+  .faq summary .pm::before,.faq summary .pm::after{content:"";position:absolute;background:var(--ink)}
+  .faq summary .pm::before{inset-block-start:50%;inset-inline:0;height:1px;transform:translateY(-50%)}
+  .faq summary .pm::after{inset-inline-start:50%;inset-block:0;width:1px;transform:translateX(-50%)}
+  .faq details[open] summary .pm{transform:rotate(45deg)}
+  .faq .faq-a{padding-block:0 24px;color:var(--ink-2);font-size:1rem;line-height:1.7;max-width:70ch}
+
+  /* ---------- contact (dark) ---------- */
+  .contact{background:var(--ink);color:var(--white)}
+  .contact .eyebrow{color:var(--ink-3);margin-block-end:16px}
+  .contact h2{color:var(--white);margin-block-end:20px;max-width:20ch}
+  .contact p{color:rgba(255,255,255,.75);max-width:52ch;margin-block-end:48px}
+  .contact-links{display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+  .contact-links .tlink{color:var(--white);font-size:1.125rem}
+  .contact-links .tlink:hover{color:var(--white);opacity:.72}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--white);border-block-start:1px solid var(--line);
+    padding-block:clamp(56px,7vw,96px) 40px}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px;margin-block-end:56px}
+  @media(max-width:820px){.foot-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.foot-grid{grid-template-columns:1fr}}
+  .foot-logo{display:flex;align-items:center;gap:10px;margin-block-end:16px}
+  .foot-logo .mark{width:40px;height:40px;border:1.5px solid var(--brand);color:var(--brand);
+    border-radius:var(--r-card);display:grid;place-items:center;font-weight:600;font-size:15px;flex:none}
+  .foot-logo b{font-weight:600;font-size:1rem;color:var(--ink)}
+  .foot-logo small{display:block;font-size:.625rem;font-weight:400;letter-spacing:.14em;color:var(--ink-2)}
+  .foot-brand p{font-size:.875rem;color:var(--ink-2);max-width:34ch}
+  .foot-col h5{font-size:.875rem;font-weight:500;color:var(--ink);margin-block-end:16px}
+  .foot-col a,.foot-col p{display:block;font-size:.875rem;color:var(--ink-2);margin-block-end:12px}
+  .foot-col a:hover{color:var(--brand)}
+  .foot-bottom{border-block-start:1px solid var(--line);padding-block-start:24px;
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+  .foot-bottom .legal{font-size:.8125rem;color:var(--ink-3)}
+  .foot-social{display:flex;gap:24px}
+  .foot-social a{font-size:.875rem;color:var(--ink-2)}
+  .foot-social a:hover{color:var(--brand)}
+
+  /* ---------- floating buttons ---------- */
+  .wa-float{position:fixed;inset-block-end:24px;inset-inline-end:24px;z-index:90;
+    width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--white);
+    display:grid;place-items:center;transition:background var(--dur) var(--ease)}
+  .wa-float:hover{background:var(--brand)}
+  .wa-float svg{width:26px;height:26px;fill:currentColor}
+  .doc-float{position:fixed;inset-block-end:24px;inset-inline-start:24px;z-index:90;
+    width:56px;height:56px;border-radius:50%;background:var(--white);border:1px solid var(--line);
+    color:var(--ink);display:grid;place-items:center;transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
+  .doc-float:hover{border-color:var(--ink);color:var(--brand)}
+  .doc-float svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- detail overlay ---------- */
+  .detail-overlay{position:fixed;inset:0;z-index:200;background:rgba(14,20,24,.55);
+    overflow-y:auto;display:none}
+  .detail-overlay.open{display:block}
+  .detail-box{max-width:1000px;margin:48px auto;background:var(--white);
+    border-radius:var(--r-card);overflow:hidden}
+  .detail-head{display:flex;justify-content:space-between;align-items:center;
+    padding:20px 24px;border-block-end:1px solid var(--line);position:sticky;
+    inset-block-start:0;background:var(--white);z-index:2}
+  .detail-status{font-size:.8125rem;color:var(--ink-2)}
+  .detail-close{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+    background:transparent;color:var(--ink);font-size:22px;line-height:1;cursor:pointer;
+    display:grid;place-items:center;transition:border-color var(--dur) var(--ease)}
+  .detail-close:hover{border-color:var(--ink)}
+  .detail-body{padding:32px 24px 40px}
+  .gmain{position:relative;width:100%;aspect-ratio:16/10;background:var(--surface);
+    border-radius:var(--r-card);overflow:hidden}
+  .gmain .gimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s var(--ease)}
+  .gmain .gimg.active{opacity:1}
+  .gthumbs{display:flex;gap:8px;margin-block-start:12px;flex-wrap:wrap}
+  .gthumb{width:80px;height:56px;border-radius:var(--r-card);overflow:hidden;
+    border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0}
+  .gthumb.active{border-color:var(--ink)}
+  .gthumb img{width:100%;height:100%;object-fit:cover}
+  .detail-title{font-size:clamp(1.5rem,3vw,2rem);margin-block-start:32px}
+  .detail-trim{color:var(--ink-2);margin-block-start:4px}
+  .detail-specs{color:var(--ink-2);font-size:.9375rem;margin-block-start:16px}
+  .detail-desc{color:var(--ink-2);font-size:1rem;line-height:1.8;margin-block-start:20px;white-space:pre-line;max-width:70ch}
+  .detail-video{margin-block-start:32px}
+  .detail-video h4{font-size:.8125rem;font-weight:500;color:var(--ink-2);margin-block-end:16px}
+  .detail-video .v-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r-card);overflow:hidden;background:var(--surface)}
+  .detail-video .v-frame iframe,.detail-video .v-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+  .detail-cta{margin-block-start:32px}
+  @media(max-width:640px){.detail-box{margin:0;border-radius:0;min-height:100vh}}
+
+  /* ---------- scroll reveal (hidden ONLY when js-anim is active; visible by default) ---------- */
+  html.js-anim .reveal{opacity:0;transform:translateY(16px);
+    transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  html.js-anim .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto!important}
+    html.js-anim .reveal{opacity:1!important;transform:none!important;transition:none!important}
+    .v-media img,.gal-item .g-media img,.post-card .p-media img{transition:none!important}
+  }
+
+  /* mobile header shrink */
+  @media(max-width:640px){
+    :root{--header-h:56px}
+    .brand small{display:none}
+  }
+  @media(max-width:480px){
+    .brand span:not(.mark){display:none}
+    .nav-right{gap:12px}
+    .btn{padding:12px 22px}
+  }
 </style>
 </head>
 <body>
-<div class="bg-fx"></div>
-
-<!-- icon sprite -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></symbol>
-  <symbol id="i-ship" viewBox="0 0 24 24"><path d="M12 3v5m0-5a2 2 0 1 0 0-.001M6 21c-2 0-3-3-3-3l9-4 9 4s-1 3-3 3M6 21c1.5 0 3-1.2 3-1.2M18 21c-1.5 0-3-1.2-3-1.2M8 9h8M5 12v-2a2 2 0 0 1 2-2M19 12v-2a2 2 0 0 0-2-2"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 9.5C8 19.3 5 15.4 5 11V6z"/><path d="M9.5 12l1.8 1.8 3.2-3.6"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M9.5 12h5M9.5 15.5h5"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></symbol>
-  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7 12 3l8.5 4v9L12 21l-8.5-5z"/><path d="M12 3v18M3.5 7 12 11l8.5-4"/></symbol>
-  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.6 5.4 6 .8-4.4 4.1 1.1 5.9L12 16.9 6.7 19.7l1.1-5.9L3.4 9.6l6-.8z"/></symbol>
-  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M6 10.5h12V21H6z"/><path d="M8.5 10.5V7a3.5 3.5 0 0 1 7 0v3.5"/></symbol>
-  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 3l3 .8 1 3.8-2 1.3a12 12 0 0 0 6 6l1.3-2 3.8 1 .8 3A2 2 0 0 1 21 22 17 17 0 0 1 4 5a2 2 0 0 1 2-2"/></symbol>
-  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 13l1.6-4.7A2.5 2.5 0 0 1 9 6.6h6a2.5 2.5 0 0 1 2.4 1.7L19 13m-14 0h14v4H5zm0 4v1.6M19 17v1.6"/><path d="M7.4 15h.01M16.6 15h.01M4.5 13h15"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
-  <symbol id="i-route" viewBox="0 0 24 24"><path d="M6 20a2.5 2.5 0 0 0 0-5H8a2.5 2.5 0 0 0 0-5H6"/><path d="M18 4a2.5 2.5 0 0 0 0 5h-2a2.5 2.5 0 0 0 0 5h2"/></symbol>
-  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4m0 0h11l-2.5 3.5L17 11H6"/></symbol>
-  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 4v16M6 20h12M12 6 5.5 8 3 13.5a3 3 0 0 0 5 0zM12 6l6.5 2L21 13.5a3 3 0 0 1-5 0z"/></symbol>
-  <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2M7.5 9h6M7.5 12h6M7.5 15h4"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
-</svg>
 
 <header>
   <div class="wrap nav">
-    <div class="brand"><div class="logo">ML</div><div>MR L3ALEM AUTO<small>CHINA → ALGERIA</small></div></div>
+    <a href="#" class="brand"><span class="mark">ML</span><span>MR L3ALEM AUTO<small>CHINA &rarr; ALGERIA</small></span></a>
     <nav class="nav-links">
       <a href="#stock" data-i18n="nav_stock">المخزون</a>
       <a href="#used">مستعملة</a>
       <a href="#live" data-i18n="nav_track">تتبع الشحنة</a>
-      <a href="#about" data-i18n="nav_why">لماذا نحن</a>
       <a href="#about" data-i18n="nav_about">من نحن</a>
       <a href="#faq" data-i18n="nav_faq">الأسئلة</a>
       <a href="#journal" data-i18n="nav_journal">المدوّنة</a>
       <a href="#contact" data-i18n="nav_contact">اتصل بنا</a>
     </nav>
-    <div class="nav-cta">
+    <div class="nav-right">
       <div class="lang" id="lang">
         <button data-lang="ar" class="active">ع</button>
         <button data-lang="fr">FR</button>
         <button data-lang="en">EN</button>
       </div>
-      <a href="portal.html" class="btn btn-ghost"><svg class="ico"><use href="#i-lock"/></svg><span data-i18n="login">تسجيل الدخول</span></a>
+      <a href="portal.html" class="nav-login" data-i18n="login">تسجيل الدخول</a>
       <a href="#stock" class="btn btn-primary" data-i18n="browse">تصفّح المخزون</a>
     </div>
   </div>
 </header>
 
-<section id="featured" class="featured-hero" style="display:none"><div id="featuredSlot"></div></section>
-
+<!-- 1 — HERO (headline + weekly offer video) -->
 <section class="hero">
-  <div class="wrap hero-grid">
+  <div class="hero-grid wrap">
     <div class="hero-copy">
       <span class="eyebrow" data-i18n="hero_eyebrow">من الصين إلى الجزائر</span>
-      <p class="lead" data-i18n="hero_lead">تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة — من الشراء حتى ميناء الجزائر — في مكان واحد.</p>
+      <h1 class="display"><span data-i18n="hero_h1a">سيارتك القادمة،</span> <span data-i18n="hero_h1b">من الصين إلى الجزائر.</span></h1>
+      <p class="hero-lead body-lg" data-i18n="hero_lead">تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة — من الشراء حتى ميناء الجزائر — في مكان واحد.</p>
       <div class="hero-actions">
-        <a href="#stock" class="btn btn-light"><svg class="ico"><use href="#i-car"/></svg><span data-i18n="hero_browse">تصفّح المخزون المتوفر</span></a>
-        <a href="#live" class="btn btn-ghost"><svg class="ico"><use href="#i-ship"/></svg><span data-i18n="hero_track">تتبع شحنتي</span></a>
+        <a href="#stock" class="tlink"><span data-i18n="hero_browse">تصفّح المخزون المتوفر</span><span class="arw" aria-hidden="true"></span></a>
+        <a href="#live" class="tlink"><span data-i18n="hero_track">تتبع شحنتي</span><span class="arw" aria-hidden="true"></span></a>
       </div>
     </div>
-    <div class="showcase">
-      <span class="eyebrow" style="display:block;margin-bottom:14px">عرض هذا الأسبوع</span>
-      <div class="vreel"><iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1035011309434063&show_text=false&width=430&height=764" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe></div>
+    <div class="hero-offer">
+      <span class="offer-eyebrow" data-i18n="offer_eye">عرض هذا الأسبوع</span>
+      <div class="offer-media" id="featured">
+        <div id="featuredSlot">
+          <video class="offer-video" autoplay muted loop playsinline preload="metadata" poster="assets/offer-poster.jpg">
+            <source src="assets/weekly-offer.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- 3 — LIVE STOCK -->
 <section id="stock">
   <div class="wrap">
-    <div class="sec-top">
-      <div>
+    <div class="sec-head reveal">
+      <div class="sh-text">
         <span class="eyebrow" data-i18n="stock_eyebrow">المخزون المباشر</span>
         <h2 data-i18n="stock_h2">سيارات متوفرة وقادمة</h2>
-        <p data-i18n="stock_p">سيارات جاهزة الآن أو في طريقها من الصين. يتم التحديث مع تغيّر مخزوننا.</p>
+        <p class="sh-intro body-lg" data-i18n="stock_p">سيارات جاهزة الآن أو في طريقها من الصين. يتم التحديث مع تغيّر مخزوننا.</p>
       </div>
-      <a href="#contact" class="btn btn-ghost"><span data-i18n="stock_all">عرض كل المخزون</span><svg class="ico"><use href="#i-arrow"/></svg></a>
+      <a href="#contact" class="tlink"><span data-i18n="stock_all">عرض كل المخزون</span><span class="arw" aria-hidden="true"></span></a>
     </div>
     <div id="brandTiles" class="brand-tiles"></div>
-    <div class="stock" id="stockGrid">
-      <div class="car-card">
-        <div class="car-photo"><span class="pill badge b-avail" data-i18n="st_avail">متوفرة</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
-        <div class="car-body">
-          <h3>Geely Coolray — <span data-i18n="st_full">فُل أوبسيون</span></h3>
-          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
-          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="ask_wa">اسأل عبر واتساب</small></div><a href="#contact"><span data-i18n="reserve">احجز</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
-        </div>
-      </div>
-      <div class="car-card">
-        <div class="car-photo"><span class="pill badge b-transit" data-i18n="st_transit">في الطريق</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
-        <div class="car-body">
-          <h3>GAC GS3 Emzoom</h3>
-          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
-          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="eta">وصول خلال ~4 أسابيع</small></div><a href="#contact"><span data-i18n="details">التفاصيل</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
-        </div>
-      </div>
-      <div class="car-card">
-        <div class="car-photo"><span class="pill badge b-avail" data-i18n="st_avail">متوفرة</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
-        <div class="car-body">
-          <h3>MG 5 GT</h3>
-          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
-          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="ask_wa">اسأل عبر واتساب</small></div><a href="#contact"><span data-i18n="reserve">احجز</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
-        </div>
-      </div>
-      <div class="car-card">
-        <div class="car-photo"><span class="pill badge b-soon" data-i18n="st_soon">تصل قريباً</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div>
-        <div class="car-body">
-          <h3>Chery Tiggo 8 Pro</h3>
-          <div class="cc"><span class="chip">2026</span><span class="chip" data-i18n="chip_auto">أوتوماتيك</span><span class="chip" data-i18n="chip_petrol">بنزين</span></div>
-          <div class="car-foot"><div class="price" data-i18n="onreq">عند الطلب<small data-i18n="reserve_now">احجز الآن</small></div><a href="#contact"><span data-i18n="details">التفاصيل</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
-        </div>
-      </div>
+    <div class="grid-cars" id="stockGrid" data-stagger>
+      <button type="button" class="v-card reveal">
+        <div class="v-media"></div>
+        <span class="v-status eyebrow" data-i18n="st_avail">متوفرة</span>
+        <h3 class="v-title">Geely Coolray — <span data-i18n="st_full">فُل أوبسيون</span></h3>
+        <div class="v-specs caption"><span>2026</span> &middot; <span data-i18n="chip_auto">أوتوماتيك</span> &middot; <span data-i18n="chip_petrol">بنزين</span></div>
+        <span class="tlink v-more"><span data-i18n="details">التفاصيل</span><span class="arw" aria-hidden="true"></span></span>
+      </button>
+      <button type="button" class="v-card reveal">
+        <div class="v-media"></div>
+        <span class="v-status eyebrow" data-i18n="st_transit">في الطريق</span>
+        <h3 class="v-title">GAC GS3 Emzoom</h3>
+        <div class="v-specs caption"><span>2026</span> &middot; <span data-i18n="chip_auto">أوتوماتيك</span> &middot; <span data-i18n="chip_petrol">بنزين</span></div>
+        <span class="tlink v-more"><span data-i18n="details">التفاصيل</span><span class="arw" aria-hidden="true"></span></span>
+      </button>
+      <button type="button" class="v-card reveal">
+        <div class="v-media"></div>
+        <span class="v-status eyebrow" data-i18n="st_avail">متوفرة</span>
+        <h3 class="v-title">MG 5 GT</h3>
+        <div class="v-specs caption"><span>2026</span> &middot; <span data-i18n="chip_auto">أوتوماتيك</span> &middot; <span data-i18n="chip_petrol">بنزين</span></div>
+        <span class="tlink v-more"><span data-i18n="details">التفاصيل</span><span class="arw" aria-hidden="true"></span></span>
+      </button>
+      <button type="button" class="v-card reveal">
+        <div class="v-media"></div>
+        <span class="v-status eyebrow" data-i18n="st_soon">تصل قريباً</span>
+        <h3 class="v-title">Chery Tiggo 8 Pro</h3>
+        <div class="v-specs caption"><span>2026</span> &middot; <span data-i18n="chip_auto">أوتوماتيك</span> &middot; <span data-i18n="chip_petrol">بنزين</span></div>
+        <span class="tlink v-more"><span data-i18n="details">التفاصيل</span><span class="arw" aria-hidden="true"></span></span>
+      </button>
     </div>
   </div>
 </section>
 
-<section id="used" style="display:none">
+<!-- 4 — USED CARS -->
+<section id="used" class="surface" style="display:none">
   <div class="wrap">
-    <div class="sec-top">
-      <div>
+    <div class="sec-head reveal">
+      <div class="sh-text">
         <span class="eyebrow">سيارات مستعملة</span>
         <h2>سيارات مستعملة بحالة ممتازة</h2>
-        <p>سيارات مستعملة مختارة بعناية — بمسافات قليلة وحالة تقارب الجديدة. اضغط على السيارة لمشاهدة الصور والتفاصيل.</p>
+        <p class="sh-intro body-lg">سيارات مستعملة مختارة بعناية — بمسافات قليلة وحالة تقارب الجديدة. اضغط على السيارة لمشاهدة الصور والتفاصيل.</p>
       </div>
     </div>
     <div id="usedBrandTiles" class="brand-tiles"></div>
-    <div class="stock" id="usedGrid"></div>
+    <div class="grid-cars" id="usedGrid" data-stagger></div>
   </div>
 </section>
 
-
+<!-- 5 — ABOUT -->
 <section id="about">
   <div class="wrap">
     <div class="about-grid">
-      <div class="about-photo">
-        <span class="pill tag b-avail ph-badge" data-i18n="ab_badge">وسيط مسجّل</span>
-        <span class="ph-init">ML</span>
-        <span class="ph-note" data-i18n="ab_photo">صورتك هنا</span>
+      <div class="about-photo reveal">
+        <img src="assets/founder.jpg" alt="" onerror="this.style.display='none'">
       </div>
-      <div class="about-body">
+      <div class="about-body reveal">
         <span class="eyebrow" data-i18n="ab_eye">من نحن</span>
         <h2 data-i18n="ab_h2">من هو مستر لعلام؟</h2>
         <p data-i18n="ab_p1">أنا مستر لعلام، وسيط سيارات جزائري من الجلفة. بدأت هذا النشاط لأنّي رأيت كم يخاف الناس من استيراد سيارة من الصين — من يضمن؟ من يتابع؟ من يشرح؟ فقرّرت أن أكون أنا ذلك الشخص.</p>
         <p data-i18n="ab_p2">أشتري السيارة مباشرة من الصين، أوثّق كل طلب بعقد باسمك، وأتابع سيارتك معك خطوة بخطوة حتى تصل إلى يدك في الجزائر. لا وعود غامضة — فقط متابعة واضحة وصدق.</p>
-        <div class="about-pts">
-          <div class="about-pt"><svg class="ico"><use href="#i-shield"/></svg><span data-i18n="ab_pt1">نشاط مسجّل رسمياً في الجلفة</span></div>
-          <div class="about-pt"><svg class="ico"><use href="#i-box"/></svg><span data-i18n="ab_pt2">توريد مباشر من الصين</span></div>
-          <div class="about-pt"><svg class="ico"><use href="#i-chat"/></svg><span data-i18n="ab_pt3">متابعة شخصية لكل عميل عبر واتساب</span></div>
+        <div class="about-list">
+          <div class="row" data-i18n="ab_pt1">نشاط مسجّل رسمياً في الجلفة</div>
+          <div class="row" data-i18n="ab_pt2">توريد مباشر من الصين</div>
+          <div class="row" data-i18n="ab_pt3">متابعة شخصية لكل عميل عبر واتساب</div>
         </div>
         <div class="about-sig" data-i18n="ab_sig">— مستر لعلام</div>
         <div class="about-role" data-i18n="ab_role">المؤسّس، مستر لعلام أوطو · الجلفة، الجزائر</div>
@@ -538,25 +557,25 @@
   </div>
 </section>
 
-<section id="live">
+<!-- 6 — LIVE SHIP TRACKING -->
+<section id="live" class="live">
   <div class="wrap">
-    <div class="sec-top">
-      <div>
+    <div class="sec-head reveal">
+      <div class="sh-text">
         <span class="eyebrow" data-i18n="live_eyebrow">تتبع مباشر</span>
         <h2 data-i18n="live_h2">تابع سيارتك عبر البحر، مباشرة</h2>
-        <p data-i18n="live_p">شاهد الموقع الحالي للسفينة التي تحمل سيارتك، لحظة بلحظة — من ميناء الصين حتى ميناء الجزائر.</p>
+        <p class="sh-intro body-lg" data-i18n="live_p">شاهد الموقع الحالي للسفينة التي تحمل سيارتك، لحظة بلحظة — من ميناء الصين حتى ميناء الجزائر.</p>
       </div>
     </div>
     <div class="live-wrap">
-      <div class="map-box"><div id="map"></div></div>
-      <div class="mpanel">
+      <div class="map-box reveal"><div id="map"></div></div>
+      <div class="mpanel reveal">
         <div class="mp-head">
-          <div class="mp-ship"><svg class="ico"><use href="#i-ship"/></svg></div>
           <div>
-            <div class="mp-name" id="mVessel">MV Ocean Star</div>
+            <div class="mp-name" id="mVessel"><bdi>MV Ocean Star</bdi></div>
             <div class="mp-route" data-i18n="live_route">شنغهاي ← الجزائر</div>
           </div>
-          <span class="pill tag" style="margin-inline-start:auto" data-i18n="sc_tag">● في الطريق</span>
+          <span class="mp-status"><span class="cd6"></span><span data-i18n="sc_tag">في الطريق</span></span>
         </div>
         <div class="mp-eta">
           <div class="mp-eta-l" data-i18n="live_eta_l">تصل خلال</div>
@@ -567,19 +586,18 @@
             <div><b id="cdS">--</b><span data-i18n="u_sec">ثانية</span></div>
           </div>
         </div>
-        <div class="mp-bar"><span id="mBar"></span></div>
         <div class="mp-rows">
           <div class="mrow"><span data-i18n="live_progress">نسبة الرحلة</span><b id="mProgress">--</b></div>
           <div class="mrow"><span data-i18n="live_leg_l">المنطقة الحالية</span><b id="mLeg">--</b></div>
-          <div class="mrow"><span data-i18n="live_pos_l">الموقع</span><b><span id="mLat">--</span> · <span id="mLng">--</span></b></div>
-          <div class="mrow"><span data-i18n="live_speed_l">السرعة</span><b><span id="mSpeed">--</span> <span data-i18n="u_knots">عقدة</span></b></div>
+          <div class="mrow"><span data-i18n="live_pos_l">الموقع</span><b><bdi><span id="mLat">--</span> · <span id="mLng">--</span></bdi></b></div>
+          <div class="mrow"><span data-i18n="live_speed_l">السرعة</span><b><bdi><span id="mSpeed">--</span></bdi> <span data-i18n="u_knots">عقدة</span></b></div>
         </div>
-        <div class="mp-miles">
-          <div class="mile done"><span class="mdot"></span><i data-i18n="m1">غادرت الصين</i></div>
-          <div class="mile done"><span class="mdot"></span><i data-i18n="m2">مضيق ملقا</i></div>
-          <div class="mile now"><span class="mdot"></span><i data-i18n="m3">قناة السويس</i></div>
-          <div class="mile"><span class="mdot"></span><i data-i18n="m4">البحر المتوسط</i></div>
-          <div class="mile"><span class="mdot"></span><i data-i18n="m5">ميناء الجزائر</i></div>
+        <div class="stages">
+          <div class="stage done"><span class="sdot"></span><span data-i18n="m1">غادرت الصين</span></div>
+          <div class="stage done"><span class="sdot"></span><span data-i18n="m2">مضيق ملقا</span></div>
+          <div class="stage now"><span class="sdot"></span><span data-i18n="m3">قناة السويس</span></div>
+          <div class="stage"><span class="sdot"></span><span data-i18n="m4">البحر المتوسط</span></div>
+          <div class="stage"><span class="sdot"></span><span data-i18n="m5">ميناء الجزائر</span></div>
         </div>
         <p class="mp-note" data-i18n="live_note">هذه رحلة توضيحية مباشرة. ستظهر سيارتك أنت هنا بمجرد تسجيل الدخول.</p>
       </div>
@@ -587,60 +605,86 @@
   </div>
 </section>
 
+<!-- 7 — DELIVERED CARS -->
 <section id="delivered">
   <div class="wrap">
-    <div class="sec-top"><div><span class="eyebrow" data-i18n="dl_eye">سيارات سلّمناها</span><h2 data-i18n="dl_h2">سيارات وصلت إلى أصحابها</h2><p data-i18n="dl_p">لقطات حقيقية لسيارات وصلت من الصين وتسلّمها أصحابها في الجزائر. الثقة تُبنى بالتسليم، لا بالكلام.</p></div></div>
-    <div class="gal">
-      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c1">جيلي كولراي — الجلفة</div></div>
-      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c2">شيري تيغو 8 — الأغواط</div></div>
-      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c3">MG 5 — بومرداس</div></div>
-      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c4">GAC GS3 — تيارت</div></div>
-      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c5">هافال جوليان — الجلفة</div></div>
-      <div class="gal-item"><span class="pill badge b-avail g-badge" data-i18n="dl_badge">✓ تم التسليم</span><svg viewBox="0 0 24 24"><use href="#i-car"/></svg><div class="g-cap" data-i18n="dl_c6">شانجان أليسفين — المسيلة</div></div>
+    <div class="sec-head reveal">
+      <div class="sh-text">
+        <span class="eyebrow" data-i18n="dl_eye">سيارات سلّمناها</span>
+        <h2 data-i18n="dl_h2">سيارات وصلت إلى أصحابها</h2>
+        <p class="sh-intro body-lg" data-i18n="dl_p">لقطات حقيقية لسيارات وصلت من الصين وتسلّمها أصحابها في الجزائر. الثقة تُبنى بالتسليم، لا بالكلام.</p>
+      </div>
+    </div>
+  </div>
+  <div class="gal-bleed">
+    <div class="gal" data-stagger>
+      <div class="gal-item reveal"><div class="g-media"><img src="assets/delivered-1.jpg" alt="" onerror="this.style.display='none'"></div><div class="g-cap"><div class="g-city" data-i18n="dl_c1">جيلي كولراي — الجلفة</div><div class="g-done" data-i18n="dl_badge">تم التسليم</div></div></div>
+      <div class="gal-item reveal"><div class="g-media"><img src="assets/delivered-2.jpg" alt="" onerror="this.style.display='none'"></div><div class="g-cap"><div class="g-city" data-i18n="dl_c2">شيري تيغو 8 — الأغواط</div><div class="g-done" data-i18n="dl_badge">تم التسليم</div></div></div>
+      <div class="gal-item reveal"><div class="g-media"><img src="assets/delivered-3.jpg" alt="" onerror="this.style.display='none'"></div><div class="g-cap"><div class="g-city" data-i18n="dl_c3">MG 5 — بومرداس</div><div class="g-done" data-i18n="dl_badge">تم التسليم</div></div></div>
+      <div class="gal-item reveal"><div class="g-media"><img src="assets/delivered-4.jpg" alt="" onerror="this.style.display='none'"></div><div class="g-cap"><div class="g-city" data-i18n="dl_c4">GAC GS3 — تيارت</div><div class="g-done" data-i18n="dl_badge">تم التسليم</div></div></div>
+      <div class="gal-item reveal"><div class="g-media"><img src="assets/delivered-5.jpg" alt="" onerror="this.style.display='none'"></div><div class="g-cap"><div class="g-city" data-i18n="dl_c5">هافال جوليان — الجلفة</div><div class="g-done" data-i18n="dl_badge">تم التسليم</div></div></div>
+      <div class="gal-item reveal"><div class="g-media"><img src="assets/delivered-6.jpg" alt="" onerror="this.style.display='none'"></div><div class="g-cap"><div class="g-city" data-i18n="dl_c6">شانجان أليسفين — المسيلة</div><div class="g-done" data-i18n="dl_badge">تم التسليم</div></div></div>
     </div>
   </div>
 </section>
 
-<section id="reviews" class="why">
+<!-- 8 — TESTIMONIALS -->
+<section id="reviews" class="surface">
   <div class="wrap">
-    <div class="sec-top"><div><span class="eyebrow" data-i18n="rv_eye">آراء العملاء</span><h2 data-i18n="rv_h2">ماذا يقول عملاؤنا</h2></div></div>
-    <div class="rev">
-      <div class="rev-card">
-        <div class="stars"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+    <div class="sec-head reveal">
+      <div class="sh-text">
+        <span class="eyebrow" data-i18n="rv_eye">آراء العملاء</span>
+        <h2 data-i18n="rv_h2">ماذا يقول عملاؤنا</h2>
+      </div>
+    </div>
+    <div class="rev" data-stagger>
+      <div class="rev-card reveal">
         <p class="rev-q" data-i18n="rv1q">«كنت خائفاً في البداية، لكن تابعت سيارتي على الخريطة يوماً بيوم حتى وصلت. تعامل صادق ومتابعة ممتازة.»</p>
-        <div class="rev-who"><div class="rev-av">س</div><div><div class="rev-n" data-i18n="rv1n">سفيان ب.</div><div class="rev-l" data-i18n="rv1l">الجلفة</div></div></div>
+        <div class="rev-who"><div class="rev-n" data-i18n="rv1n">سفيان ب.</div><div class="rev-l" data-i18n="rv1l">الجلفة</div></div>
       </div>
-      <div class="rev-card">
-        <div class="stars"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+      <div class="rev-card reveal">
         <p class="rev-q" data-i18n="rv2q">«كل مرحلة كان يوصلني إشعار على الواتساب. عقد واضح ومن غير مفاجآت. أنصح به بشدة.»</p>
-        <div class="rev-who"><div class="rev-av">أ</div><div><div class="rev-n" data-i18n="rv2n">أمين خ.</div><div class="rev-l" data-i18n="rv2l">الأغواط</div></div></div>
+        <div class="rev-who"><div class="rev-n" data-i18n="rv2n">أمين خ.</div><div class="rev-l" data-i18n="rv2l">الأغواط</div></div>
       </div>
-      <div class="rev-card">
-        <div class="stars"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+      <div class="rev-card reveal">
         <p class="rev-q" data-i18n="rv3q">«أول مرة نستورد سيارة، ومستر لعلام سهّل عليّ كل شيء وشرح لي كل خطوة. سيارتي وصلت كما اتفقنا.»</p>
-        <div class="rev-who"><div class="rev-av">ي</div><div><div class="rev-n" data-i18n="rv3n">ياسين ع.</div><div class="rev-l" data-i18n="rv3l">تيارت</div></div></div>
+        <div class="rev-who"><div class="rev-n" data-i18n="rv3n">ياسين ع.</div><div class="rev-l" data-i18n="rv3l">تيارت</div></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- 9 — BLOG -->
 <section id="journal">
   <div class="wrap">
-    <div class="sec-top"><div><span class="eyebrow" data-i18n="jr_eyebrow">مدوّنة مستر لعلام</span><h2 data-i18n="jr_h2">أخبار وأدلّة حول الاستيراد من الصين</h2></div><a href="blog.html" class="btn btn-ghost"><span data-i18n="jr_all">كل المقالات</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
-    <div class="stock">
-      <a class="car-card" href="blog.html#best-2026"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-news"/></svg></div><div class="car-body"><h3 data-i18n="jr1">أفضل السيارات الصينية للجزائر في 2026</h3><div class="cc"><span class="chip" data-i18n="jr1t">دليل</span></div></div></a>
-      <a class="car-card" href="blog.html#geely-2026"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></div><div class="car-body"><h3 data-i18n="jr2">موديلات جيلي الجديدة تصل هذا الموسم</h3><div class="cc"><span class="chip" data-i18n="jr2t">أخبار</span></div></div></a>
-      <a class="car-card" href="blog.html#shipping"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-ship"/></svg></div><div class="car-body"><h3 data-i18n="jr3">مدة الشحن من الصين: ماذا تتوقّع</h3><div class="cc"><span class="chip" data-i18n="jr3t">الشحن</span></div></div></a>
-      <a class="car-card" href="blog.html#coolray-vs-gs3"><div class="car-photo"><svg viewBox="0 0 24 24"><use href="#i-scale"/></svg></div><div class="car-body"><h3 data-i18n="jr4">كولراي في مواجهة GAC GS3 — أيّهما تختار؟</h3><div class="cc"><span class="chip" data-i18n="jr4t">مقارنة</span></div></div></a>
+    <div class="sec-head reveal">
+      <div class="sh-text">
+        <span class="eyebrow" data-i18n="jr_eyebrow">مدوّنة مستر لعلام</span>
+        <h2 data-i18n="jr_h2">أخبار وأدلّة حول الاستيراد من الصين</h2>
+      </div>
+      <a href="blog.html" class="tlink"><span data-i18n="jr_all">كل المقالات</span><span class="arw" aria-hidden="true"></span></a>
+    </div>
+    <div class="grid-posts" data-stagger>
+      <a class="post-card reveal" href="blog.html#best-2026"><div class="p-media"></div><span class="eyebrow" data-i18n="jr1t">دليل</span><h3 data-i18n="jr1">أفضل السيارات الصينية للجزائر في 2026</h3></a>
+      <a class="post-card reveal" href="blog.html#geely-2026"><div class="p-media"></div><span class="eyebrow" data-i18n="jr2t">أخبار</span><h3 data-i18n="jr2">موديلات جيلي الجديدة تصل هذا الموسم</h3></a>
+      <a class="post-card reveal" href="blog.html#shipping"><div class="p-media"></div><span class="eyebrow" data-i18n="jr3t">الشحن</span><h3 data-i18n="jr3">مدة الشحن من الصين: ماذا تتوقّع</h3></a>
+      <a class="post-card reveal" href="blog.html#coolray-vs-gs3"><div class="p-media"></div><span class="eyebrow" data-i18n="jr4t">مقارنة</span><h3 data-i18n="jr4">كولراي في مواجهة GAC GS3 — أيّهما تختار؟</h3></a>
     </div>
   </div>
 </section>
 
-<section id="request">
+<!-- 10 — ORDER FORM -->
+<section id="request" class="surface">
   <div class="wrap">
-    <div class="sec-top"><div><span class="eyebrow" data-i18n="rq_eye">اطلب سيارتك</span><h2 data-i18n="rq_h2">لم تجد سيارتك؟ اطلبها ونجدها لك</h2><p data-i18n="rq_p">أخبرنا بالسيارة التي تريدها وميزانيتك، وسنبحث لك عنها في الصين ونعود إليك على واتساب.</p></div></div>
+    <div class="sec-head reveal">
+      <div class="sh-text">
+        <span class="eyebrow" data-i18n="rq_eye">اطلب سيارتك</span>
+        <h2 data-i18n="rq_h2">لم تجد سيارتك؟ اطلبها ونجدها لك</h2>
+        <p class="sh-intro body-lg" data-i18n="rq_p">أخبرنا بالسيارة التي تريدها وميزانيتك، وسنبحث لك عنها في الصين ونعود إليك على واتساب.</p>
+      </div>
+    </div>
     <div class="req-wrap">
-      <form class="req-form" id="reqForm" onsubmit="return sendRequest(event)">
+      <form class="req-form reveal" id="reqForm" onsubmit="return sendRequest(event)">
         <div class="req-grid">
           <div class="field"><label data-i18n="rq_name">الاسم الكامل</label><input id="f_name" type="text" required></div>
           <div class="field"><label data-i18n="rq_phone">رقم الهاتف (واتساب)</label><input id="f_phone" type="tel" required></div>
@@ -658,76 +702,83 @@
           </div>
           <div class="field"><label data-i18n="rq_notes">ملاحظات إضافية</label><input id="f_notes" type="text"></div>
         </div>
-        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center"><svg class="ico"><use href="#i-chat"/></svg><span data-i18n="rq_send">إرسال الطلب عبر واتساب</span></button>
+        <button class="btn btn-primary" type="submit" data-i18n="rq_send">إرسال الطلب عبر واتساب</button>
         <p class="req-note" data-i18n="rq_note">سنراجع طلبك ونعود إليك على واتساب في أقرب وقت.</p>
       </form>
-      <div class="req-aside">
-        <h4 data-i18n="rq_aside_h">كيف يعمل الطلب؟</h4>
-        <div class="ra"><svg class="ico"><use href="#i-box"/></svg><div><b data-i18n="rq_a1t">نبحث في الصين</b><span data-i18n="rq_a1s">نبحث عن سيارتك بأفضل الشروط من مصادرنا.</span></div></div>
-        <div class="ra"><svg class="ico"><use href="#i-chat"/></svg><div><b data-i18n="rq_a2t">نعود إليك على واتساب</b><span data-i18n="rq_a2s">نتواصل معك مباشرة بالتفاصيل والخطوات.</span></div></div>
-        <div class="ra"><svg class="ico"><use href="#i-shield"/></svg><div><b data-i18n="rq_a3t">دون أي التزام</b><span data-i18n="rq_a3s">الطلب مجاني ولا يُلزمك بأي شيء.</span></div></div>
+      <div class="req-aside reveal">
+        <h3 data-i18n="rq_aside_h">كيف يعمل الطلب؟</h3>
+        <div class="steps">
+          <div class="step"><span class="num">1</span><div><b data-i18n="rq_a1t">نبحث في الصين</b><span data-i18n="rq_a1s">نبحث عن سيارتك بأفضل الشروط من مصادرنا.</span></div></div>
+          <div class="step"><span class="num">2</span><div><b data-i18n="rq_a2t">نعود إليك على واتساب</b><span data-i18n="rq_a2s">نتواصل معك مباشرة بالتفاصيل والخطوات.</span></div></div>
+          <div class="step"><span class="num">3</span><div><b data-i18n="rq_a3t">دون أي التزام</b><span data-i18n="rq_a3s">الطلب مجاني ولا يُلزمك بأي شيء.</span></div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="faq" class="why">
+<!-- 11 — FAQ -->
+<section id="faq">
   <div class="wrap">
-    <div class="sec-top"><div><span class="eyebrow" data-i18n="fq_eye">الأسئلة الشائعة</span><h2 data-i18n="fq_h2">أسئلة يطرحها كل عميل</h2></div></div>
-    <div class="faq">
-      <details open><summary data-i18n="fq1q">كيف تبدأ عملية الطلب؟</summary><div class="faq-a" data-i18n="fq1a">نتفق معك على السيارة وشروطها، ثم يُوثّق كل شيء في عقد مكتوب باسمك قبل بدء الطلب. أنت تعرف ما تدفعه ولماذا في كل مرحلة.</div></details>
-      <details><summary data-i18n="fq2q">من يتكفّل بالجمارك ومصاريف الميناء؟</summary><div class="faq-a" data-i18n="fq2a">نشرح لك كل المراحل والتكاليف المتوقّعة مسبقاً وبوضوح، حتى لا تكون هناك أي مفاجآت بعد وصول السيارة.</div></details>
-      <details><summary data-i18n="fq3q">كم تستغرق مدة الشحن من الصين؟</summary><div class="faq-a" data-i18n="fq3a">اعتماداً على تجربتنا، نعتمد على شركة MSC لأنها الأكثر موثوقية، وتستغرق عادةً بين 45 و65 يوماً من مغادرة السفينة حتى ميناء الجزائر. وعند توفّر خط موهيل (Mohill) تصل السيارة في نحو 35 يوماً — مع إمكانية متابعتها مباشرة على الخريطة طوال الرحلة.</div></details>
-      <details><summary data-i18n="fq4q">ماذا لو تأخّرت السيارة أو حدث طارئ؟</summary><div class="faq-a" data-i18n="fq4a">تبقى على تواصل دائم معنا، وكل طلب موثّق بعقد. نحدّثك في كل مرحلة عبر واتساب، ولا نتركك في الغموض أبداً.</div></details>
-      <details><summary data-i18n="fq5q">كيف تتم عملية الدفع؟</summary><div class="faq-a" data-i18n="fq5a">نتفق على طريقة دفع واضحة وموثّقة في العقد، ونشرحها لك خطوة بخطوة قبل أن تلتزم بأي شيء.</div></details>
-      <details><summary data-i18n="fq6q">هل تسلّمون لكل الولايات؟</summary><div class="faq-a" data-i18n="fq6a">نعم، ننسّق معك التسليم بعد وصول السيارة إلى ميناء الجزائر، مهما كانت ولايتك.</div></details>
+    <div class="sec-head reveal">
+      <div class="sh-text">
+        <span class="eyebrow" data-i18n="fq_eye">الأسئلة الشائعة</span>
+        <h2 data-i18n="fq_h2">أسئلة يطرحها كل عميل</h2>
+      </div>
+    </div>
+    <div class="faq reveal">
+      <details open><summary><span data-i18n="fq1q">كيف تبدأ عملية الطلب؟</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a" data-i18n="fq1a">نتفق معك على السيارة وشروطها، ثم يُوثّق كل شيء في عقد مكتوب باسمك قبل بدء الطلب. أنت تعرف ما تدفعه ولماذا في كل مرحلة.</div></details>
+      <details><summary><span data-i18n="fq2q">من يتكفّل بالجمارك ومصاريف الميناء؟</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a" data-i18n="fq2a">نشرح لك كل المراحل والتكاليف المتوقّعة مسبقاً وبوضوح، حتى لا تكون هناك أي مفاجآت بعد وصول السيارة.</div></details>
+      <details><summary><span data-i18n="fq3q">كم تستغرق مدة الشحن من الصين؟</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a" data-i18n="fq3a">اعتماداً على تجربتنا، نعتمد على شركة MSC لأنها الأكثر موثوقية، وتستغرق عادةً بين 45 و65 يوماً من مغادرة السفينة حتى ميناء الجزائر. وعند توفّر خط موهيل (Mohill) تصل السيارة في نحو 35 يوماً — مع إمكانية متابعتها مباشرة على الخريطة طوال الرحلة.</div></details>
+      <details><summary><span data-i18n="fq4q">ماذا لو تأخّرت السيارة أو حدث طارئ؟</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a" data-i18n="fq4a">تبقى على تواصل دائم معنا، وكل طلب موثّق بعقد. نحدّثك في كل مرحلة عبر واتساب، ولا نتركك في الغموض أبداً.</div></details>
+      <details><summary><span data-i18n="fq5q">كيف تتم عملية الدفع؟</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a" data-i18n="fq5a">نتفق على طريقة دفع واضحة وموثّقة في العقد، ونشرحها لك خطوة بخطوة قبل أن تلتزم بأي شيء.</div></details>
+      <details><summary><span data-i18n="fq6q">هل تسلّمون لكل الولايات؟</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a" data-i18n="fq6a">نعم، ننسّق معك التسليم بعد وصول السيارة إلى ميناء الجزائر، مهما كانت ولايتك.</div></details>
     </div>
   </div>
 </section>
 
-<section id="contact">
+<!-- 12 — CONTACT -->
+<section id="contact" class="contact">
   <div class="wrap">
-    <div class="banner">
-      <div>
-        <span class="eyebrow" data-i18n="ct_eyebrow">تواصل معنا</span>
-        <h2 data-i18n="ct_h2">جاهز للعثور على سيارتك؟</h2>
-        <p data-i18n="ct_p">راسلنا عبر واتساب — سنساعدك على الاختيار والحجز والمتابعة حتى الجزائر.</p>
-      </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="https://wa.me/213554601928" class="btn btn-primary"><svg class="ico"><use href="#i-chat"/></svg><span data-i18n="ct_wa">راسلنا على واتساب</span></a>
-        <a href="tel:+213554601928" class="btn btn-ghost"><svg class="ico"><use href="#i-phone"/></svg>0554 601 928</a>
-        <a href="mailto:contact@mrl3alemauto.com" class="btn btn-ghost"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>contact@mrl3alemauto.com</a>
+    <div class="reveal">
+      <span class="eyebrow" data-i18n="ct_eyebrow">تواصل معنا</span>
+      <h2 data-i18n="ct_h2">جاهز للعثور على سيارتك؟</h2>
+      <p class="body-lg" data-i18n="ct_p">راسلنا عبر واتساب — سنساعدك على الاختيار والحجز والمتابعة حتى الجزائر.</p>
+      <div class="contact-links">
+        <a href="https://wa.me/213554601928" class="tlink"><span data-i18n="ct_wa">راسلنا على واتساب</span><span class="arw" aria-hidden="true"></span></a>
+        <a href="tel:+213554601928" class="tlink"><bdi>0554 601 928</bdi><span class="arw" aria-hidden="true"></span></a>
+        <a href="mailto:contact@mrl3alemauto.com" class="tlink"><bdi>contact@mrl3alemauto.com</bdi><span class="arw" aria-hidden="true"></span></a>
       </div>
     </div>
   </div>
 </section>
 
+<!-- 13 — FOOTER -->
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <div>
-        <div class="brand" style="margin-bottom:16px"><div class="logo">ML</div><div style="color:#fff">MR L3ALEM AUTO<small>CHINA → ALGERIA</small></div></div>
+      <div class="foot-brand">
+        <div class="foot-logo"><span class="mark">ML</span><div><b>MR L3ALEM AUTO</b><small>CHINA &rarr; ALGERIA</small></div></div>
         <p data-i18n="foot_desc">استورد سيارتك من الصين وتابع رحلتها الكاملة إلى الجزائر. وساطة مسجّلة مقرّها الجلفة.</p>
       </div>
-      <div><h5 data-i18n="foot_explore">استكشف</h5><a href="#stock" data-i18n="q1b">المخزون المتوفر</a><a href="#live" data-i18n="nav_track">تتبع الشحنة</a><a href="#used">سيارات مستعملة</a><a href="blog.html" data-i18n="nav_journal">المدوّنة</a></div>
-      <div><h5 data-i18n="foot_company">الشركة</h5><a href="#about" data-i18n="nav_why">لماذا نحن</a><a href="#contact" data-i18n="nav_contact">اتصل بنا</a><a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a></div>
-      <div><h5 data-i18n="nav_contact">اتصل بنا</h5><p>WhatsApp: +213 554 601 928</p><p><a href="mailto:contact@mrl3alemauto.com" style="color:inherit;text-decoration:none">contact@mrl3alemauto.com</a></p><p data-i18n="foot_addr">حي باكوكة، الجلفة، الجزائر</p></div>
+      <div class="foot-col"><h5 data-i18n="foot_explore">استكشف</h5><a href="#stock" data-i18n="q1b">المخزون المتوفر</a><a href="#live" data-i18n="nav_track">تتبع الشحنة</a><a href="#used">سيارات مستعملة</a><a href="blog.html" data-i18n="nav_journal">المدوّنة</a></div>
+      <div class="foot-col"><h5 data-i18n="foot_company">الشركة</h5><a href="#about" data-i18n="nav_why">لماذا نحن</a><a href="#contact" data-i18n="nav_contact">اتصل بنا</a><a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a></div>
+      <div class="foot-col"><h5 data-i18n="nav_contact">اتصل بنا</h5><p><bdi>WhatsApp: +213 554 601 928</bdi></p><p><a href="mailto:contact@mrl3alemauto.com"><bdi>contact@mrl3alemauto.com</bdi></a></p><p data-i18n="foot_addr">حي باكوكة، الجلفة، الجزائر</p></div>
     </div>
     <div class="foot-bottom">
-      <div data-i18n="copyright">© 2026 مستر لعلام أوطو · السجل التجاري رقم 26 A 1561121‑00/17</div>
-      <div class="socials">
-        <a href="https://wa.me/213554601928" aria-label="WhatsApp"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3c-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6 1.8 2.8 4.4 3.9c1.6.7 2.2.7 3 .6.5 0 1.4-.6 1.6-1.1s.2-1 .1-1.1z"/></svg></a>
-        <a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.75-1.6 1.5V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg></a>
+      <div class="legal" data-i18n="copyright">© 2026 مستر لعلام أوطو · السجل التجاري رقم 26 A 1561121‑00/17</div>
+      <div class="foot-social">
+        <a href="https://wa.me/213554601928">WhatsApp</a>
+        <a href="https://www.facebook.com/profile.php?id=61587525334464" target="_blank" rel="noopener">Facebook</a>
       </div>
     </div>
   </div>
 </footer>
 
-<a href="https://wa.me/213554601928" class="wa-float" aria-label="WhatsApp"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3c-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6 1.8 2.8 4.4 3.9c1.6.7 2.2.7 3 .6.5 0 1.4-.6 1.6-1.1s.2-1 .1-1.1z"/></svg><span data-i18n="wa_float">تحدّث معنا</span></a>
+<a href="https://wa.me/213554601928" class="wa-float" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3c-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6 1.8 2.8 4.4 3.9c1.6.7 2.2.7 3 .6.5 0 1.4-.6 1.6-1.1s.2-1 .1-1.1z"/></svg></a>
 
-<a href="https://wa.me/8613138626358?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D9%88%D8%AB%D9%8A%D9%82%D8%A9%20%D8%A7%D9%84%D8%B4%D8%AD%D9%86%20(BL)%20%D9%88%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D9%86%D8%AF%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AE%D8%A7%D8%B5%D8%A9%20%D8%A8%D8%B7%D9%84%D8%A8%D9%8A." target="_blank" rel="noopener" class="doc-float" aria-label="مستنداتك">
-  <span class="df-ic"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15.5h5"/></svg></span>
-  <span class="df-tx"><b data-i18n="doc_b">استلم مستنداتك</b><small data-i18n="doc_s">وثيقة الشحن (BL) والمستندات</small></span>
+<a href="https://wa.me/8613138626358?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D9%88%D8%AB%D9%8A%D9%82%D8%A9%20%D8%A7%D9%84%D8%B4%D8%AD%D9%86%20(BL)%20%D9%88%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D9%86%D8%AF%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AE%D8%A7%D8%B5%D8%A9%20%D8%A8%D8%B7%D9%84%D8%A8%D9%8A." target="_blank" rel="noopener" class="doc-float" aria-label="مستنداتك (BL)">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15.5h5"/></svg>
 </a>
 
 <script>
@@ -740,8 +791,9 @@ const I18N = {
     hero_eyebrow:"من الصين إلى الجزائر",hero_h1a:"سيارتك القادمة،",hero_h1b:"من الصين إلى الجزائر.",
     hero_lead:"تصفّح السيارات المتوفرة، احجز سيارتك، وتابع رحلتها الكاملة — من الشراء حتى ميناء الجزائر — في مكان واحد.",
     hero_browse:"تصفّح المخزون المتوفر",hero_track:"تتبع شحنتي",
+    offer_eye:"عرض هذا الأسبوع",offer_h:"عرض هذا الأسبوع",
     b1b:"توريد مباشر",b1s:"من الصين إلى الجزائر",b2b:"تتبع مباشر",b2s:"تابع سيارتك",b3b:"مسجّلة رسمياً",b3s:"الجلفة، الجزائر",
-    sc_tag:"● في الطريق",sc_name:"جيلي كولراي — فُل أوبسيون",sc_journey:"الرحلة",sc_departed:"غادرت الصين",
+    sc_tag:"في الطريق",sc_name:"جيلي كولراي — فُل أوبسيون",sc_journey:"الرحلة",sc_departed:"غادرت الصين",
     chip_auto:"أوتوماتيك",chip_petrol:"بنزين",chip_suv:"SUV",chip_full:"فُل أوبسيون",
     q1b:"المخزون المتوفر",q1s:"شاهد المتوفر الآن",q2b:"تتبع شحنتي",q2s:"تابع سيارتك مباشرة",q3b:"لماذا مستر لعلام",q3s:"وسيط مسجّل",q4b:"المدوّنة",q4s:"أدلّة ونصائح الاستيراد",q5b:"اتصل بنا",q5s:"تحدّث عبر واتساب",
     stock_eyebrow:"المخزون المباشر",stock_h2:"سيارات متوفرة وقادمة",stock_p:"سيارات جاهزة الآن أو في طريقها من الصين. يتم التحديث مع تغيّر مخزوننا.",stock_all:"عرض كل المخزون",
@@ -770,7 +822,7 @@ const I18N = {
     ab_p2:"أشتري السيارة مباشرة من الصين، أوثّق كل طلب بعقد باسمك، وأتابع سيارتك معك خطوة بخطوة حتى تصل إلى يدك في الجزائر. لا وعود غامضة — فقط متابعة واضحة وصدق.",
     ab_pt1:"نشاط مسجّل رسمياً في الجلفة",ab_pt2:"توريد مباشر من الصين",ab_pt3:"متابعة شخصية لكل عميل عبر واتساب",
     ab_sig:"— مستر لعلام",ab_role:"المؤسّس، مستر لعلام أوطو · الجلفة، الجزائر",
-    dl_eye:"سيارات سلّمناها",dl_h2:"سيارات وصلت إلى أصحابها",dl_p:"لقطات حقيقية لسيارات وصلت من الصين وتسلّمها أصحابها في الجزائر. الثقة تُبنى بالتسليم، لا بالكلام.",dl_badge:"✓ تم التسليم",
+    dl_eye:"سيارات سلّمناها",dl_h2:"سيارات وصلت إلى أصحابها",dl_p:"لقطات حقيقية لسيارات وصلت من الصين وتسلّمها أصحابها في الجزائر. الثقة تُبنى بالتسليم، لا بالكلام.",dl_badge:"تم التسليم",
     dl_c1:"جيلي كولراي — الجلفة",dl_c2:"شيري تيغو 8 — الأغواط",dl_c3:"MG 5 — بومرداس",dl_c4:"GAC GS3 — تيارت",dl_c5:"هافال جوليان — الجلفة",dl_c6:"شانجان أليسفين — المسيلة",
     rv_eye:"آراء العملاء",rv_h2:"ماذا يقول عملاؤنا",
     rv1q:"«كنت خائفاً في البداية، لكن تابعت سيارتي على الخريطة يوماً بيوم حتى وصلت. تعامل صادق ومتابعة ممتازة.»",rv1n:"سفيان ب.",rv1l:"الجلفة",
@@ -798,8 +850,9 @@ const I18N = {
     hero_eyebrow:"Chine — Algérie",hero_h1a:"Votre prochaine voiture,",hero_h1b:"de la Chine vers l'Algérie.",
     hero_lead:"Parcourez les véhicules disponibles, réservez votre voiture et suivez tout son trajet — de l'achat jusqu'au port d'Alger — au même endroit.",
     hero_browse:"Voir le stock disponible",hero_track:"Suivre mon expédition",
+    offer_eye:"Offre de la semaine",offer_h:"L'offre de cette semaine",
     b1b:"Sourcing direct",b1s:"De la Chine vers l'Algérie",b2b:"Suivi en direct",b2s:"Suivez votre voiture",b3b:"Enregistré officiellement",b3s:"Djelfa, Algérie",
-    sc_tag:"● En transit",sc_name:"Geely Coolray — Full Option",sc_journey:"Trajet",sc_departed:"Départ de Chine",
+    sc_tag:"En transit",sc_name:"Geely Coolray — Full Option",sc_journey:"Trajet",sc_departed:"Départ de Chine",
     chip_auto:"Automatique",chip_petrol:"Essence",chip_suv:"SUV",chip_full:"Full option",
     q1b:"Stock disponible",q1s:"Voir ce qui est prêt",q2b:"Suivre mon expédition",q2s:"Suivez en direct",q3b:"Pourquoi Mr L3alem",q3s:"Un courtier enregistré",q4b:"Le blog",q4s:"Guides et conseils d'import",q5b:"Contactez-nous",q5s:"Discuter sur WhatsApp",
     stock_eyebrow:"Stock en direct",stock_h2:"Véhicules disponibles et à venir",stock_p:"Voitures prêtes maintenant ou en route depuis la Chine. Mis à jour selon notre stock.",stock_all:"Voir tout le stock",
@@ -828,7 +881,7 @@ const I18N = {
     ab_p2:"J'achète la voiture directement en Chine, je documente chaque commande par un contrat à votre nom, et je suis votre voiture avec vous étape par étape jusqu'à ce qu'elle arrive entre vos mains en Algérie. Pas de promesses vagues — juste un suivi clair et honnête.",
     ab_pt1:"Activité enregistrée officiellement à Djelfa",ab_pt2:"Sourcing direct depuis la Chine",ab_pt3:"Suivi personnel de chaque client sur WhatsApp",
     ab_sig:"— Mr L3alem",ab_role:"Fondateur, Mr L3alem Auto · Djelfa, Algérie",
-    dl_eye:"Voitures livrées",dl_h2:"Des voitures arrivées à leurs propriétaires",dl_p:"Des photos réelles de voitures arrivées de Chine et remises à leurs propriétaires en Algérie. La confiance se construit par la livraison, pas par les mots.",dl_badge:"✓ Livrée",
+    dl_eye:"Voitures livrées",dl_h2:"Des voitures arrivées à leurs propriétaires",dl_p:"Des photos réelles de voitures arrivées de Chine et remises à leurs propriétaires en Algérie. La confiance se construit par la livraison, pas par les mots.",dl_badge:"Livrée",
     dl_c1:"Geely Coolray — Djelfa",dl_c2:"Chery Tiggo 8 — Laghouat",dl_c3:"MG 5 — Boumerdès",dl_c4:"GAC GS3 — Tiaret",dl_c5:"Haval Jolion — Djelfa",dl_c6:"Changan Alsvin — M'Sila",
     rv_eye:"Témoignages",rv_h2:"Ce que disent nos clients",
     rv1q:"« J'avais peur au début, mais j'ai suivi ma voiture sur la carte jour après jour jusqu'à son arrivée. Traitement honnête et excellent suivi. »",rv1n:"Sofiane B.",rv1l:"Djelfa",
@@ -856,8 +909,9 @@ const I18N = {
     hero_eyebrow:"China to Algeria",hero_h1a:"Your next car,",hero_h1b:"from China to Algeria.",
     hero_lead:"Browse available vehicles, reserve your car, and follow its complete journey — from purchase to the port of Algiers — all in one place.",
     hero_browse:"Browse available stock",hero_track:"Track my shipment",
+    offer_eye:"This week's offer",offer_h:"This week's offer",
     b1b:"Direct sourcing",b1s:"From China to Algeria",b2b:"Live tracking",b2s:"Follow your car",b3b:"Registered",b3s:"Djelfa, Algeria",
-    sc_tag:"● In transit",sc_name:"Geely Coolray — Full Option",sc_journey:"Journey",sc_departed:"Departed China",
+    sc_tag:"In transit",sc_name:"Geely Coolray — Full Option",sc_journey:"Journey",sc_departed:"Departed China",
     chip_auto:"Automatic",chip_petrol:"Petrol",chip_suv:"SUV",chip_full:"Full option",
     q1b:"Available stock",q1s:"See what's ready now",q2b:"Track my shipment",q2s:"Follow your car live",q3b:"Why Mr L3alem",q3s:"A registered broker",q4b:"The blog",q4s:"Import guides & tips",q5b:"Contact us",q5s:"Talk on WhatsApp",
     stock_eyebrow:"Live stock",stock_h2:"Available & incoming vehicles",stock_p:"Cars ready now or on their way from China. Updated as our inventory changes.",stock_all:"View all stock",
@@ -886,7 +940,7 @@ const I18N = {
     ab_p2:"I buy the car directly in China, document every order with a contract in your name, and follow your car with you step by step until it reaches your hands in Algeria. No vague promises — just clear follow-up and honesty.",
     ab_pt1:"Officially registered business in Djelfa",ab_pt2:"Direct sourcing from China",ab_pt3:"Personal follow-up for every customer on WhatsApp",
     ab_sig:"— Mr L3alem",ab_role:"Founder, Mr L3alem Auto · Djelfa, Algeria",
-    dl_eye:"Delivered cars",dl_h2:"Cars that reached their owners",dl_p:"Real photos of cars that arrived from China and were handed to their owners in Algeria. Trust is built by delivering, not by talking.",dl_badge:"✓ Delivered",
+    dl_eye:"Delivered cars",dl_h2:"Cars that reached their owners",dl_p:"Real photos of cars that arrived from China and were handed to their owners in Algeria. Trust is built by delivering, not by talking.",dl_badge:"Delivered",
     dl_c1:"Geely Coolray — Djelfa",dl_c2:"Chery Tiggo 8 — Laghouat",dl_c3:"MG 5 — Boumerdès",dl_c4:"GAC GS3 — Tiaret",dl_c5:"Haval Jolion — Djelfa",dl_c6:"Changan Alsvin — M'Sila",
     rv_eye:"Testimonials",rv_h2:"What our customers say",
     rv1q:"“I was scared at first, but I followed my car on the map day by day until it arrived. Honest dealing and excellent follow-up.”",rv1n:"Sofiane B.",rv1l:"Djelfa",
@@ -930,6 +984,62 @@ document.querySelectorAll('#lang button').forEach(function(b){
 });
 setLang('ar');
 
+// header border-on-scroll
+(function(){
+  var h=document.querySelector('header');
+  function onScroll(){ if(h) h.classList.toggle('is-scrolled', window.scrollY>40); }
+  onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+})();
+
+// nav scroll-spy (active underline = one of the few crimson accents)
+(function(){
+  var links=Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
+  var map={};
+  links.forEach(function(a){ var id=a.getAttribute('href').slice(1); if(id) map[id]=a; });
+  var ids=Object.keys(map); if(!ids.length) return;
+  var spy=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){a.classList.remove('active');});
+        var a=map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+  ids.forEach(function(id){ var s=document.getElementById(id); if(s) spy.observe(s); });
+})();
+
+// scroll reveal
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function stagger(root){
+    (root||document).querySelectorAll('[data-stagger]').forEach(function(c){
+      var i=0;
+      Array.prototype.forEach.call(c.children,function(ch){
+        if(ch.classList && ch.classList.contains('reveal')){ ch.dataset.delay=(i%8)*80; i++; }
+      });
+    });
+  }
+  function showAll(root){(root||document).querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});}
+  if(reduce || !('IntersectionObserver' in window)){
+    showAll(document);
+    window.__revealScan=showAll;
+    return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var el=e.target, d=parseInt(el.dataset.delay||0,10);
+        el.style.transitionDelay=d+'ms';
+        el.classList.add('in');
+        io.unobserve(el);
+      }
+    });
+  },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  function scan(root){ stagger(root); (root||document).querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el);}); }
+  scan(document);
+  window.__revealScan=scan;
+})();
+
 // Request-a-car form -> prefilled WhatsApp message (no backend needed)
 var RQ_LABELS={
   ar:{t:"طلب سيارة جديد",name:"الاسم",phone:"الهاتف",model:"السيارة المطلوبة",budget:"الميزانية",notes:"ملاحظات"},
@@ -952,41 +1062,37 @@ function sendRequest(e){
 // ---- Live showroom from Airtable: featured video, brands, models, detail pages ----
 var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
 (function(){
-  var COLORMAP={"أبيض":"#f2f2f2","فضي":"#c7ccd1","رمادي":"#6c7076","أسود":"#1c1f24","أحمر":"#e01e26","أزرق":"#3b6fd1","أخضر":"#2f9e5f","بني":"#7a5a3a","ذهبي":"#d9b382"};
-  var STATUSMAP={"متوفرة":{cls:"b-avail",label:"متوفرة"},"في الطريق":{cls:"b-transit",label:"في الطريق"},"تصل قريباً":{cls:"b-soon",label:"تصل قريباً"}};
+  var STATUSMAP={"متوفرة":{label:"متوفرة"},"في الطريق":{label:"في الطريق"},"تصل قريباً":{label:"تصل قريباً"}};
   var WA="213554601928", ALL=[], BRANDS={main:null,used:null};
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c];});}
-  function chip(t){return t?("<span class=\"chip\">"+esc(t)+"</span>"):"";}
   function norm(b){return String(b||"").trim().toLowerCase();}
-  function dots(colors){
-    if(!colors)return "";
-    var parts=String(colors).split(/[،,\/]+/).map(function(x){return x.trim();}).filter(Boolean);
-    var d=parts.map(function(p){var c=COLORMAP[p];return c?("<i title=\""+esc(p)+"\" style=\"background:"+c+"\"></i>"):"";}).join("");
-    return d?("<div class=\"car-colors\">"+d+"</div>"):"";
-  }
-  function fbEmbed(url){
+  function mediaEmbed(url){
     var u=String(url||"").trim(); if(!u) return "";
+    if(/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u)){
+      return "<video autoplay muted loop playsinline preload=\"metadata\" src=\""+esc(u)+"\"></video>";
+    }
     if(/youtu\.?be/.test(u)){
       var id="", m=u.match(/[?&]v=([^&]+)/)||u.match(/youtu\.be\/([^?&]+)/)||u.match(/embed\/([^?&]+)/); if(m)id=m[1];
-      if(id) return "<div class=\"vwrap\"><iframe src=\"https://www.youtube.com/embed/"+esc(id)+"\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></div>";
+      if(id) return "<div class=\"v-frame\"><iframe src=\"https://www.youtube.com/embed/"+esc(id)+"\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></div>";
     }
-    return "<div class=\"vwrap\"><iframe src=\"https://www.facebook.com/plugins/video.php?href="+encodeURIComponent(u)+"&show_text=false&width=800\" style=\"border:none;overflow:hidden\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"true\" allow=\"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share\"></iframe></div>";
+    return ""; // Facebook iframe intentionally omitted (premium redesign)
   }
   function waLink(c){ return "https://wa.me/"+WA+"?text="+encodeURIComponent("مرحبا، مهتم بـ "+(c.name||"")+(c.trim?(" — "+c.trim):"")); }
+  function specsLine(c){
+    return [c.year,c.transmission,c.fuel].filter(Boolean).map(esc).join(" · ");
+  }
   function card(c){
-    var st=STATUSMAP[c.status]||{cls:"b-avail",label:c.status||""};
+    var st=STATUSMAP[c.status]||{label:c.status||""};
     var photo=(c.photos&&c.photos[0])||"";
-    var media=photo?("<img loading=\"lazy\" src=\""+esc(photo)+"\" alt=\""+esc(c.name)+"\">"):("<svg viewBox=\"0 0 24 24\"><use href=\"#i-car\"/></svg>");
-    return "<div class=\"car-card\" role=\"button\" tabindex=\"0\" data-id=\""+esc(c.id)+"\">"
-      +"<div class=\"car-photo\"><span class=\"pill badge "+st.cls+"\">"+esc(st.label)+"</span>"+media+"</div>"
-      +"<div class=\"car-body\">"
-      +"<h3>"+esc(c.name)+"</h3>"
-      +(c.trim?("<div class=\"car-trim\">"+esc(c.trim)+"</div>"):"")
-      +"<div class=\"cc\">"+chip(c.year)+chip(c.transmission)+chip(c.fuel)+"</div>"
-      +dots(c.colors)
-      +"<div class=\"car-foot\"><div class=\"price\"><span data-i18n=\"onreq\">عند الطلب</span><small data-i18n=\"ask_wa\">اسأل عبر واتساب</small></div>"
-      +"<span class=\"more\"><span data-i18n=\"details\">التفاصيل</span><b>›</b></span></div>"
-      +"</div></div>";
+    var media=photo?("<img loading=\"lazy\" src=\""+esc(photo)+"\" alt=\""+esc(c.name)+"\">"):"";
+    var specs=specsLine(c);
+    return "<button type=\"button\" class=\"v-card car-card reveal\" data-id=\""+esc(c.id)+"\">"
+      +"<div class=\"v-media\">"+media+"</div>"
+      +"<span class=\"v-status eyebrow\">"+esc(st.label)+"</span>"
+      +"<h3 class=\"v-title\">"+esc(c.name)+(c.trim?(" — "+esc(c.trim)):"")+"</h3>"
+      +(specs?("<div class=\"v-specs caption\">"+specs+"</div>"):"")
+      +"<span class=\"tlink v-more\"><span data-i18n=\"details\">التفاصيل</span><span class=\"arw\" aria-hidden=\"true\"></span></span>"
+      +"</button>";
   }
   function subset(kind){ return ALL.filter(function(c){ return kind==="used" ? !!c.used : !c.used; }); }
   function renderBrands(kind){
@@ -1006,6 +1112,7 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
     var cars=subset(kind).filter(function(c){return cur===null||norm(c.brand)===cur;});
     grid.innerHTML=cars.map(card).join("");
     try{ setLang(document.documentElement.lang||"ar"); }catch(e){}
+    try{ if(window.__revealScan) window.__revealScan(grid); }catch(e){}
   }
   function renderAll(){
     renderBrands("main");
@@ -1020,20 +1127,21 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
   }
   function openDetail(c){
     var d=detailNode(), photos=c.photos||[];
-    var gmain=photos.length?photos.map(function(p,i){return "<img class=\"gimg"+(i===0?" active":"")+"\" data-i=\""+i+"\" src=\""+esc(p)+"\">";}).join(""):"<svg viewBox=\"0 0 24 24\" style=\"width:120px;stroke:#999;fill:none;margin:60px auto;display:block\"><use href=\"#i-car\"/></svg>";
+    var gmain=photos.length?photos.map(function(p,i){return "<img class=\"gimg"+(i===0?" active":"")+"\" data-i=\""+i+"\" src=\""+esc(p)+"\">";}).join(""):"";
     var thumbs=photos.length>1?("<div class=\"gthumbs\">"+photos.map(function(p,i){return "<button class=\"gthumb"+(i===0?" active":"")+"\" data-i=\""+i+"\"><img src=\""+esc(p)+"\"></button>";}).join("")+"</div>"):"";
-    var st=STATUSMAP[c.status]||{cls:"b-avail",label:c.status||""};
-    var vid=c.video?("<div class=\"detail-video\"><h4>فيديو تفصيلي عن السيارة</h4>"+fbEmbed(c.video)+"</div>"):"";
+    var st=STATUSMAP[c.status]||{label:c.status||""};
+    var vid=c.video?("<div class=\"detail-video\"><h4>فيديو تفصيلي عن السيارة</h4>"+mediaEmbed(c.video)+"</div>"):"";
     var desc=c.description?("<p class=\"detail-desc\">"+esc(c.description)+"</p>"):"";
+    var specs=specsLine(c);
     d.innerHTML="<div class=\"detail-box\">"
-      +"<div class=\"detail-head\"><span class=\"pill badge "+st.cls+"\">"+esc(st.label)+"</span><button class=\"detail-close\" aria-label=\"إغلاق\">×</button></div>"
+      +"<div class=\"detail-head\"><span class=\"detail-status\">"+esc(st.label)+"</span><button class=\"detail-close\" aria-label=\"إغلاق\">×</button></div>"
       +"<div class=\"detail-body\">"
       +"<div class=\"gmain\">"+gmain+"</div>"+thumbs
       +"<h2 class=\"detail-title\">"+esc(c.name)+"</h2>"
       +(c.trim?("<div class=\"detail-trim\">"+esc(c.trim)+"</div>"):"")
-      +"<div class=\"cc\" style=\"margin-top:12px\">"+chip(c.year)+chip(c.transmission)+chip(c.fuel)+"</div>"
-      +dots(c.colors)+desc+vid
-      +"<div><a class=\"detail-cta\" href=\""+waLink(c)+"\" target=\"_blank\" rel=\"noopener\">احجز عبر واتساب</a></div>"
+      +(specs?("<div class=\"detail-specs\">"+specs+"</div>"):"")
+      +desc+vid
+      +"<div><a class=\"btn btn-primary detail-cta\" href=\""+waLink(c)+"\" target=\"_blank\" rel=\"noopener\">احجز عبر واتساب</a></div>"
       +"</div></div>";
     d.classList.add("open"); document.body.style.overflow="hidden"; d.scrollTop=0;
     d.querySelectorAll(".gthumb").forEach(function(b){b.addEventListener("click",function(){
@@ -1053,7 +1161,6 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
   function bindGrid(id){
     var grid=document.getElementById(id); if(!grid)return;
     grid.addEventListener("click",function(e){ var k=e.target.closest&&e.target.closest(".car-card"); if(k&&k.getAttribute("data-id")) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); });
-    grid.addEventListener("keydown",function(e){ if(e.key==="Enter"){ var k=e.target.closest&&e.target.closest(".car-card"); if(k) location.hash="#car/"+encodeURIComponent(k.getAttribute("data-id")); } });
   }
   function bindBrands(id){
     var bt=document.getElementById(id); if(!bt)return;
@@ -1069,15 +1176,13 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
     var slot=document.getElementById("featuredSlot"); if(!slot)return;
     fetch(API_BASE.replace(/\/+$/,"")+"/api/featured").then(function(r){return r.json();}).then(function(d){
       if(!d||!d.active||!d.video)return;
-      slot.innerHTML="<div class=\"wrap\"><div class=\"featured-inner\"><span class=\"eyebrow\">"+esc(d.headline||"عرض هذا الأسبوع")+"</span>"+fbEmbed(d.video)+"</div></div>";
-      var sec=document.getElementById("featured"); if(sec) sec.style.display="block";
+      var m=mediaEmbed(d.video); if(m) slot.innerHTML=m;
     }).catch(function(){});
   }
   function loadStock(tries){
     if(!API_BASE)return;
     tries=(tries==null)?15:tries;
     var g=document.getElementById("stockGrid");
-    if(g&&!g.getAttribute("data-loaded")) g.innerHTML="<div style=\"grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted2);font-size:15px\">جارٍ تحميل المخزون…</div>";
     fetch(API_BASE.replace(/\/+$/,"")+"/api/stock",{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
       var cars=((d&&d.cars)||[]).filter(function(c){return c&&c.name&&c.status!=="مُباعة"&&c.photos&&c.photos.length;});
       if(!cars.length){ if(tries>0) setTimeout(function(){loadStock(tries-1);},3000); return; }
@@ -1099,12 +1204,12 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
   var map=L.map('map',{zoomControl:true,attributionControl:true,scrollWheelZoom:false,worldCopyJump:true}).setView([24,58],3);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:11,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'}).addTo(map);
   L.polyline(route,{color:'#3a4150',weight:2,dashArray:'3 8',opacity:.75}).addTo(map);
-  function port(color){return L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';box-shadow:0 0 0 4px '+color+'33,0 0 10px '+color+'"></div>',iconSize:[12,12],iconAnchor:[6,6]});}
-  L.marker(route[0],{icon:port('#6ea8ff')}).addTo(map).bindTooltip('Shanghai',{direction:'top',offset:[0,-6]});
-  L.marker(route[route.length-1],{icon:port('#34d27b')}).addTo(map).bindTooltip('Alger',{direction:'top',offset:[0,-6]});
+  function port(color){return L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';box-shadow:0 0 0 4px '+color+'33"></div>',iconSize:[12,12],iconAnchor:[6,6]});}
+  L.marker(route[0],{icon:port('#96989A')}).addTo(map).bindTooltip('Shanghai',{direction:'top',offset:[0,-6]});
+  L.marker(route[route.length-1],{icon:port('#FFFFFF')}).addTo(map).bindTooltip('Alger',{direction:'top',offset:[0,-6]});
 
-  var SHIP='<div class="ship-mark"><span class="ping"></span><svg viewBox="0 0 24 24"><path d="M12 3v6m0-6a1.5 1.5 0 1 0 .01 0M4.5 20C3 20 2.3 17.6 2.3 17.6L12 13.2l9.7 4.4S21 20 19.5 20M8 10.5h8M6.2 12.4v-1.6A1.6 1.6 0 0 1 7.8 9.2M17.8 12.4v-1.6A1.6 1.6 0 0 0 16.2 9.2"/></svg></div>';
-  var shipIcon=L.divIcon({className:'',html:SHIP,iconSize:[40,40],iconAnchor:[20,20]});
+  var SHIP='<div class="ship-mark"><span class="dot"></span></div>';
+  var shipIcon=L.divIcon({className:'',html:SHIP,iconSize:[22,22],iconAnchor:[11,11]});
 
   // segment lengths for interpolation
   function segLen(a,b){var dx=a[1]-b[1],dy=a[0]-b[0];return Math.sqrt(dx*dx+dy*dy);}
@@ -1130,7 +1235,7 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
 
   // journey window: departed 18 days ago, arriving in 22 days  (~45%)
   var dep=Date.now()-18*864e5, arr=Date.now()+22*864e5;
-  var traveled=L.polyline([route[0]],{color:'#e9cfa8',weight:3.5,opacity:.95}).addTo(map);
+  var traveled=L.polyline([route[0]],{color:'#ffffff',weight:3,opacity:.95}).addTo(map);
   var marker=L.marker(pointAt(0.45),{icon:shipIcon,zIndexOffset:1000}).addTo(map);
 
   function T(id,v){var e=document.getElementById(id); if(e)e.textContent=v;}
@@ -1152,7 +1257,6 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
     T('cdH',pad(Math.floor(ms%864e5/36e5)));
     T('cdM',pad(Math.floor(ms%36e5/6e4)));
     T('cdS',pad(Math.floor(ms%6e4/1e3)));
-    var bar=document.getElementById('mBar'); if(bar)bar.style.width=(f*100)+'%';
   }
   tick(); setInterval(tick,1000);
   setTimeout(function(){map.invalidateSize();},250);
