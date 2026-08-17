@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script>/* enable reveal-animation only when JS + IntersectionObserver are available; otherwise all content stays visible */
 (function(){try{var m=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(('IntersectionObserver' in window)&&!m){document.documentElement.className+=' js-anim';}}catch(e){}})();</script>
 <style>
@@ -413,6 +412,11 @@
   .detail-cta{margin-block-start:32px}
   @media(max-width:640px){.detail-box{margin:0;border-radius:0;min-height:100vh}}
 
+  /* container tracking widget (SeaRates) */
+  .track-widget{background:var(--white);border:1px solid var(--line);
+    border-radius:var(--r-card);overflow:hidden;min-height:620px}
+  .track-widget #tracking_system_root{min-height:620px}
+
   /* ---------- scroll reveal (hidden ONLY when js-anim is active; visible by default) ---------- */
   html.js-anim .reveal{opacity:0;transform:translateY(16px);
     transition:opacity .7s var(--ease),transform .7s var(--ease)}
@@ -568,50 +572,18 @@
   </div>
 </section>
 
-<!-- 6 — LIVE SHIP TRACKING -->
-<section id="live" class="live">
+<!-- 6 — LIVE CONTAINER TRACKING -->
+<section id="live">
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sh-text">
         <span class="eyebrow" data-i18n="live_eyebrow">تتبع مباشر</span>
         <h2 data-i18n="live_h2">تابع سيارتك عبر البحر، مباشرة</h2>
-        <p class="sh-intro body-lg" data-i18n="live_p">شاهد الموقع الحالي للسفينة التي تحمل سيارتك، لحظة بلحظة — من ميناء الصين حتى ميناء الجزائر.</p>
+        <p class="sh-intro body-lg" data-i18n="live_p">أدخل رقم الحاوية أو وثيقة الشحن (BL) لتتبع شحنتك مباشرة — الموقع على الخريطة، مراحل الرحلة، ووقت الوصول المتوقّع.</p>
       </div>
     </div>
-    <div class="live-wrap">
-      <div class="map-box reveal"><div id="map"></div></div>
-      <div class="mpanel reveal">
-        <div class="mp-head">
-          <div>
-            <div class="mp-name" id="mVessel"><bdi>MV Ocean Star</bdi></div>
-            <div class="mp-route" data-i18n="live_route">شنغهاي ← الجزائر</div>
-          </div>
-          <span class="mp-status"><span class="cd6"></span><span data-i18n="sc_tag">في الطريق</span></span>
-        </div>
-        <div class="mp-eta">
-          <div class="mp-eta-l" data-i18n="live_eta_l">تصل خلال</div>
-          <div class="cd">
-            <div><b id="cdD">--</b><span data-i18n="u_days">يوم</span></div>
-            <div><b id="cdH">--</b><span data-i18n="u_hrs">ساعة</span></div>
-            <div><b id="cdM">--</b><span data-i18n="u_min">دقيقة</span></div>
-            <div><b id="cdS">--</b><span data-i18n="u_sec">ثانية</span></div>
-          </div>
-        </div>
-        <div class="mp-rows">
-          <div class="mrow"><span data-i18n="live_progress">نسبة الرحلة</span><b id="mProgress">--</b></div>
-          <div class="mrow"><span data-i18n="live_leg_l">المنطقة الحالية</span><b id="mLeg">--</b></div>
-          <div class="mrow"><span data-i18n="live_pos_l">الموقع</span><b><bdi><span id="mLat">--</span> · <span id="mLng">--</span></bdi></b></div>
-          <div class="mrow"><span data-i18n="live_speed_l">السرعة</span><b><bdi><span id="mSpeed">--</span></bdi> <span data-i18n="u_knots">عقدة</span></b></div>
-        </div>
-        <div class="stages">
-          <div class="stage done"><span class="sdot"></span><span data-i18n="m1">غادرت الصين</span></div>
-          <div class="stage done"><span class="sdot"></span><span data-i18n="m2">مضيق ملقا</span></div>
-          <div class="stage now"><span class="sdot"></span><span data-i18n="m3">قناة السويس</span></div>
-          <div class="stage"><span class="sdot"></span><span data-i18n="m4">البحر المتوسط</span></div>
-          <div class="stage"><span class="sdot"></span><span data-i18n="m5">ميناء الجزائر</span></div>
-        </div>
-        <p class="mp-note" data-i18n="live_note">هذه رحلة توضيحية مباشرة. ستظهر سيارتك أنت هنا بمجرد تسجيل الدخول.</p>
-      </div>
+    <div class="track-widget reveal">
+      <div id="tracking_system_root" data-filter='{"platform":0,"lang":"ar"}'></div>
     </div>
   </div>
 </section>
@@ -822,7 +794,7 @@ const I18N = {
     jr1:"أفضل السيارات الصينية للجزائر في 2026",jr1t:"دليل",jr2:"موديلات جيلي الجديدة تصل هذا الموسم",jr2t:"أخبار",jr3:"مدة الشحن من الصين: ماذا تتوقّع",jr3t:"الشحن",jr4:"كولراي في مواجهة GAC GS3 — أيّهما تختار؟",jr4t:"مقارنة",
     ct_eyebrow:"تواصل معنا",ct_h2:"جاهز للعثور على سيارتك؟",ct_p:"راسلنا عبر واتساب — سنساعدك على الاختيار والحجز والمتابعة حتى الجزائر.",ct_wa:"راسلنا على واتساب",
     foot_desc:"استورد سيارتك من الصين وتابع رحلتها الكاملة إلى الجزائر. وساطة مسجّلة مقرّها الجلفة.",foot_explore:"استكشف",foot_company:"الشركة",foot_addr:"حي باكوكة، الجلفة، الجزائر",
-    live_eyebrow:"تتبع مباشر",live_h2:"تابع سيارتك عبر البحر، مباشرة",live_p:"شاهد الموقع الحالي للسفينة التي تحمل سيارتك، لحظة بلحظة — من ميناء الصين حتى ميناء الجزائر.",
+    live_eyebrow:"تتبع مباشر",live_h2:"تابع سيارتك عبر البحر، مباشرة",live_p:"أدخل رقم الحاوية أو وثيقة الشحن (BL) لتتبع شحنتك مباشرة — الموقع على الخريطة، مراحل الرحلة، ووقت الوصول المتوقّع.",
     live_route:"شنغهاي ← الجزائر",live_eta_l:"تصل خلال",live_progress:"نسبة الرحلة",live_leg_l:"المنطقة الحالية",live_pos_l:"الموقع",live_speed_l:"السرعة",u_knots:"عقدة",
     u_days:"يوم",u_hrs:"ساعة",u_min:"دقيقة",u_sec:"ثانية",
     m1:"غادرت الصين",m2:"مضيق ملقا",m3:"قناة السويس",m4:"البحر المتوسط",m5:"ميناء الجزائر",
@@ -881,7 +853,7 @@ const I18N = {
     jr1:"Meilleures voitures chinoises pour l'Algérie en 2026",jr1t:"Guide",jr2:"Nouveaux modèles Geely cette saison",jr2t:"Actu",jr3:"Délais d'expédition depuis la Chine : à quoi s'attendre",jr3t:"Expédition",jr4:"Coolray vs GAC GS3 — lequel choisir ?",jr4t:"Comparatif",
     ct_eyebrow:"Contactez-nous",ct_h2:"Prêt à trouver votre voiture ?",ct_p:"Écrivez-nous sur WhatsApp — nous vous aidons à choisir, réserver et suivre jusqu'en Algérie.",ct_wa:"WhatsApp",
     foot_desc:"Importez votre voiture de Chine et suivez tout son trajet vers l'Algérie. Courtage enregistré basé à Djelfa.",foot_explore:"Explorer",foot_company:"Entreprise",foot_addr:"Cité Bakouka, Djelfa, Algérie",
-    live_eyebrow:"Suivi en direct",live_h2:"Suivez votre voiture sur la mer, en direct",live_p:"Visualisez la position actuelle du navire qui transporte votre voiture, en temps réel — du port de Chine au port d'Alger.",
+    live_eyebrow:"Suivi en direct",live_h2:"Suivez votre voiture sur la mer, en direct",live_p:"Saisissez votre numéro de conteneur ou de connaissement (BL) pour suivre votre expédition en direct — position sur la carte, étapes du trajet et heure d'arrivée estimée.",
     live_route:"Shanghai → Alger",live_eta_l:"Arrive dans",live_progress:"Progression",live_leg_l:"Zone actuelle",live_pos_l:"Position",live_speed_l:"Vitesse",u_knots:"nœuds",
     u_days:"j",u_hrs:"h",u_min:"min",u_sec:"s",
     m1:"Départ de Chine",m2:"Détroit de Malacca",m3:"Canal de Suez",m4:"Méditerranée",m5:"Port d'Alger",
@@ -940,7 +912,7 @@ const I18N = {
     jr1:"Best Chinese cars for Algeria in 2026",jr1t:"Guide",jr2:"New Geely models arriving this season",jr2t:"News",jr3:"Shipping times from China: what to expect",jr3t:"Shipping",jr4:"Coolray vs GAC GS3 — which to pick?",jr4t:"Compare",
     ct_eyebrow:"Get in touch",ct_h2:"Ready to find your car?",ct_p:"Message us on WhatsApp — we'll help you choose, reserve, and follow it all the way to Algeria.",ct_wa:"WhatsApp us",
     foot_desc:"Import your car from China and follow its entire journey to Algeria. A registered brokerage based in Djelfa.",foot_explore:"Explore",foot_company:"Company",foot_addr:"Cité Bakouka, Djelfa, Algeria",
-    live_eyebrow:"Live tracking",live_h2:"Follow your car across the sea, live",live_p:"See the current position of the ship carrying your car, in real time — from the port in China to the port of Algiers.",
+    live_eyebrow:"Live tracking",live_h2:"Follow your car across the sea, live",live_p:"Enter your container or Bill of Lading (BL) number to track your shipment live — map position, journey milestones, and estimated arrival.",
     live_route:"Shanghai → Algiers",live_eta_l:"Arrives in",live_progress:"Progress",live_leg_l:"Current area",live_pos_l:"Position",live_speed_l:"Speed",u_knots:"knots",
     u_days:"d",u_hrs:"h",u_min:"m",u_sec:"s",
     m1:"Departed China",m2:"Malacca Strait",m3:"Suez Canal",m4:"Mediterranean",m5:"Port of Algiers",
@@ -1209,117 +1181,7 @@ var API_BASE = "https://whatsapp-airtable-agent.onrender.com";
 })();
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>
-(function(){
-  if(typeof L === 'undefined') return;
-  // China -> Algeria sea route via Malacca & Suez  [lat,lng]
-  var route=[[31.2,121.5],[24,119],[15,113],[6.5,105],[1.3,103.8],[6,80],[9,65],[12.5,51],[14,43],[20,38],[27,34.5],[29.95,32.55],[31.3,32.3],[34,25],[35,15],[37,7],[36.76,3.06]];
-  var map=L.map('map',{zoomControl:true,attributionControl:true,scrollWheelZoom:false,worldCopyJump:true}).setView([24,58],3);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:11,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'}).addTo(map);
-  L.polyline(route,{color:'#3a4150',weight:2,dashArray:'3 8',opacity:.75}).addTo(map);
-  function port(color){return L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:'+color+';box-shadow:0 0 0 4px '+color+'33"></div>',iconSize:[12,12],iconAnchor:[6,6]});}
-  L.marker(route[0],{icon:port('#96989A')}).addTo(map).bindTooltip('Shanghai',{direction:'top',offset:[0,-6]});
-  L.marker(route[route.length-1],{icon:port('#FFFFFF')}).addTo(map).bindTooltip('Alger',{direction:'top',offset:[0,-6]});
-
-  var SHIP='<div class="ship-mark"><span class="dot"></span></div>';
-  var shipIcon=L.divIcon({className:'',html:SHIP,iconSize:[22,22],iconAnchor:[11,11]});
-
-  // segment lengths for interpolation
-  function segLen(a,b){var dx=a[1]-b[1],dy=a[0]-b[0];return Math.sqrt(dx*dx+dy*dy);}
-  var segs=[],total=0,i;
-  for(i=0;i<route.length-1;i++){var d=segLen(route[i],route[i+1]);segs.push(d);total+=d;}
-  function pointAt(f){
-    if(f<=0)return[route[0][0],route[0][1],0];
-    if(f>=1)return[route[route.length-1][0],route[route.length-1][1],segs.length-1];
-    var target=f*total,acc=0;
-    for(var i=0;i<segs.length;i++){
-      if(acc+segs[i]>=target){var t=(target-acc)/segs[i];
-        return[route[i][0]+(route[i+1][0]-route[i][0])*t, route[i][1]+(route[i+1][1]-route[i][1])*t, i];}
-      acc+=segs[i];
-    }
-    return[route[route.length-1][0],route[route.length-1][1],segs.length-1];
-  }
-
-  var LEGS={
-    ar:["بحر الصين الشرقي","بحر الصين الجنوبي","بحر الصين الجنوبي","مضيق ملقا","المحيط الهندي","المحيط الهندي","بحر العرب","خليج عدن","البحر الأحمر","البحر الأحمر","البحر الأحمر","قناة السويس","شرق المتوسط","وسط المتوسط","وسط المتوسط","غرب المتوسط"],
-    fr:["Mer de Chine orientale","Mer de Chine méridionale","Mer de Chine méridionale","Détroit de Malacca","Océan Indien","Océan Indien","Mer d'Arabie","Golfe d'Aden","Mer Rouge","Mer Rouge","Mer Rouge","Canal de Suez","Méditerranée est","Méditerranée centrale","Méditerranée centrale","Méditerranée ouest"],
-    en:["East China Sea","South China Sea","South China Sea","Malacca Strait","Indian Ocean","Indian Ocean","Arabian Sea","Gulf of Aden","Red Sea","Red Sea","Red Sea","Suez Canal","East Mediterranean","Central Mediterranean","Central Mediterranean","West Mediterranean"]
-  };
-
-  var traveled=L.polyline([route[0]],{color:'#ffffff',weight:3,opacity:.95}).addTo(map);
-  var liveLine=L.polyline([],{color:'#ffffff',weight:2,dashArray:'4 8',opacity:.55});
-  var marker=L.marker(pointAt(0.45),{icon:shipIcon,zIndexOffset:1000}).addTo(map);
-  var LIVE=null, etaMs=null, fittedLive=false;
-
-  // demo journey window: departed 18 days ago, arriving in 22 days (~45%) — used only
-  // until the backend reports a real vessel to track.
-  var dep=Date.now()-18*864e5, arr=Date.now()+22*864e5;
-
-  function T(id,v){var e=document.getElementById(id); if(e)e.textContent=v;}
-  function pad(n){return (n<10?'0':'')+n;}
-  function fmtLat(x){return x>=0?x.toFixed(2)+'°N':(-x).toFixed(2)+'°S';}
-  function fmtLon(x){return x>=0?x.toFixed(2)+'°E':(-x).toFixed(2)+'°W';}
-  function cd(ms){ if(ms<0)ms=0; T('cdD',Math.floor(ms/864e5)); T('cdH',pad(Math.floor(ms%864e5/36e5))); T('cdM',pad(Math.floor(ms%36e5/6e4))); T('cdS',pad(Math.floor(ms%6e4/1e3))); }
-
-  // rough progress %: nearest reference-route vertex to the real position
-  function liveProgress(v){
-    var best=0,bd=1e9,i;
-    for(i=0;i<route.length;i++){var dy=route[i][0]-v.lat,dx=route[i][1]-v.lon,d=dy*dy+dx*dx;if(d<bd){bd=d;best=i;}}
-    var acc=0; for(i=0;i<best;i++)acc+=segs[i];
-    return Math.round(acc/total*100);
-  }
-  function applyLive(){
-    var v=LIVE; if(!v)return;
-    marker.setLatLng([v.lat,v.lon]);
-    traveled.setLatLngs([]);
-    liveLine.addTo(map); liveLine.setLatLngs([[v.lat,v.lon],route[route.length-1]]);
-    var nm=document.getElementById('mVessel'); if(nm&&v.name) nm.textContent=v.name;
-    T('mLat',fmtLat(v.lat)); T('mLng',fmtLon(v.lon));
-    T('mSpeed',(v.speed!=null&&isFinite(v.speed))?Number(v.speed).toFixed(1):'—');
-    T('mLeg', v.destination || '—');
-    var pr=liveProgress(v); T('mProgress', isFinite(pr)?pr+'%':'—');
-    if(!fittedLive){ try{ map.fitBounds([[v.lat,v.lon],route[route.length-1]],{padding:[50,50],maxZoom:6}); }catch(e){} fittedLive=true; }
-  }
-  function fetchLive(){
-    if(typeof API_BASE==='undefined'||!API_BASE) return;
-    fetch(API_BASE.replace(/\/+$/,'')+'/api/vessel',{cache:'no-store'})
-      .then(function(r){return r.json();})
-      .then(function(v){
-        if(v&&v.active&&isFinite(v.lat)&&isFinite(v.lon)){
-          LIVE=v; etaMs=null;
-          if(v.eta){ var s=String(v.eta).trim().replace(' ','T'); if(!/[zZ]|[+\-]\d\d:?\d\d$/.test(s)) s+='Z'; var t=Date.parse(s); if(!isNaN(t)&&t>Date.now()) etaMs=t; }
-          applyLive();
-        } else if(LIVE){ LIVE=null; liveLine.setLatLngs([]); fittedLive=false; }
-      }).catch(function(){});
-  }
-
-  function tick(){
-    if(LIVE){
-      if(etaMs) cd(etaMs-Date.now());
-      else { T('cdD','—'); T('cdH','—'); T('cdM','—'); T('cdS','—'); }
-      return;
-    }
-    // demo animation (fallback until a real vessel is configured)
-    var now=Date.now();
-    var f=(now-dep)/(arr-dep); if(f<0)f=0; if(f>1)f=1;
-    var p=pointAt(f);
-    marker.setLatLng([p[0],p[1]]);
-    var path=route.slice(0,p[2]+1); path.push([p[0],p[1]]); traveled.setLatLngs(path);
-    T('mProgress',Math.round(f*100)+'%');
-    T('mLat',fmtLat(p[0]));
-    T('mLng',fmtLon(p[1]));
-    T('mSpeed',(15.4+Math.sin(now/2600)*1.4).toFixed(1));
-    var lang=document.documentElement.lang||'ar'; var legs=LEGS[lang]||LEGS.ar;
-    T('mLeg',legs[Math.min(p[2],legs.length-1)]);
-    cd(arr-now);
-  }
-  tick(); setInterval(tick,1000);
-  fetchLive(); setInterval(fetchLive, 5*60*1000);
-  setTimeout(function(){map.invalidateSize();},250);
-  window.addEventListener('resize',function(){map.invalidateSize();});
-})();
-</script>
+<script async src="https://www.searates.com/container/widget"></script>
 
 </body>
 </html>
